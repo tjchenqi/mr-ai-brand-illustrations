@@ -14,7 +14,7 @@ Format:
 16:9 horizontal. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -29,13 +29,13 @@ Structure type:
 Label Frame
 
 Composition:
-Mr.Ai peels oversized name labels off a small portrait frame. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
+Mr.Ai peels oversized labels off a small portrait or object frame. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
 
-Short Chinese labels:
-标签 / 误解 / 本人
+Overlay labels for post-production only:
+标签 / 误解 / 本体
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ### 9:16
@@ -47,7 +47,7 @@ Format:
 9:16 vertical. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -62,13 +62,13 @@ Structure type:
 Label Frame
 
 Composition:
-Mr.Ai peels oversized name labels off a small portrait frame. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
+Mr.Ai peels oversized labels off a small portrait or object frame. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
 
-Short Chinese labels:
-标签 / 误解 / 本人
+Overlay labels for post-production only:
+标签 / 误解 / 本体
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ## 02-s3-思想核心切入
@@ -82,7 +82,7 @@ Format:
 16:9 horizontal. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -99,11 +99,11 @@ Third Path
 Composition:
 Mr.Ai stands at a fork with two blocked paths and opens a small third path. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
 
-Short Chinese labels:
-模仿 / 拒绝 / 改写
+Overlay labels for post-production only:
+选项A / 选项B / 第三路
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ### 9:16
@@ -115,7 +115,7 @@ Format:
 9:16 vertical. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -132,11 +132,11 @@ Third Path
 Composition:
 Mr.Ai stands at a fork with two blocked paths and opens a small third path. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
 
-Short Chinese labels:
-模仿 / 拒绝 / 改写
+Overlay labels for post-production only:
+选项A / 选项B / 第三路
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ## 03-s4-现实机制
@@ -150,7 +150,7 @@ Format:
 16:9 horizontal. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -167,11 +167,11 @@ Third Path
 Composition:
 Mr.Ai stands at a fork with two blocked paths and opens a small third path. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
 
-Short Chinese labels:
-模仿 / 拒绝 / 改写
+Overlay labels for post-production only:
+选项A / 选项B / 第三路
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ### 9:16
@@ -183,7 +183,7 @@ Format:
 9:16 vertical. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -200,11 +200,11 @@ Third Path
 Composition:
 Mr.Ai stands at a fork with two blocked paths and opens a small third path. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
 
-Short Chinese labels:
-模仿 / 拒绝 / 改写
+Overlay labels for post-production only:
+选项A / 选项B / 第三路
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ## 04-s5-反方问题
@@ -218,7 +218,7 @@ Format:
 16:9 horizontal. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -230,16 +230,16 @@ Core idea:
 你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王...
 
 Structure type:
-Use vs Rewrite
+Label Frame
 
 Composition:
-Mr.Ai moves one song card from a consumption basket into a rewrite workbench. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
+Mr.Ai peels oversized labels off a small portrait or object frame. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
 
-Short Chinese labels:
-消费 / 改写 / 起点
+Overlay labels for post-production only:
+标签 / 误解 / 本体
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ### 9:16
@@ -251,7 +251,7 @@ Format:
 9:16 vertical. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -263,16 +263,16 @@ Core idea:
 你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王...
 
 Structure type:
-Use vs Rewrite
+Label Frame
 
 Composition:
-Mr.Ai moves one song card from a consumption basket into a rewrite workbench. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
+Mr.Ai peels oversized labels off a small portrait or object frame. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
 
-Short Chinese labels:
-消费 / 改写 / 起点
+Overlay labels for post-production only:
+标签 / 误解 / 本体
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ## 05-s7-边界声明
@@ -286,7 +286,7 @@ Format:
 16:9 horizontal. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -301,13 +301,13 @@ Structure type:
 Coexistence Stage
 
 Composition:
-Mr.Ai lights two small stage lamps that overlap without merging. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
+Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
 
-Short Chinese labels:
+Overlay labels for post-production only:
 来处 / 自己 / 共处
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ### 9:16
@@ -319,7 +319,7 @@ Format:
 9:16 vertical. Clean white background with generous empty space for later subtitles and video overlays.
 
 Brand character:
-Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
 Visual style:
 Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -334,11 +334,11 @@ Structure type:
 Coexistence Stage
 
 Composition:
-Mr.Ai lights two small stage lamps that overlap without merging. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
+Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
 
-Short Chinese labels:
+Overlay labels for post-production only:
 来处 / 自己 / 共处
 
 Constraints:
-One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```

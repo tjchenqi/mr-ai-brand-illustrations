@@ -30,16 +30,32 @@ bin/mrai gen script.md --out samples/my-topic --style auto
 - `explainer-sketch`: sparse whiteboard explanation. Use for mechanisms, workflows, risks, verification, loops, decision criteria, and xiaohei-like video inserts.
 - `auto`: choose `brand` or `explainer-sketch` per selected S segment. Review before production.
 
-`auto` is deterministic and keyword-based. It is useful for first-pass scaffolds, not final art direction.
+`auto` is deterministic and rule-based. It is useful for first-pass scaffolds, not final art direction.
 
-Common explainer-sketch triggers:
+The rule layer is outside Python:
 
-- mechanism words: `概念`, `结构`, `机制`, `区别`, `判断`, `边界`, `验证`, `循环`, `Loop`
-- culture/person reasoning words: `第三条路`, `误解`, `标签`, `依赖`, `消费`, `改写`
+- `agent-pack/visual-routing-rules.json`: semantic intent -> layout.
+- `agent-pack/layout-library.json`: layout -> action, labels, avoid list.
+- `agent-pack/treatment-rules.json`: S/B segment scoring, quote handling, timeline treatment.
 
-Common brand triggers:
+These files should use transferable semantic patterns, not named entities from test scripts.
 
-- emotional or identity words: `钩子`, `结尾`, `飞吻`, `支持`, `共处`, `人物`, `舞台`, `音乐`, `编织`
+Useful overrides:
+
+```bash
+bin/mrai gen script.md --out samples/my-topic --style auto --segments S2,S4,S7
+bin/mrai gen script.md --out samples/my-topic --prefer-layout "Third Path"
+bin/mrai gen script.md --out samples/my-topic --routing agent-pack/visual-routing-rules.json
+```
+
+Inline segment override:
+
+```markdown
+### S4 · 核心判断
+<!-- visual: style: explainer-sketch, layout: Third Path, labels: 模仿|拒绝|改写 -->
+
+这里是口播正文。
+```
 
 The CLI limits repeated layouts: a single style/layout pair should not appear more than twice in one package. If the first match repeats too much, the CLI falls back to a related physical metaphor. Still review `shot-list.md`; if two images feel visually redundant, rewrite one shot before image generation.
 

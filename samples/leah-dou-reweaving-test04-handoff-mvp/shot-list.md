@@ -18,9 +18,9 @@ formats: ["16x9", "9x16"]
 structure_type: Label Frame
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
-mr_ai_action: Mr.Ai peels oversized name labels off a small portrait frame.
+mr_ai_action: Mr.Ai peels oversized labels off a small portrait or object frame.
 main_metaphor: Label Frame
-short_labels: ["标签", "误解", "本人"]
+short_labels: ["标签", "误解", "本体"]
 prompt_status: draft
 qa_status: pending review
 ```
@@ -41,7 +41,7 @@ style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
 mr_ai_action: Mr.Ai stands at a fork with two blocked paths and opens a small third path.
 main_metaphor: Third Path
-short_labels: ["模仿", "拒绝", "改写"]
+short_labels: ["选项A", "选项B", "第三路"]
 prompt_status: draft
 qa_status: pending review
 ```
@@ -62,7 +62,7 @@ style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
 mr_ai_action: Mr.Ai stands at a fork with two blocked paths and opens a small third path.
 main_metaphor: Third Path
-short_labels: ["模仿", "拒绝", "改写"]
+short_labels: ["选项A", "选项B", "第三路"]
 prompt_status: draft
 qa_status: pending review
 ```
@@ -78,12 +78,12 @@ voiceover_summary: "你可能会说：这难道不是依赖？她毕竟用了父
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
 formats: ["16x9", "9x16"]
-structure_type: Use vs Rewrite
+structure_type: Label Frame
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
-mr_ai_action: Mr.Ai moves one song card from a consumption basket into a rewrite workbench.
-main_metaphor: Use vs Rewrite
-short_labels: ["消费", "改写", "起点"]
+mr_ai_action: Mr.Ai peels oversized labels off a small portrait or object frame.
+main_metaphor: Label Frame
+short_labels: ["标签", "误解", "本体"]
 prompt_status: draft
 qa_status: pending review
 ```
@@ -102,7 +102,7 @@ formats: ["16x9", "9x16"]
 structure_type: Coexistence Stage
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
-mr_ai_action: Mr.Ai lights two small stage lamps that overlap without merging.
+mr_ai_action: Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula.
 main_metaphor: Coexistence Stage
 short_labels: ["来处", "自己", "共处"]
 prompt_status: draft

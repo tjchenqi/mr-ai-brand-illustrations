@@ -1,0 +1,91 @@
+{
+  "version": "0.1.0",
+  "description": "Machine-readable layout specs. visual-routing-rules.json chooses a layout; this file tells agents and the CLI how to draw it.",
+  "layouts": {
+    "Reweaving Loom": {
+      "action": "Mr.Ai weaves two simple source ribbons through a small hand loom into one new pattern.",
+      "labels": ["来源", "改写", "新表达"],
+      "avoid": ["dense fabric texture", "literal celebrity references", "decorative poster"]
+    },
+    "Third Path": {
+      "action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
+      "labels": ["选项A", "选项B", "第三路"],
+      "avoid": ["heroic mountain scene", "maze with too many branches", "large road signs full of text"]
+    },
+    "Label Frame": {
+      "action": "Mr.Ai peels oversized labels off a small portrait or object frame.",
+      "labels": ["标签", "误解", "本体"],
+      "avoid": ["identity documents", "face close-up", "many unreadable tags"]
+    },
+    "Use vs Rewrite": {
+      "action": "Mr.Ai moves one source card from a consumption basket into a rewrite workbench.",
+      "labels": ["使用", "改写", "结果"],
+      "avoid": ["courtroom ownership scene", "shopping poster", "copy-paste UI"]
+    },
+    "Coexistence Stage": {
+      "action": "Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula.",
+      "labels": ["来处", "自己", "共处"],
+      "avoid": ["plus signs", "math equation", "three-box PPT layout", "spotlights so large that Mr.Ai disappears"]
+    },
+    "Guardrail Pit": {
+      "action": "Mr.Ai places a yellow guardrail before a red risk pit.",
+      "labels": ["风险", "边界", "验证"],
+      "avoid": ["disaster imagery", "dramatic horror lighting", "large warning poster"]
+    },
+    "Toolchain Thread": {
+      "action": "Mr.Ai threads a blue line through small tool blocks.",
+      "labels": ["工具", "交接", "结果"],
+      "avoid": ["dense software architecture", "realistic UI screenshot", "too many app icons"]
+    },
+    "Black Box Reveal": {
+      "action": "Mr.Ai opens a simple dark box and reveals mechanism cards inside.",
+      "labels": ["黑盒", "机制", "证据"],
+      "avoid": ["sci-fi interface", "robot face", "complex circuit board"]
+    },
+    "Mini Comic Correction": {
+      "action": "Mr.Ai compares two or three tiny panels: assumption, check, correction.",
+      "labels": ["以为", "检查", "修正"],
+      "avoid": ["speech balloons full of text", "children's book style", "many panels"]
+    },
+    "Before/After Desk": {
+      "action": "Mr.Ai moves a card from an old messy desk to a clearer new workbench.",
+      "labels": ["之前", "之后", "变化"],
+      "avoid": ["corporate before-after slide", "symmetrical poster", "busy office scene"]
+    },
+    "Evidence Scale": {
+      "action": "Mr.Ai weighs a claim card against evidence cards on a small scale.",
+      "labels": ["判断", "证据", "结论"],
+      "avoid": ["legal trial scene", "financial chart", "heavy realism"]
+    },
+    "Checkpoint Rope": {
+      "action": "Mr.Ai pulls one blue rope through several simple checkpoint posts in a loose loop.",
+      "labels": ["目标", "状态", "验证"],
+      "avoid": ["formal flowchart", "too many steps", "tangled rope"]
+    },
+    "Feedback Leak": {
+      "action": "Mr.Ai plugs a leaking red pipe before it drips into a state bucket.",
+      "labels": ["错误", "状态", "放大"],
+      "avoid": ["gross liquid", "industrial machinery", "dramatic catastrophe"]
+    },
+    "Decision Gates": {
+      "action": "Mr.Ai stands beside four small gates; only one gate is open, the others are marked as blocked with simple red crosses.",
+      "labels": ["可验", "可存", "可恢复", "值得"],
+      "avoid": ["game level art", "castle scene", "large text labels on every gate"]
+    },
+    "Nested Rings": {
+      "action": "Mr.Ai points at three nested hand-drawn rings, each ring holding one small object.",
+      "labels": ["外层", "中层", "内层"],
+      "avoid": ["target logo", "corporate Venn diagram", "dense architecture"]
+    },
+    "Evidence Clamp": {
+      "action": "Mr.Ai clips a goal card and an evidence card onto one simple board.",
+      "labels": ["目标", "证据", "验收"],
+      "avoid": ["clipboard checklist with tiny text", "contract legal scene", "dashboard"]
+    },
+    "Conveyor Split": {
+      "action": "Mr.Ai nudges cards along a thin conveyor that splits useful output from noise.",
+      "labels": ["输入", "噪音", "行动"],
+      "avoid": ["factory illustration", "complex machine", "PPT pipeline"]
+    }
+  }
+}

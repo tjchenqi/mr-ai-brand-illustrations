@@ -1,0 +1,27 @@
+{
+  "version": "0.1.0",
+  "description": "Rules for selecting script segments and assigning timeline treatments. This is separate from visual routing so S/B handling does not live in Python.",
+  "segment_scoring": {
+    "keywords": ["问题", "答案", "关键", "真正", "区别", "风险", "边界", "机制", "结构", "判断", "选择", "验证", "证据", "流程", "工作流", "循环", "Loop", "不是", "而是", "但", "所以", "结论", "转折", "误解", "标签", "改写", "共处"],
+    "title_bonus_keywords": ["钩子", "开头", "结尾", "边界", "核心", "机制", "反方", "验证", "结论"],
+    "quoted_source_penalty": 6
+  },
+  "role_treatments": {
+    "S": {
+      "meaning": "host voiceover; eligible for brand or explainer images",
+      "selected_timing": "sync_with_voiceover_anchor",
+      "unselected": "subtitle-or-no-image",
+      "unselected_timing": "keep_voiceover_primary"
+    },
+    "B": {
+      "meaning": "quoted source; preserve quoted meaning",
+      "default": "quote-card-or-overlay",
+      "timing": "hold_during_quote",
+      "image_policy": "do not turn B segments into metaphor images unless an explicit visual override says so"
+    }
+  },
+  "inline_override_schema": {
+    "syntax": "<!-- visual: style: explainer-sketch, layout: Third Path, labels: A|B|C -->",
+    "supported_keys": ["style", "layout", "labels", "action", "treatment", "timing"]
+  }
+}

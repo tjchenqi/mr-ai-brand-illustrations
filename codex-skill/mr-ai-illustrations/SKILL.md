@@ -15,6 +15,7 @@ Prioritize video-internal explanation images that match voiceover. Do not treat 
 
 Start with:
 
+- `references/AGENT_START_HERE.md`
 - `references/project-positioning.md`
 - `references/mr-ai-character-bible.md`
 - `references/visual-style-dna.md`
@@ -25,6 +26,9 @@ Start with:
 
 Read when needed:
 
+- `references/visual-routing-rules.json` for semantic intent to layout routing.
+- `references/layout-library.json` for layout actions, labels, and avoid lists.
+- `references/treatment-rules.json` for S/B scoring, quote handling, and inline override syntax.
 - `references/composition-patterns.md` for choosing the visual structure.
 - `references/cli-usage.md` when the user wants command-line or batch workflow integration.
 - `references/delivery-spec.md` for task folder layout.
@@ -83,7 +87,7 @@ The prompt must preserve:
 
 If the user asks to generate images and image generation is available, generate each image individually. If generation is not available, deliver final prompts and QA guidance.
 
-Keep image text short. Long subtitles and full explanations should be handled by editing tools or Remotion.
+Default to no rendered Chinese text inside generated bitmap images. Ask for blank label cards/signs, then add exact Chinese later with editing tools or Remotion.
 
 ### 5. QA
 

@@ -7,7 +7,7 @@
 ## S0 · 开场
 
 - Role: host voiceover
-- Visual treatment: explainer-sketch
+- Visual treatment: brand
 - Timing: sync_with_voiceover_anchor
 - Voiceover anchor: 今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。
 - Script summary excerpt: 今天我们用一个小例子解释：为什么一段引用不能直接被画成自

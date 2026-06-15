@@ -11,7 +11,7 @@
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
       "timing": "keep_voiceover_primary",
-      "overlay_text_candidate": "重新编织"
+      "overlay_text_candidate": "窦靖童在歌手2"
     },
     {
       "segment_id": "S1",
@@ -22,7 +22,7 @@
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
       "timing": "keep_voiceover_primary",
-      "overlay_text_candidate": "和声"
+      "overlay_text_candidate": "5月22日晚歌"
     },
     {
       "segment_id": "S2",
@@ -44,7 +44,7 @@
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "影响的焦虑"
+      "overlay_text_candidate": "第三条路"
     },
     {
       "segment_id": "S4",
@@ -55,7 +55,7 @@
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "同一个表达"
+      "overlay_text_candidate": "改写"
     },
     {
       "segment_id": "S5",
@@ -66,7 +66,7 @@
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "消费"
+      "overlay_text_candidate": "改写"
     },
     {
       "segment_id": "S6",
@@ -77,7 +77,7 @@
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
       "timing": "keep_voiceover_primary",
-      "overlay_text_candidate": "和声"
+      "overlay_text_candidate": "支持"
     },
     {
       "segment_id": "S7",
@@ -88,7 +88,7 @@
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "同一个表达"
+      "overlay_text_candidate": "共处"
     },
     {
       "segment_id": "S8",
@@ -99,7 +99,7 @@
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
       "timing": "keep_voiceover_primary",
-      "overlay_text_candidate": "同一个表达"
+      "overlay_text_candidate": "节目结束后媒体"
     }
   ],
   "shots": [
@@ -117,11 +117,11 @@
       "voiceover_summary": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什么\"，而是\"你爸当年……\"\"你妈那时候……\"。面试时，别人翻简历翻到家庭那一栏，眼神停了...",
       "script_summary_excerpt": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
-      "mr_ai_action": "Mr.Ai peels oversized name labels off a small portrait frame.",
+      "mr_ai_action": "Mr.Ai peels oversized labels off a small portrait or object frame.",
       "short_labels": [
         "标签",
         "误解",
-        "本人"
+        "本体"
       ],
       "overlay_text_candidate": "误解"
     },
@@ -141,11 +141,11 @@
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
       "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
       "short_labels": [
-        "模仿",
-        "拒绝",
-        "改写"
+        "选项A",
+        "选项B",
+        "第三路"
       ],
-      "overlay_text_candidate": "影响的焦虑"
+      "overlay_text_candidate": "第三条路"
     },
     {
       "shot_id": "03-s4-现实机制",
@@ -163,11 +163,11 @@
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
       "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
       "short_labels": [
-        "模仿",
-        "拒绝",
-        "改写"
+        "选项A",
+        "选项B",
+        "第三路"
       ],
-      "overlay_text_candidate": "同一个表达"
+      "overlay_text_candidate": "改写"
     },
     {
       "shot_id": "04-s5-反方问题",
@@ -178,18 +178,18 @@
         "9x16"
       ],
       "style_preset": "explainer-sketch",
-      "structure_type": "Use vs Rewrite",
+      "structure_type": "Label Frame",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王...",
       "script_summary_excerpt": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
-      "mr_ai_action": "Mr.Ai moves one song card from a consumption basket into a rewrite workbench.",
+      "mr_ai_action": "Mr.Ai peels oversized labels off a small portrait or object frame.",
       "short_labels": [
-        "消费",
-        "改写",
-        "起点"
+        "标签",
+        "误解",
+        "本体"
       ],
-      "overlay_text_candidate": "消费"
+      "overlay_text_candidate": "改写"
     },
     {
       "shot_id": "05-s7-边界声明",
@@ -205,13 +205,13 @@
       "voiceover_summary": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是\"主体性的胜利\"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受\"选边\"。没有...",
       "script_summary_excerpt": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
-      "mr_ai_action": "Mr.Ai lights two small stage lamps that overlap without merging.",
+      "mr_ai_action": "Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula.",
       "short_labels": [
         "来处",
         "自己",
         "共处"
       ],
-      "overlay_text_candidate": "边界"
+      "overlay_text_candidate": "共处"
     }
   ]
 }

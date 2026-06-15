@@ -1,0 +1,205 @@
+{
+  "version": "0.4.0",
+  "description": "Semantic visual routing rules for Mr.Ai. This file maps transferable voiceover intent to layout names. It must not become a pile of named entities from test scripts.",
+  "defaults": {
+    "formats": ["16x9", "9x16"],
+    "max_same_layout": 2,
+    "default_style": "explainer-sketch"
+  },
+  "overlay": {
+    "keywords": ["标签误读", "误解", "第三条路", "二选一", "不是选边", "改写", "重新表达", "共处", "边界", "风险", "证据", "验收", "验证", "闭环", "工作流", "输入", "输出", "噪音", "判断", "选择", "支持"],
+    "layout_labels": {
+      "Label Frame": "标签误读",
+      "Third Path": "第三条路",
+      "Use vs Rewrite": "使用与改写",
+      "Reweaving Loom": "重新编织",
+      "Coexistence Stage": "共处",
+      "Checkpoint Rope": "闭环检查",
+      "Feedback Leak": "错误闭环",
+      "Decision Gates": "判断门",
+      "Nested Rings": "层次关系",
+      "Evidence Clamp": "证据验收",
+      "Conveyor Split": "输入输出",
+      "Black Box Reveal": "打开黑盒",
+      "Toolchain Thread": "工具链",
+      "Guardrail Pit": "风险边界",
+      "Evidence Scale": "证据判断",
+      "Mini Comic Correction": "误解修正",
+      "Before/After Desk": "前后变化"
+    }
+  },
+  "styles": {
+    "brand": {
+      "triggers": ["钩子", "结尾", "人物", "身份", "情绪", "关系", "支持", "共处", "舞台", "品牌", "封面", "开场", "收束", "愿景"],
+      "default_layout": "Black Box Reveal",
+      "fallbacks": ["Reweaving Loom", "Label Frame", "Use vs Rewrite", "Coexistence Stage", "Before/After Desk", "Toolchain Thread", "Guardrail Pit", "Mini Comic Correction", "Black Box Reveal", "Evidence Scale", "Third Path"],
+      "rules": [
+        {
+          "intent": "reweaving_sources_into_new_expression",
+          "use_for": "Inherited material, external influence, old knowledge, or prior assets are transformed into a new expression.",
+          "avoid_for": "Simple chronological history with no transformation.",
+          "layout": "Reweaving Loom",
+          "match": ["编织", "重组", "重新表达", "重新组织", "改写", "继承", "来源", "旧材料", "新表达", "同一个表达", "融合"]
+        },
+        {
+          "intent": "third_path_between_false_choices",
+          "use_for": "The voiceover rejects a forced binary and opens a third, more useful path.",
+          "avoid_for": "Normal A/B comparison where one side clearly wins.",
+          "layout": "Third Path",
+          "match": ["第三条路", "两条路", "二选一", "选边", "不是选", "既不是", "也不是", "不是A也不是B", "不只", "不等于", "另一种"]
+        },
+        {
+          "intent": "identity_label_misreading",
+          "use_for": "A person, tool, idea, or product is reduced to a convenient external label.",
+          "avoid_for": "Neutral taxonomy or ordinary naming with no distortion.",
+          "layout": "Label Frame",
+          "match": ["标签", "误解", "被定义", "被理解成", "被翻译成", "身份", "名字", "外部称呼", "刻板印象", "简化成"]
+        },
+        {
+          "intent": "use_vs_rewrite",
+          "use_for": "The point is not whether something is used, but how it is transformed by use.",
+          "avoid_for": "Pure copying, pure consumption, or legal ownership disputes.",
+          "layout": "Use vs Rewrite",
+          "match": ["依赖", "消费", "怎么用", "如何使用", "拿来", "转化", "改写", "起点", "终点", "工具化", "借用"]
+        },
+        {
+          "intent": "coexistence_not_replacement",
+          "use_for": "Two origins, roles, positions, or truths can coexist without one erasing the other.",
+          "avoid_for": "Mathematical merger or simple addition formula.",
+          "layout": "Coexistence Stage",
+          "match": ["共处", "不是互斥", "同时成立", "并存", "支持", "陪伴", "关系", "不是替代", "不必消灭"]
+        },
+        {
+          "intent": "risk_boundary_guardrail",
+          "use_for": "The segment names a boundary, failure mode, or safety constraint.",
+          "avoid_for": "General disagreement with no concrete risk.",
+          "layout": "Guardrail Pit",
+          "match": ["风险", "边界", "幻觉", "出错", "可靠", "规避", "限制", "红线", "不要", "不能"]
+        },
+        {
+          "intent": "toolchain_handoff",
+          "use_for": "Several tools, agents, or steps must pass work to each other.",
+          "avoid_for": "Single-tool demos with no chain or handoff.",
+          "layout": "Toolchain Thread",
+          "match": ["工作流", "工具链", "整合", "协作", "交付", "流水线", "handoff", "agent", "多智能体", "批处理"]
+        },
+        {
+          "intent": "black_box_reveal",
+          "use_for": "The segment explains hidden structure inside a process, role, model, or system.",
+          "avoid_for": "Simple linear process that is already visible.",
+          "layout": "Black Box Reveal",
+          "match": ["黑盒", "打开", "拆开", "结构", "内涵", "底层", "机制", "重新定义", "看不见", "里面"]
+        },
+        {
+          "intent": "emotion_correction",
+          "use_for": "The voiceover corrects a common emotional reaction or misconception.",
+          "avoid_for": "Pure factual correction with no audience emotion.",
+          "layout": "Mini Comic Correction",
+          "match": ["情绪", "恐惧", "期待", "焦虑", "误会", "反转", "以为", "其实"]
+        },
+        {
+          "intent": "before_after_transition",
+          "use_for": "A before/after transformation is the central idea.",
+          "avoid_for": "Static comparison with no transformation.",
+          "layout": "Before/After Desk",
+          "match": ["之前", "之后", "过去", "现在", "变化", "从", "变成", "转向", "升级", "重演"]
+        },
+        {
+          "intent": "evidence_judgment",
+          "use_for": "The voiceover weighs claims, choices, or interpretations against evidence.",
+          "avoid_for": "Personal taste judgment with no evidence layer.",
+          "layout": "Evidence Scale",
+          "match": ["证据", "判断", "选择", "答案", "依据", "是否成立", "验证", "结论"]
+        }
+      ]
+    },
+    "explainer-sketch": {
+      "triggers": ["概念", "结构", "底层", "机制", "区别", "判断", "风险", "边界", "流程", "工作流", "验证", "证据", "循环", "Loop", "不是", "而是", "第三条路", "误解", "标签", "怎么用", "依赖", "消费", "改写", "共处"],
+      "default_layout": "Conveyor Split",
+      "fallbacks": ["Label Frame", "Use vs Rewrite", "Coexistence Stage", "Checkpoint Rope", "Feedback Leak", "Decision Gates", "Nested Rings", "Evidence Clamp", "Conveyor Split", "Third Path", "Black Box Reveal", "Evidence Scale"],
+      "rules": [
+        {
+          "intent": "coexistence_not_replacement",
+          "use_for": "Two sources, roles, truths, or constraints should remain visible together.",
+          "avoid_for": "Mathematical addition or three-box equation slides.",
+          "layout": "Coexistence Stage",
+          "match": ["共处", "不是互斥", "同时成立", "并存", "支持", "陪伴", "关系", "不是替代", "不必消灭"],
+          "prefer_when_repeated": true
+        },
+        {
+          "intent": "third_path_between_false_choices",
+          "use_for": "The segment rejects a forced binary and opens a third path.",
+          "avoid_for": "Normal A/B comparison where one side clearly wins.",
+          "layout": "Third Path",
+          "match": ["第三条路", "两条路", "二选一", "选边", "不是选", "既不是", "也不是", "不是A也不是B", "不只", "不等于", "另一种"]
+        },
+        {
+          "intent": "identity_label_misreading",
+          "use_for": "The segment says a label hides the real object, person, or idea.",
+          "avoid_for": "Neutral category labels.",
+          "layout": "Label Frame",
+          "match": ["标签", "误解", "被定义", "被理解成", "被翻译成", "身份", "名字", "外部称呼", "刻板印象", "简化成"]
+        },
+        {
+          "intent": "use_vs_rewrite",
+          "use_for": "A source/tool/influence becomes meaningful only after active transformation.",
+          "avoid_for": "Pure copying or pure consumption.",
+          "layout": "Use vs Rewrite",
+          "match": ["依赖", "消费", "怎么用", "如何使用", "拿来", "转化", "改写", "起点", "终点", "工具化", "借用"]
+        },
+        {
+          "intent": "checkpoint_loop",
+          "use_for": "A repeated process has checkpoints, state reads, validation, or stop conditions.",
+          "avoid_for": "One-time linear steps with no feedback.",
+          "layout": "Checkpoint Rope",
+          "match": ["步骤", "状态", "读取", "写回", "检查点", "闭环", "循环", "Loop", "验证后", "停止条件", "下一步"]
+        },
+        {
+          "intent": "feedback_leak",
+          "use_for": "Bad output, bad state, or wrong feedback enters a loop and amplifies.",
+          "avoid_for": "A single isolated error with no downstream effect.",
+          "layout": "Feedback Leak",
+          "match": ["错误", "污染", "放大", "反馈循环", "坏状态", "写入状态", "越跑越偏", "失控", "泄漏"],
+          "prefer_when_repeated": true
+        },
+        {
+          "intent": "decision_gates",
+          "use_for": "The segment asks whether a task is suitable, valuable, recoverable, or verifiable.",
+          "avoid_for": "A broad principle with no decision criteria.",
+          "layout": "Decision Gates",
+          "match": ["是否值得", "适不适合", "判断条件", "门槛", "可验证", "可恢复", "可保存", "不适合", "不是所有"],
+          "prefer_when_repeated": true
+        },
+        {
+          "intent": "nested_layers",
+          "use_for": "The explanation has layers, scopes, or nested responsibilities.",
+          "avoid_for": "Flat lists with no containment relationship.",
+          "layout": "Nested Rings",
+          "match": ["三层", "层次", "嵌套", "外层", "内层", "范围", "系统", "harness", "架构层"]
+        },
+        {
+          "intent": "evidence_contract",
+          "use_for": "A goal, claim, or output must be accepted only with evidence.",
+          "avoid_for": "A subjective preference without acceptance criteria.",
+          "layout": "Evidence Clamp",
+          "match": ["目标", "证据", "验收", "契约", "依据", "标准", "通过", "不通过", "可检查"],
+          "prefer_when_repeated": true
+        },
+        {
+          "intent": "conveyor_split",
+          "use_for": "Input becomes output through a process that separates signal from noise.",
+          "avoid_for": "A static comparison or final result only.",
+          "layout": "Conveyor Split",
+          "match": ["输入", "输出", "流程", "过程", "工作流", "整合", "工具", "噪音", "行动", "产出"]
+        },
+        {
+          "intent": "black_box_reveal",
+          "use_for": "A hidden mechanism must be opened and made explainable.",
+          "avoid_for": "Simple visible pipeline.",
+          "layout": "Black Box Reveal",
+          "match": ["黑盒", "打开", "拆开", "结构", "内涵", "底层", "机制", "看不见", "里面"]
+        }
+      ]
+    }
+  }
+}

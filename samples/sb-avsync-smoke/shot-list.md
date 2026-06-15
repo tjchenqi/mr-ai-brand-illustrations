@@ -15,12 +15,12 @@ voiceover_summary: "今天我们用一个小例子解释：为什么一段引用
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
 formats: ["16x9", "9x16"]
-structure_type: Conveyor Split
-style_preset: explainer-sketch
+structure_type: Guardrail Pit
+style_preset: brand
 image_timing: sync_with_voiceover_anchor
-mr_ai_action: Mr.Ai nudges cards along a thin conveyor that splits good output from noise.
-main_metaphor: Conveyor Split
-short_labels: ["输入", "噪音", "行动"]
+mr_ai_action: Mr.Ai places a yellow guardrail before a red risk pit.
+main_metaphor: Guardrail Pit
+short_labels: ["风险", "边界", "验证"]
 prompt_status: draft
 qa_status: pending review
 ```
@@ -36,12 +36,12 @@ voiceover_summary: "这句话不能只做成一句漂亮金句。它背后真正
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
 formats: ["16x9", "9x16"]
-structure_type: Evidence Clamp
+structure_type: Conveyor Split
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
-mr_ai_action: Mr.Ai clips a goal card and an evidence card onto one simple board.
-main_metaphor: Evidence Clamp
-short_labels: ["目标", "证据", "验收"]
+mr_ai_action: Mr.Ai nudges cards along a thin conveyor that splits useful output from noise.
+main_metaphor: Conveyor Split
+short_labels: ["输入", "噪音", "行动"]
 prompt_status: draft
 qa_status: pending review
 ```
@@ -57,12 +57,12 @@ voiceover_summary: "所以，引用负责保留原意，解释图负责把结构
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
 formats: ["16x9", "9x16"]
-structure_type: Conveyor Split
+structure_type: Black Box Reveal
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
-mr_ai_action: Mr.Ai nudges cards along a thin conveyor that splits good output from noise.
-main_metaphor: Conveyor Split
-short_labels: ["输入", "噪音", "行动"]
+mr_ai_action: Mr.Ai opens a simple dark box and reveals mechanism cards inside.
+main_metaphor: Black Box Reveal
+short_labels: ["黑盒", "机制", "证据"]
 prompt_status: draft
 qa_status: pending review
 ```

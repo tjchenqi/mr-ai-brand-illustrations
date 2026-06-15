@@ -16,63 +16,10 @@ import textwrap
 from pathlib import Path
 
 
-LAYOUT_RULES = [
-    ("编织|两首歌|同一个表达|重新表达|改写|旧线|图案", "Reweaving Loom", "Mr.Ai weaves two blue and yellow music ribbons through a small hand loom."),
-    ("第三条路|两条路|模仿|叛逃|选边|只做自己|只做父亲", "Third Path", "Mr.Ai stands at a fork with two blocked paths and opens a small third path."),
-    ("标签|误解|理解成你|父母的名字|是谁的孩子|是谁的女儿", "Label Frame", "Mr.Ai peels oversized name labels off a small portrait frame."),
-    ("依赖|消费|怎么用|终点|起点", "Use vs Rewrite", "Mr.Ai moves one song card from a consumption basket into a rewrite workbench."),
-    ("共处|不是互斥|支持|和声|飞吻|侧台", "Coexistence Stage", "Mr.Ai lights two small stage lamps that overlap without merging."),
-    ("可靠|hallucinate|幻觉|边界|风险|出错|提前识别|规避", "Guardrail Pit", "Mr.Ai places a yellow guardrail before a red risk pit."),
-    ("工作流|整合|组织方式|工具|普通人|红利|用的人|赚钱方式", "Toolchain Thread", "Mr.Ai threads a blue line through small tool blocks."),
-    ("重新定义|岗位|工作|结构|职业|内涵", "Black Box Reveal", "Mr.Ai opens a work-definition box and reveals changing role cards."),
-    ("情绪|恐惧|期待|公众|曲线|欢迎", "Mini Comic Correction", "Mr.Ai compares two small emotion panels."),
-    ("工业革命|AI革命|像|不像|对比|重演", "Before/After Desk", "Mr.Ai moves a card from an old machine desk to an AI workflow desk."),
-    ("问题|答案|结尾|姿态|选择", "Evidence Scale", "Mr.Ai weighs two choice cards on a small scale."),
-]
-
-EXPLAINER_LAYOUT_RULES = [
-    ("共处|不是互斥|支持|和声|飞吻|侧台|不只属于|来自他们", "Coexistence Stage", "Mr.Ai lights two small stage lamps that overlap without merging."),
-    ("第三条路|两条路|模仿|叛逃|选边|只做自己|只做父亲", "Third Path", "Mr.Ai stands at a fork with two blocked paths and opens a small third path."),
-    ("标签|误解|理解成你|父母的名字|是谁的孩子|是谁的女儿", "Label Frame", "Mr.Ai peels oversized name labels off a small portrait frame."),
-    ("依赖|消费|怎么用|终点|起点|改写", "Use vs Rewrite", "Mr.Ai moves one song card from a consumption basket into a rewrite workbench."),
-    ("七个|七步|读取状态|选择工作|写回|路由或停止|任务级 Loop", "Checkpoint Rope", "Mr.Ai, drawn small, pulls one blue rope through seven simple checkpoint posts in a loose loop."),
-    ("错误也会闭环|错误状态|状态污染|反馈循环|写入状态", "Feedback Leak", "Mr.Ai plugs a leaking red pipe before it drips into a state bucket."),
-    ("四道|四个|不是所有任务|值得闭环|是否值得|适合 Loop|反馈能不能", "Decision Gates", "Mr.Ai stands beside four small gates; only one gate is open, the others are marked as blocked with simple red crosses."),
-    ("三层|层次|Agent loop|harness", "Nested Rings", "Mr.Ai points at three nested hand-drawn rings, each ring holding one small object."),
-    ("目标|验证|验收|契约|证据", "Evidence Clamp", "Mr.Ai clips a goal card and an evidence card onto one simple board."),
-    ("输入|输出|流程|过程|工作流|整合|工具", "Conveyor Split", "Mr.Ai nudges cards along a thin conveyor that splits good output from noise."),
-]
-
-
-LABELS_BY_LAYOUT = {
-    "Guardrail Pit": ["风险", "边界", "验证"],
-    "Before/After Desk": ["过去", "现在", "变化"],
-    "Toolchain Thread": ["工具", "工作流", "结果"],
-    "Black Box Reveal": ["黑盒", "工作", "重写"],
-    "Mini Comic Correction": ["期待", "恐惧", "反转"],
-    "Evidence Scale": ["选择", "行动", "判断"],
-    "Reweaving Loom": ["旧歌", "新歌", "改写"],
-    "Third Path": ["模仿", "拒绝", "改写"],
-    "Label Frame": ["父母", "标签", "本人"],
-    "Use vs Rewrite": ["消费", "改写", "起点"],
-    "Coexistence Stage": ["来处", "自己", "共处"],
-}
-
-EXPLAINER_LABELS_BY_LAYOUT = {
-    "Checkpoint Rope": ["目标", "状态", "验证"],
-    "Feedback Leak": ["错误", "状态", "放大"],
-    "Decision Gates": ["可验", "可存", "可恢复", "值得"],
-    "Nested Rings": ["Loop", "Harness", "工程"],
-    "Evidence Clamp": ["目标", "证据", "验收"],
-    "Conveyor Split": ["输入", "噪音", "行动"],
-    "Third Path": ["模仿", "拒绝", "改写"],
-    "Label Frame": ["标签", "误解", "本人"],
-    "Use vs Rewrite": ["消费", "改写", "起点"],
-    "Coexistence Stage": ["来处", "自己", "共处"],
-}
-
-DEFAULT_FORMATS = ["16x9", "9x16"]
-MAX_SAME_LAYOUT = 2
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_ROUTING_PATH = REPO_ROOT / "agent-pack" / "visual-routing-rules.json"
+DEFAULT_LAYOUT_LIBRARY_PATH = REPO_ROOT / "agent-pack" / "layout-library.json"
+DEFAULT_TREATMENT_RULES_PATH = REPO_ROOT / "agent-pack" / "treatment-rules.json"
 
 
 @dataclass
@@ -83,10 +30,15 @@ class ScriptSegment:
     body: str
     raw_title: str
     index: int
+    visual_override: dict[str, str] | None = None
 
     @property
     def segment_id(self) -> str:
         return f"{self.role}{self.number}" if self.number else f"S{self.index}"
+
+    @property
+    def override(self) -> dict[str, str]:
+        return self.visual_override or {}
 
 
 def read_input(value: str) -> str:
@@ -94,6 +46,62 @@ def read_input(value: str) -> str:
     if path.exists():
         return path.read_text(encoding="utf-8")
     return value
+
+
+def load_json_config(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def contains_any(text: str, keywords: list[str]) -> bool:
+    lowered = text.lower()
+    return any(keyword.lower() in lowered for keyword in keywords)
+
+
+def count_keywords(text: str, keywords: list[str]) -> int:
+    lowered = text.lower()
+    return sum(lowered.count(keyword.lower()) for keyword in keywords)
+
+
+def style_rules(routing: dict, style: str) -> dict:
+    return routing["styles"].get(style, routing["styles"][routing["defaults"]["default_style"]])
+
+
+def find_layout_rule(routing: dict, style: str, layout: str) -> dict | None:
+    for rule in style_rules(routing, style).get("rules", []):
+        if rule.get("layout") == layout:
+            return rule
+    for style_config in routing["styles"].values():
+        for rule in style_config.get("rules", []):
+            if rule.get("layout") == layout:
+                return rule
+    return None
+
+
+def layout_spec(layout_library: dict, layout: str) -> dict:
+    return layout_library.get("layouts", {}).get(layout, {})
+
+
+def parse_csv_ids(value: str | None) -> set[str]:
+    if not value:
+        return set()
+    return {item.strip().upper() for item in value.split(",") if item.strip()}
+
+
+def parse_visual_override(text: str) -> dict[str, str]:
+    match = re.search(r"<!--\s*visual:\s*(.*?)\s*-->", text, re.IGNORECASE | re.DOTALL)
+    if not match:
+        return {}
+    result: dict[str, str] = {}
+    for part in match.group(1).split(","):
+        if ":" not in part:
+            continue
+        key, value = part.split(":", 1)
+        result[key.strip().lower()] = value.strip()
+    return result
+
+
+def strip_visual_comments(text: str) -> str:
+    return re.sub(r"<!--\s*visual:.*?\s*-->", "", text, flags=re.IGNORECASE | re.DOTALL).strip()
 
 
 def slugify(text: str) -> str:
@@ -114,7 +122,15 @@ def parse_script_segments(script: str) -> list[ScriptSegment]:
     if not matches:
         sections = split_sections_fallback(script)
         return [
-            ScriptSegment(role="S", number=str(i), title=title, body=body, raw_title=title, index=i)
+            ScriptSegment(
+                role="S",
+                number=str(i),
+                title=title,
+                body=strip_visual_comments(body),
+                raw_title=title,
+                index=i,
+                visual_override=parse_visual_override(body),
+            )
             for i, (title, body) in enumerate(sections, start=1)
         ]
 
@@ -129,11 +145,23 @@ def parse_script_segments(script: str) -> list[ScriptSegment]:
         body = body.strip()
         if not body:
             continue
+        visual_override = parse_visual_override(body)
+        body = strip_visual_comments(body)
         role = match.group(1).upper()
         number = match.group(2)
         title = match.group(3).strip() or f"{role}{number}"
         raw_title = f"{role}{number} · {title}"
-        segments.append(ScriptSegment(role=role, number=number, title=title, body=body, raw_title=raw_title, index=index))
+        segments.append(
+            ScriptSegment(
+                role=role,
+                number=number,
+                title=title,
+                body=body,
+                raw_title=raw_title,
+                index=index,
+                visual_override=visual_override,
+            )
+        )
     return segments
 
 
@@ -212,31 +240,15 @@ def summarize(text: str, limit: int = 72) -> str:
     return clean[:limit] + ("..." if len(clean) > limit else "")
 
 
-def make_overlay_text(text: str, layout: str | None = None, limit: int = 7) -> str:
+def make_overlay_text(config: dict, text: str, layout: str | None = None, limit: int = 7) -> str:
     """Produce a short overlay seed, not a subtitle excerpt."""
-    keyword_groups = [
-        "重新编织|重新表达|同一个表达|影响的焦虑|第三条路|不是选边|没有接受选边|依赖还是改写|依赖和改写|消费|改写|共处|不是互斥|支持|和声|飞吻|标签|误解|主体性|边界|答案",
-        "目标|状态|验证|错误|放大|证据|验收|风险|工具链|工作流|输入|输出",
-    ]
-    for group in keyword_groups:
-        match = re.search(group, text, re.IGNORECASE)
-        if match:
-            return match.group(0)[:limit]
-    if layout:
-        layout_labels = {
-            "Label Frame": "标签误读",
-            "Third Path": "第三条路",
-            "Use vs Rewrite": "依赖还是改写",
-            "Reweaving Loom": "重新编织",
-            "Coexistence Stage": "共处",
-            "Checkpoint Rope": "闭环检查",
-            "Feedback Leak": "错误闭环",
-            "Decision Gates": "四道门",
-            "Evidence Clamp": "证据验收",
-            "Conveyor Split": "引用与解释",
-        }
-        if layout in layout_labels:
-            return layout_labels[layout]
+    lowered = text.lower()
+    for keyword in config.get("overlay", {}).get("keywords", []):
+        if keyword.lower() in lowered:
+            return keyword[:limit]
+    layout_labels = config.get("overlay", {}).get("layout_labels", {})
+    if layout and layout in layout_labels:
+        return layout_labels[layout]
     clean = re.sub(r"[“”\"'《》。，、：:；;！？!?（）()\[\]【】\s]+", "", text)
     return clean[:limit]
 
@@ -245,156 +257,110 @@ def yaml_string(text: str) -> str:
     return json.dumps(text, ensure_ascii=False)
 
 
-def choose_layout(text: str, style: str = "brand") -> str:
-    if style == "explainer-sketch":
-        for pattern, layout, _ in EXPLAINER_LAYOUT_RULES:
-            if re.search(pattern, text, re.IGNORECASE):
-                return layout
-        return "Conveyor Split"
-    if re.search(r"三层|层次|Agent loop|harness", text, re.IGNORECASE):
-        return "Black Box Reveal"
-    if re.search(r"错误也会闭环|错误状态|状态污染|反馈循环|写入状态", text, re.IGNORECASE):
-        return "Guardrail Pit"
-    if re.search(r"四道|四个|不是所有任务|值得闭环|是否值得|适合 Loop|反馈能不能", text, re.IGNORECASE):
-        return "Guardrail Pit"
-    if re.search(r"七个|七步|读取状态|选择工作|写回|路由或停止|任务级 Loop", text, re.IGNORECASE):
-        return "Validation Loop"
-    for pattern, layout, _ in LAYOUT_RULES:
-        if re.search(pattern, text, re.IGNORECASE):
-            return layout
-    return "Black Box Reveal"
+def choose_layout(config: dict, text: str, style: str = "brand") -> str:
+    style_config = style_rules(config, style)
+    for rule in style_config.get("rules", []):
+        if contains_any(text, rule.get("match", [])):
+            return rule["layout"]
+    return style_config["default_layout"]
 
 
-def choose_diverse_layout(layout: str, style: str, text: str, used_layouts: dict[str, int]) -> str:
+def choose_diverse_layout(config: dict, layout: str, style: str, text: str, used_layouts: dict[str, int]) -> str:
     layout_key = f"{style}:{layout}"
-    if used_layouts.get(layout_key, 0) < MAX_SAME_LAYOUT:
+    max_same_layout = config["defaults"]["max_same_layout"]
+    if used_layouts.get(layout_key, 0) < max_same_layout:
         return layout
 
-    if style == "explainer-sketch":
-        if re.search(r"共处|不是互斥|支持|和声|飞吻|侧台|不只属于|来自他们", text):
-            preferred = "Coexistence Stage"
-            if used_layouts.get(f"{style}:{preferred}", 0) < MAX_SAME_LAYOUT:
+    for rule in style_rules(config, style).get("rules", []):
+        preferred = rule.get("layout")
+        if rule.get("prefer_when_repeated") and contains_any(text, rule.get("match", [])):
+            if used_layouts.get(f"{style}:{preferred}", 0) < max_same_layout:
                 return preferred
-        fallback_layouts = [
-            "Label Frame",
-            "Use vs Rewrite",
-            "Coexistence Stage",
-            "Checkpoint Rope",
-            "Feedback Leak",
-            "Decision Gates",
-            "Nested Rings",
-            "Evidence Clamp",
-            "Conveyor Split",
-            "Third Path",
-        ]
-    else:
-        fallback_layouts = [
-            "Reweaving Loom",
-            "Label Frame",
-            "Use vs Rewrite",
-            "Coexistence Stage",
-            "Before/After Desk",
-            "Toolchain Thread",
-            "Guardrail Pit",
-            "Mini Comic Correction",
-            "Black Box Reveal",
-            "Evidence Scale",
-            "Third Path",
-        ]
+
+    fallback_layouts = style_rules(config, style).get("fallbacks", [])
 
     return next(
         (
             candidate
             for candidate in fallback_layouts
-            if candidate != layout and used_layouts.get(f"{style}:{candidate}", 0) < MAX_SAME_LAYOUT
+            if candidate != layout and used_layouts.get(f"{style}:{candidate}", 0) < max_same_layout
         ),
         layout,
     )
 
 
-def is_forced_layout(text: str) -> bool:
-    return bool(
-        re.search(
-            r"三层|Agent loop|harness|七个|七步|读取状态|选择工作|写回|路由或停止|任务级 Loop|"
-            r"错误也会闭环|错误状态|状态污染|反馈循环|写入状态|四道|不是所有任务|值得闭环|是否值得|适合 Loop|反馈能不能|"
-            r"编织|同一个表达|重新表达|第三条路|两条路|模仿|叛逃|选边|标签|误解|父母的名字|是谁的孩子|是谁的女儿|"
-            r"依赖|消费|怎么用|终点|起点|共处|不是互斥|支持|和声|飞吻|侧台",
-            text,
-            re.IGNORECASE,
-        )
-    )
+def action_for_layout(layout_library: dict, layout: str) -> str:
+    spec = layout_spec(layout_library, layout)
+    return spec.get("action", "Mr.Ai explains the concept through one small physical action.")
 
 
-def action_for_layout(layout: str) -> str:
-    for _, candidate, action in EXPLAINER_LAYOUT_RULES:
-        if candidate == layout:
-            return action
-    for _, candidate, action in LAYOUT_RULES:
-        if candidate == layout:
-            return action
-    return "Mr.Ai explains the concept through one small physical action."
+def labels_for_layout(layout_library: dict, layout: str) -> list[str]:
+    spec = layout_spec(layout_library, layout)
+    return spec.get("labels", ["概念", "动作", "结果"])
 
 
-def pick_sections(sections: list[tuple[str, str]], max_shots: int) -> list[tuple[str, str]]:
-    scored = []
-    keywords = "问题|答案|关键|但|真正|区别|风险|工作流|革命|不是|而是|所以|结尾"
-    for index, (title, body) in enumerate(sections):
-        score = len(re.findall(keywords, title + body))
-        scored.append((score, index, title, body))
-    scored.sort(key=lambda item: (-item[0], item[1]))
-    chosen = sorted(scored[:max_shots], key=lambda item: item[1])
-    return [(title, body) for _, _, title, body in chosen]
-
-
-def score_segment(segment: ScriptSegment) -> int:
+def score_segment(treatment: dict, segment: ScriptSegment) -> int:
     text = segment.raw_title + segment.body
-    keywords = "问题|答案|关键|但|真正|区别|风险|工作流|革命|不是|而是|所以|结尾|概念|结构|机制|选择|改写|边界|判断|验证|循环|Loop"
-    score = len(re.findall(keywords, text, re.IGNORECASE))
+    scoring = treatment["segment_scoring"]
+    score = count_keywords(text, scoring.get("keywords", []))
     if segment.role == "B":
-        score -= 6
-    if re.search(r"钩子|开头|结尾|边界|思想核心|现实机制|反方", segment.title):
+        score -= scoring.get("quoted_source_penalty", 6)
+    if contains_any(segment.title, scoring.get("title_bonus_keywords", [])):
         score += 2
     return score
 
 
-def pick_segments(segments: list[ScriptSegment], max_shots: int) -> list[ScriptSegment]:
+def pick_segments(treatment: dict, segments: list[ScriptSegment], max_shots: int, forced_ids: set[str] | None = None) -> list[ScriptSegment]:
+    forced_ids = forced_ids or set()
     candidates = [segment for segment in segments if segment.role == "S"]
-    scored = [(score_segment(segment), segment.index, segment) for segment in candidates]
+    forced = [segment for segment in candidates if segment.segment_id.upper() in forced_ids]
+    remaining = [segment for segment in candidates if segment.segment_id.upper() not in forced_ids]
+    scored = [(score_segment(treatment, segment), segment.index, segment) for segment in remaining]
     scored.sort(key=lambda item: (-item[0], item[1]))
-    chosen = sorted(scored[:max_shots], key=lambda item: item[1])
-    return [segment for _, _, segment in chosen]
+    chosen = forced + [segment for _, _, segment in scored[: max(0, max_shots - len(forced))]]
+    return sorted(chosen[:max_shots], key=lambda segment: segment.index)
 
 
-def choose_style_for_segment(segment: ScriptSegment, requested_style: str) -> str:
+def choose_style_for_segment(config: dict, segment: ScriptSegment, requested_style: str) -> str:
     if requested_style != "auto":
         return requested_style
+    override = segment.override
+    if override.get("style") in config["styles"]:
+        return override["style"]
     text = segment.raw_title + segment.body
-    if re.search(r"概念|结构|底层|机制|区别|判断|风险|边界|流程|工作流|验证|循环|Loop|不是|而是|第三条路|误解|标签|怎么用|依赖|消费|改写", text, re.IGNORECASE):
+    if contains_any(text, style_rules(config, "explainer-sketch").get("triggers", [])):
         return "explainer-sketch"
-    if re.search(r"钩子|结尾|飞吻|支持|共处|人物|舞台|情绪|怀旧|音乐|编织|父亲|女儿", text):
+    if contains_any(text, style_rules(config, "brand").get("triggers", [])):
         return "brand"
-    return "explainer-sketch"
+    return config["defaults"]["default_style"]
 
 
-def visual_treatment_for_segment(segment: ScriptSegment, selected: bool, style: str) -> str:
+def visual_treatment_for_segment(treatment: dict, segment: ScriptSegment, selected: bool, style: str) -> str:
+    override = segment.override
+    if override.get("treatment"):
+        return override["treatment"]
     if segment.role == "B":
-        return "quote-card-or-overlay"
+        return treatment.get("role_treatments", {}).get("B", {}).get("default", "quote-card-or-overlay")
     if selected:
         return style
-    return "subtitle-or-no-image"
+    return treatment.get("role_treatments", {}).get("S", {}).get("unselected", "subtitle-or-no-image")
 
 
-def timing_for_segment(segment: ScriptSegment, selected: bool) -> str:
+def timing_for_segment(treatment: dict, segment: ScriptSegment, selected: bool) -> str:
+    override = segment.override
+    if override.get("timing"):
+        return override["timing"]
     if segment.role == "B":
-        return "hold_during_quote"
+        return treatment.get("role_treatments", {}).get("B", {}).get("timing", "hold_during_quote")
     if selected:
-        return "sync_with_voiceover_anchor"
-    return "keep_voiceover_primary"
+        return treatment.get("role_treatments", {}).get("S", {}).get("selected_timing", "sync_with_voiceover_anchor")
+    return treatment.get("role_treatments", {}).get("S", {}).get("unselected_timing", "keep_voiceover_primary")
 
 
 def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[str], fmt: str, style: str) -> str:
     orientation = "16:9 horizontal" if fmt == "16x9" else "9:16 vertical"
     safe = "Leave quiet blank space on the right side." if fmt == "16x9" else "Keep safe blank space at the top and bottom for subtitles."
+    overlay_labels = " / ".join(labels)
     if style == "explainer-sketch":
         return textwrap.dedent(
             f"""\
@@ -404,7 +370,7 @@ def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[
             {orientation}. Clean white background with generous empty space for later subtitles and video overlays.
 
             Brand character:
-            Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+            Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small but readable, about 10-18% of the canvas in 16:9 or 16-26% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
             Visual style:
             Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
@@ -421,11 +387,11 @@ def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[
             Composition:
             {action} Use one physical metaphor only. Use thin arrows or a single route line if needed. {safe}
 
-            Short Chinese labels:
-            {' / '.join(labels)}
+            Overlay labels for post-production only:
+            {overlay_labels}
 
             Constraints:
-            One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+            One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
             """
         )
     return textwrap.dedent(
@@ -436,7 +402,7 @@ def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[
         {orientation}. Clean composition with safe space for later subtitles and video overlays.
 
         Brand character:
-        Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, blue shirt, thick dark outline, and yellow brand accent. He must perform the core conceptual action, not stand as decoration. Keep him warm, calm, curious, and practical. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+        Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, blue shirt, thick dark outline, and yellow brand accent. He must perform the core conceptual action, not stand as decoration. Keep him warm, calm, curious, and practical. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
 
         Visual style:
         Colored cartoon brand IP plus clean explanatory sketch logic. White or very light background, simple conceptual props, restrained blue/yellow brand color, dark outlines, small red warnings only when needed.
@@ -453,16 +419,31 @@ def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[
         Composition:
         {action} Use blank label cards or very short labels only. {safe}
 
-        Short Chinese labels:
-        {' / '.join(labels)}
+        Overlay labels for post-production only:
+        {overlay_labels}
 
         Constraints:
-        One image explains only one core idea. Use at most 1-3 short Chinese labels, and do not repeat the same label on multiple objects. If exact Chinese text is important, leave clean blank label cards or label spaces so text can be added later in video editing. Do not write a long title, paragraph, subtitle, or structure type on the image. Do not make it a PPT infographic, dense architecture diagram, stock vector, generic mascot poster, realistic UI screenshot, sci-fi interface, or children's illustration. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+        One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. Do not write a long title, paragraph, subtitle, or structure type on the image. Do not make it a PPT infographic, math equation, plus-sign formula, dense architecture diagram, stock vector, generic mascot poster, realistic UI screenshot, sci-fi interface, or children's illustration. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
         """
     )
 
 
-def write_package(script: str, out: Path, title: str, max_shots: int, style: str) -> None:
+def write_package(
+    script: str,
+    out: Path,
+    title: str,
+    max_shots: int,
+    style: str,
+    routing_path: Path,
+    layout_library_path: Path,
+    treatment_rules_path: Path,
+    forced_segments: set[str] | None = None,
+    prefer_layout: str | None = None,
+) -> None:
+    routing = load_json_config(routing_path)
+    layout_library = load_json_config(layout_library_path)
+    treatment_rules = load_json_config(treatment_rules_path)
+    formats = routing.get("defaults", {}).get("formats", ["16x9", "9x16"])
     out.mkdir(parents=True, exist_ok=True)
     (out / "16x9").mkdir(exist_ok=True)
     (out / "9x16").mkdir(exist_ok=True)
@@ -471,7 +452,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
     (out / "source-script.md").write_text(script.strip() + "\n", encoding="utf-8")
 
     segments = parse_script_segments(script)
-    chosen_segments = pick_segments(segments, max_shots)
+    chosen_segments = pick_segments(treatment_rules, segments, max_shots, forced_segments)
     chosen_ids = {segment.segment_id for segment in chosen_segments}
 
     shot_lines = ["# Shot List", "", f"- Topic: {title}", f"- Style preset: {style}", "- Status: generated by `mrai gen`, review before production", ""]
@@ -494,18 +475,18 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
 
     used_layouts: dict[str, int] = {}
     for segment in segments:
-        shot_style = choose_style_for_segment(segment, style)
+        shot_style = choose_style_for_segment(routing, segment, style)
         selected = segment.segment_id in chosen_ids
-        treatment = visual_treatment_for_segment(segment, selected, shot_style)
-        timing = timing_for_segment(segment, selected)
+        segment_treatment = visual_treatment_for_segment(treatment_rules, segment, selected, shot_style)
+        timing = timing_for_segment(treatment_rules, segment, selected)
         summary = summarize(segment.body, 80)
-        overlay_text = make_overlay_text(segment.body)
+        overlay_text = make_overlay_text(routing, segment.body)
         timeline_lines.extend(
             [
                 f"## {segment.segment_id} · {segment.title}",
                 "",
                 f"- Role: {'host voiceover' if segment.role == 'S' else 'quoted source'}",
-                f"- Visual treatment: {treatment}",
+                f"- Visual treatment: {segment_treatment}",
                 f"- Timing: {timing}",
                 f"- Voiceover anchor: {summary}",
                 f"- Script summary excerpt: {summary[:28]}",
@@ -522,7 +503,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
                 "voiceover_summary": summary,
                 "script_summary_excerpt": summary[:28],
                 "selected_for_image": selected,
-                "visual_treatment": treatment,
+                "visual_treatment": segment_treatment,
                 "timing": timing,
                 "overlay_text_candidate": overlay_text,
             }
@@ -531,24 +512,24 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
     for idx, segment in enumerate(chosen_segments, start=1):
         section_title = segment.raw_title
         body = segment.body
-        shot_style = choose_style_for_segment(segment, style)
+        shot_style = choose_style_for_segment(routing, segment, style)
         section_text = section_title + body
-        layout = choose_layout(section_text, shot_style)
-        layout = choose_diverse_layout(layout, shot_style, section_text, used_layouts)
+        layout = segment.override.get("layout") or prefer_layout or choose_layout(routing, section_text, shot_style)
+        layout = choose_diverse_layout(routing, layout, shot_style, section_text, used_layouts)
         layout_key = f"{shot_style}:{layout}"
         used_layouts[layout_key] = used_layouts.get(layout_key, 0) + 1
-        label_map = EXPLAINER_LABELS_BY_LAYOUT if shot_style == "explainer-sketch" else LABELS_BY_LAYOUT
-        labels = label_map.get(layout, ["概念", "动作", "结果"])
-        action = action_for_layout(layout)
+        override_labels = segment.override.get("labels", "")
+        labels = [item.strip() for item in override_labels.split("|") if item.strip()] if override_labels else labels_for_layout(layout_library, layout)
+        action = segment.override.get("action") or action_for_layout(layout_library, layout)
         shot_id = f"{idx:02d}-{segment.segment_id.lower()}-{slugify(segment.title)[:42]}"
         summary = summarize(body)
-        overlay_text = make_overlay_text(section_text, layout)
+        overlay_text = make_overlay_text(routing, section_text, layout)
         audio_visual_map["shots"].append(
             {
                 "shot_id": shot_id,
                 "segment_id": segment.segment_id,
                 "segment_role": "host_voiceover",
-                "formats": DEFAULT_FORMATS,
+                "formats": formats,
                 "style_preset": shot_style,
                 "structure_type": layout,
                 "timing": "sync_with_voiceover_anchor",
@@ -573,7 +554,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
                 f"voiceover_summary: {yaml_string(summary)}",
                 "visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.",
                 "format: both",
-                f"formats: {json.dumps(DEFAULT_FORMATS)}",
+                f"formats: {json.dumps(formats)}",
                 f"structure_type: {layout}",
                 f"style_preset: {shot_style}",
                 "image_timing: sync_with_voiceover_anchor",
@@ -633,9 +614,9 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
 
         ## Known risks
 
-        - This CLI uses deterministic heuristics; an agent should refine the shot choices.
-        - Chinese labels may be duplicated or corrupted by image models.
-        - Workflow layouts can drift toward formal PPT diagrams.
+        - This CLI uses deterministic routing rules; an agent should refine the shot choices.
+        - Production default is blank in-image labels; add exact Chinese in post-production.
+        - Workflow layouts can drift toward formal PPT diagrams, equations, or three-box slides.
         - Explainer-sketch layouts can drift back into polished brand posters if Mr.Ai is too large or the props are too detailed.
         - S/B parsing is deterministic; review whether B segments should be quote cards, overlays, or skipped.
         """
@@ -687,11 +668,45 @@ def main() -> int:
         default="brand",
         help="Visual preset: brand for polished Mr.Ai illustrations, explainer-sketch for xiaohei-like whiteboard explanations, auto for per-segment recommendations.",
     )
+    gen.add_argument(
+        "--routing",
+        default=str(DEFAULT_ROUTING_PATH),
+        help="Path to visual routing rules JSON. Defaults to agent-pack/visual-routing-rules.json.",
+    )
+    gen.add_argument(
+        "--layout-library",
+        default=str(DEFAULT_LAYOUT_LIBRARY_PATH),
+        help="Path to layout library JSON. Defaults to agent-pack/layout-library.json.",
+    )
+    gen.add_argument(
+        "--treatment-rules",
+        default=str(DEFAULT_TREATMENT_RULES_PATH),
+        help="Path to treatment rules JSON. Defaults to agent-pack/treatment-rules.json.",
+    )
+    gen.add_argument(
+        "--segments",
+        help="Optional comma-separated S segment IDs to force into the shot list, for example S2,S4,S7.",
+    )
+    gen.add_argument(
+        "--prefer-layout",
+        help="Optional layout override for selected shots, for example 'Third Path'. Inline visual comments still take priority.",
+    )
 
     args = parser.parse_args()
     if args.command == "gen":
         script = read_input(args.input)
-        write_package(script, Path(args.out), args.title, max(1, args.max_shots), args.style)
+        write_package(
+            script,
+            Path(args.out),
+            args.title,
+            max(1, args.max_shots),
+            args.style,
+            Path(args.routing).expanduser(),
+            Path(args.layout_library).expanduser(),
+            Path(args.treatment_rules).expanduser(),
+            parse_csv_ids(args.segments),
+            args.prefer_layout,
+        )
         print(f"Wrote Mr.Ai package to {args.out}")
         return 0
     return 1

@@ -9,7 +9,7 @@
       "voiceover_summary": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。",
       "script_summary_excerpt": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自",
       "selected_for_image": true,
-      "visual_treatment": "explainer-sketch",
+      "visual_treatment": "brand",
       "timing": "sync_with_voiceover_anchor",
       "overlay_text_candidate": "今天我们用一个"
     },
@@ -56,19 +56,19 @@
         "16x9",
         "9x16"
       ],
-      "style_preset": "explainer-sketch",
-      "structure_type": "Conveyor Split",
+      "style_preset": "brand",
+      "structure_type": "Guardrail Pit",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。",
       "script_summary_excerpt": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
-      "mr_ai_action": "Mr.Ai nudges cards along a thin conveyor that splits good output from noise.",
+      "mr_ai_action": "Mr.Ai places a yellow guardrail before a red risk pit.",
       "short_labels": [
-        "输入",
-        "噪音",
-        "行动"
+        "风险",
+        "边界",
+        "验证"
       ],
-      "overlay_text_candidate": "引用与解释"
+      "overlay_text_candidate": "风险边界"
     },
     {
       "shot_id": "02-s1-主播解释",
@@ -79,16 +79,16 @@
         "9x16"
       ],
       "style_preset": "explainer-sketch",
-      "structure_type": "Evidence Clamp",
+      "structure_type": "Conveyor Split",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具进入流程之后，人的判断、验证和复盘必须跟着改变。",
       "script_summary_excerpt": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
-      "mr_ai_action": "Mr.Ai clips a goal card and an evidence card onto one simple board.",
+      "mr_ai_action": "Mr.Ai nudges cards along a thin conveyor that splits useful output from noise.",
       "short_labels": [
-        "目标",
-        "证据",
-        "验收"
+        "输入",
+        "噪音",
+        "行动"
       ],
       "overlay_text_candidate": "验证"
     },
@@ -101,18 +101,18 @@
         "9x16"
       ],
       "style_preset": "explainer-sketch",
-      "structure_type": "Conveyor Split",
+      "structure_type": "Black Box Reveal",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不能混在一起。",
       "script_summary_excerpt": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
-      "mr_ai_action": "Mr.Ai nudges cards along a thin conveyor that splits good output from noise.",
+      "mr_ai_action": "Mr.Ai opens a simple dark box and reveals mechanism cards inside.",
       "short_labels": [
-        "输入",
-        "噪音",
-        "行动"
+        "黑盒",
+        "机制",
+        "证据"
       ],
-      "overlay_text_candidate": "引用与解释"
+      "overlay_text_candidate": "打开黑盒"
     }
   ]
 }

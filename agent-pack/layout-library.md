@@ -2,114 +2,159 @@
 
 Use this file when choosing repeatable Mr.Ai illustration layouts for AI 闲僧 videos.
 
-Each layout is a starting point, not a rigid template. Keep Mr.Ai active, keep labels short, and avoid formal PPT diagrams.
+Architecture note:
 
-## 01 Evidence Scale
+- `visual-routing-rules.json` decides which layout fits a semantic intent.
+- `layout-library.json` stores machine-readable actions, default labels, and avoid lists.
+- This Markdown file explains the same library for humans and agents.
 
-Use for: hallucination, verification, trust, source quality.
+Each layout is a starting point, not a rigid template. Keep Mr.Ai active, keep labels blank in the bitmap by default, and avoid formal PPT diagrams.
 
-Scene: Mr.Ai weighs an answer card against evidence cards.
+## Core Layouts
 
-Best labels: `回答`, `证据`, `问号`, `通过`.
+### Label Frame
 
-Risk: repeated or wrong Chinese labels. For production, prefer blank cards and add exact text later.
+Use for: identity labels, misleading category names, external definitions, stereotypes.
 
-## 02 Validation Loop
+Scene: Mr.Ai peels oversized labels off a small portrait or object frame.
 
-Use for: answer -> evidence -> check -> repair loops.
+Avoid: identity documents, many tiny tags, face close-ups.
 
-Scene: Mr.Ai pulls a blue thread through physical checkpoint cards.
+### Third Path
 
-Best labels: `依据`, `检查`, `修正`. Add `回答` in post-production if exact text matters.
+Use for: false binary choices, "not A or B, but C", rejecting forced selection.
 
-Risk: can become a formal flowchart. Make the checkpoints look like cards, tags, or small tools.
+Scene: Mr.Ai stands at a fork with two blocked paths and opens a small third path.
 
-## 03 Black Box Reveal
+Avoid: heroic landscape, large road signs full of text, maze scenes.
 
-Use for: model behavior, hidden process, RAG, debugging.
+### Use vs Rewrite
 
-Scene: Mr.Ai opens a dark box and shines light on evidence or mechanism cards inside.
+Use for: using a source/tool/influence versus actively transforming it.
 
-Best labels: `黑盒`, `证据`, `机制`.
+Scene: Mr.Ai moves one source card from a consumption basket into a rewrite workbench.
 
-Risk: avoid sci-fi UI or robot visuals.
+Avoid: legal ownership scenes, shopping metaphors, copy-paste UI.
 
-## 04 Prompt Control Panel
+### Reweaving Loom
 
-Use for: prompt engineering, parameter tuning, instruction quality.
+Use for: old material, prior knowledge, inherited influence, or external assets becoming a new expression.
 
-Scene: Mr.Ai tunes a small low-tech control panel with 3 knobs.
+Scene: Mr.Ai weaves two simple source ribbons through a small hand loom into one new pattern.
 
-Best labels: `目标`, `约束`, `输出`.
+Avoid: literal celebrity references, dense fabric texture, decorative poster style.
 
-Risk: avoid making it look like a real software settings screen.
+### Coexistence Stage
 
-## 05 Toolchain Thread
+Use for: two origins, roles, or truths coexisting without replacement.
 
-Use for: agents, tool calling, automation workflow, handoff.
+Scene: Mr.Ai turns on two small lamps whose light overlaps without becoming a formula.
 
-Scene: Mr.Ai threads a blue line through 3-4 physical tool blocks.
+Avoid: plus signs, equations, three-box PPT layout.
 
-Best labels: `工具`, `调用`, `结果`.
+### Black Box Reveal
 
-Risk: too many blocks turn it into architecture.
+Use for: hidden mechanisms, model behavior, systems, role definitions, invisible process.
 
-## 06 Guardrail Pit
+Scene: Mr.Ai opens a simple dark box and reveals mechanism cards inside.
 
-Use for: safety, privacy, copyright, hallucination risk, overtrust.
+Avoid: sci-fi UI, robot faces, complex circuit boards.
 
-Scene: Mr.Ai places a yellow guardrail before a red danger pit or loose bridge.
+### Evidence Scale
 
-Best labels: `风险`, `边界`, `验证`.
+Use for: weighing claims, choices, trust, verification, and interpretation.
 
-Risk: avoid fear-heavy or dramatic disaster imagery.
+Scene: Mr.Ai weighs a claim card against evidence cards on a small scale.
 
-## 07 Evidence Cabinet
+Avoid: courtroom drama, financial chart, heavy realism.
 
-Use for: RAG, knowledge base, source retrieval, notes.
+### Guardrail Pit
 
-Scene: Mr.Ai pulls evidence cards from a small cabinet and connects them to a model box.
+Use for: risk, boundaries, hallucination, safety constraints, "do not cross" moments.
 
-Best labels: `知识库`, `检索`, `引用`.
+Scene: Mr.Ai places a yellow guardrail before a red risk pit.
 
-Risk: avoid dense file-system diagrams.
+Avoid: disaster imagery, horror lighting, giant warning posters.
 
-## 08 Before/After Desk
+### Toolchain Thread
 
-Use for: messy-to-clear transformation, manual-to-automated workflow.
+Use for: agents, tool calling, handoff, automation workflow, batch pipeline.
 
-Scene: left side messy cards, right side clean stack, Mr.Ai moves one card across the middle.
+Scene: Mr.Ai threads a blue line through small tool blocks.
 
-Best labels: `混乱`, `整理`, `复用`.
+Avoid: dense software architecture, realistic UI screenshots, many app icons.
 
-Risk: avoid symmetrical corporate before/after graphics.
+### Mini Comic Correction
 
-## 09 Mini Comic Correction
+Use for: misconception correction, emotional reversal, "we thought X, actually Y".
 
-Use for: misconception correction, failure-to-fix narrative.
+Scene: two or three tiny panels: assumption, check, correction.
 
-Scene: 3 small panels: wrong belief, check action, corrected result.
+Avoid: speech balloons full of text, children's book tone, too many panels.
 
-Best labels: 1 label per panel, or no in-image labels.
+### Before/After Desk
 
-Risk: avoid too much dialogue text.
+Use for: transformation from old to new, messy to clear, manual to automated.
 
-## 10 Conveyor With Checkpoint
+Scene: Mr.Ai moves a card from an old messy desk to a clearer new workbench.
 
-Use for: repeatable production, automation, content pipeline.
+Avoid: corporate before-after slides, symmetrical posters, busy office scenes.
 
-Scene: Mr.Ai feeds raw material into a small conveyor with one visible checkpoint.
+## Workflow Layouts
 
-Best labels: `输入`, `检查`, `输出`.
+### Checkpoint Rope
 
-Risk: too much machinery can make the scene busy.
+Use for: loops, checkpoints, state reads, validation, stop conditions.
 
-## Selection rules
+Scene: Mr.Ai pulls one blue rope through simple checkpoint posts.
 
-- Use `Evidence Scale` or `Black Box Reveal` for trust and hallucination topics.
-- Use `Validation Loop` or `Conveyor With Checkpoint` for workflows.
-- Use `Prompt Control Panel` for prompt quality and controllability.
-- Use `Toolchain Thread` for agents and tool calling.
-- Use `Guardrail Pit` for risk and boundaries.
-- Use `Mini Comic Correction` when the voiceover has a clear before/after misconception.
+Avoid: formal flowcharts, too many steps, tangled rope.
 
+### Feedback Leak
+
+Use for: bad output or state entering a loop and amplifying.
+
+Scene: Mr.Ai plugs a leaking red pipe before it drips into a state bucket.
+
+Avoid: industrial machinery, gross liquid, catastrophe.
+
+### Decision Gates
+
+Use for: deciding whether a task is suitable, verifiable, recoverable, or worth looping.
+
+Scene: four small gates; only one is open.
+
+Avoid: game level art, castle scenes, text-heavy gates.
+
+### Nested Rings
+
+Use for: layers, scopes, nested responsibilities.
+
+Scene: Mr.Ai points at three nested hand-drawn rings.
+
+Avoid: corporate Venn diagrams, target logos, dense architecture.
+
+### Evidence Clamp
+
+Use for: goals, claims, or outputs accepted only with evidence.
+
+Scene: Mr.Ai clips a goal card and an evidence card onto one board.
+
+Avoid: legal contracts, dashboards, tiny checklist text.
+
+### Conveyor Split
+
+Use for: input becoming output through a process that separates signal from noise.
+
+Scene: Mr.Ai nudges cards along a thin conveyor that splits useful output from noise.
+
+Avoid: factory illustrations, complex machines, PPT pipelines.
+
+## Selection Rules
+
+- Use `Label Frame` when a label distorts the thing itself.
+- Use `Third Path` only when the segment rejects a forced binary.
+- Use `Use vs Rewrite` when the key question is transformation by use.
+- Use `Coexistence Stage` when the point is coexistence, not addition.
+- Use `Checkpoint Rope`, `Feedback Leak`, `Decision Gates`, `Nested Rings`, `Evidence Clamp`, and `Conveyor Split` for workflow and agent-system explanations.
+- If one layout appears more than twice, choose a nearby physical metaphor before generating images.
