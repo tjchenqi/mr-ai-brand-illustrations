@@ -1,0 +1,7 @@
+interface:
+  display_name: "Mr.Ai Illustrations"
+  short_description: "Plan Mr.Ai brand illustrations for AI 闲僧 scripts"
+  default_prompt: "Use $mr-ai-illustrations to turn this AI 闲僧 script into a 16:9 and 9:16 Mr.Ai illustration shot list and image prompts."
+policy:
+  allow_implicit_invocation: true
+

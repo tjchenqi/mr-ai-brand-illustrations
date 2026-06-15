@@ -1,0 +1,10 @@
+.DS_Store
+*.zip
+*.tmp
+*.log
+node_modules/
+.env
+dist/
+out/
+renders/
+
