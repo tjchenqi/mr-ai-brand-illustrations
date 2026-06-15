@@ -19,6 +19,7 @@ Start with:
 - `references/mr-ai-character-bible.md`
 - `references/visual-style-dna.md`
 - `references/script-to-shot-workflow.md`
+- `references/layout-library.md`
 - `references/prompt-template.md`
 - `references/qa-checklist.md`
 
@@ -26,6 +27,7 @@ Read when needed:
 
 - `references/composition-patterns.md` for choosing the visual structure.
 - `references/delivery-spec.md` for task folder layout.
+- `references/first-validation-protocol.md` when preparing a handoff to another production agent.
 - `references/remotion-optional-notes.md` only when the user wants video overlay or Remotion notes.
 - `references/sample-themes.md` only when creating a sample pack.
 
@@ -88,4 +90,3 @@ For a full script package, produce:
 - optional `remotion-overlay-notes.md`
 
 Use `references/delivery-spec.md` for naming and folder structure.
-

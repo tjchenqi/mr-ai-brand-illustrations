@@ -10,9 +10,11 @@ Read these files in order:
 2. `../agent-pack/mr-ai-character-bible.md`
 3. `../agent-pack/visual-style-dna.md`
 4. `../agent-pack/script-to-shot-workflow.md`
-5. `../agent-pack/prompt-template.md`
-6. `../agent-pack/qa-checklist.md`
-7. `../agent-pack/delivery-spec.md`
+5. `../agent-pack/layout-library.md`
+6. `../agent-pack/prompt-template.md`
+7. `../agent-pack/qa-checklist.md`
+8. `../agent-pack/delivery-spec.md`
+9. `../agent-pack/first-validation-protocol.md`
 
 ## Default task
 
@@ -29,3 +31,4 @@ Given an AI 闲僧 script or topic, produce:
 
 Do not copy the upstream Xiaohei visual identity. Use Mr.Ai only. Preserve cap, mustache, blue clothing, yellow accent, and friendly middle-aged cartoon identity.
 
+For the first handoff, use `genggui-handoff-prompt.md`.
