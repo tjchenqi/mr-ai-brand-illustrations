@@ -298,13 +298,13 @@ Core idea:
 我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是"主体性的胜利"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受"选边"。没有...
 
 Structure type:
-Third Path
+Coexistence Stage
 
 Composition:
-Mr.Ai stands at a fork with two blocked paths and opens a small third path. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
+Mr.Ai lights two small stage lamps that overlap without merging. Use one physical metaphor only. Use thin arrows or a single route line if needed. Leave quiet blank space on the right side.
 
 Short Chinese labels:
-模仿 / 拒绝 / 改写
+来处 / 自己 / 共处
 
 Constraints:
 One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
@@ -331,13 +331,13 @@ Core idea:
 我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是"主体性的胜利"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受"选边"。没有...
 
 Structure type:
-Third Path
+Coexistence Stage
 
 Composition:
-Mr.Ai stands at a fork with two blocked paths and opens a small third path. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
+Mr.Ai lights two small stage lamps that overlap without merging. Use one physical metaphor only. Use thin arrows or a single route line if needed. Keep safe blank space at the top and bottom for subtitles.
 
 Short Chinese labels:
-模仿 / 拒绝 / 改写
+来处 / 自己 / 共处
 
 Constraints:
 One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.

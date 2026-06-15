@@ -14,6 +14,7 @@ segment_role: host_voiceover
 voiceover_summary: "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。"
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
+formats: ["16x9", "9x16"]
 structure_type: Conveyor Split
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
@@ -34,6 +35,7 @@ segment_role: host_voiceover
 voiceover_summary: "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具进入流程之后，人的判断、验证和复盘必须跟着改变。"
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
+formats: ["16x9", "9x16"]
 structure_type: Evidence Clamp
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
@@ -54,6 +56,7 @@ segment_role: host_voiceover
 voiceover_summary: "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不能混在一起。"
 visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
 format: both
+formats: ["16x9", "9x16"]
 structure_type: Conveyor Split
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor

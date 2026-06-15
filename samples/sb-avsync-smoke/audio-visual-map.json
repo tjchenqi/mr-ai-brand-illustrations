@@ -7,40 +7,44 @@
       "role": "host_voiceover",
       "title": "开场",
       "voiceover_summary": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。",
+      "script_summary_excerpt": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自"
+      "overlay_text_candidate": "今天我们用一个"
     },
     {
       "segment_id": "B1",
       "role": "quoted_source",
       "title": "原文引用",
       "voiceover_summary": "\"真正重要的不是工具本身，而是人如何重新组织工作。\"",
+      "script_summary_excerpt": "\"真正重要的不是工具本身，而是人如何重新组织工作。\"",
       "selected_for_image": false,
       "visual_treatment": "quote-card-or-overlay",
       "timing": "hold_during_quote",
-      "overlay_text_candidate": "\"真正重要的不是工具本身，而是人如何重新组织工作。\""
+      "overlay_text_candidate": "真正重要的不是"
     },
     {
       "segment_id": "S1",
       "role": "host_voiceover",
       "title": "主播解释",
       "voiceover_summary": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具进入流程之后，人的判断、验证和复盘必须跟着改变。",
+      "script_summary_excerpt": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具"
+      "overlay_text_candidate": "验证"
     },
     {
       "segment_id": "S2",
       "role": "host_voiceover",
       "title": "结尾",
       "voiceover_summary": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不能混在一起。",
+      "script_summary_excerpt": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
       "timing": "sync_with_voiceover_anchor",
-      "overlay_text_candidate": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不"
+      "overlay_text_candidate": "所以引用负责保"
     }
   ],
   "shots": [
@@ -48,10 +52,15 @@
       "shot_id": "01-s0-开场",
       "segment_id": "S0",
       "segment_role": "host_voiceover",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
       "style_preset": "explainer-sketch",
       "structure_type": "Conveyor Split",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。",
+      "script_summary_excerpt": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
       "mr_ai_action": "Mr.Ai nudges cards along a thin conveyor that splits good output from noise.",
       "short_labels": [
@@ -59,16 +68,21 @@
         "噪音",
         "行动"
       ],
-      "overlay_text_candidate": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自"
+      "overlay_text_candidate": "引用与解释"
     },
     {
       "shot_id": "02-s1-主播解释",
       "segment_id": "S1",
       "segment_role": "host_voiceover",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
       "style_preset": "explainer-sketch",
       "structure_type": "Evidence Clamp",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具进入流程之后，人的判断、验证和复盘必须跟着改变。",
+      "script_summary_excerpt": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
       "mr_ai_action": "Mr.Ai clips a goal card and an evidence card onto one simple board.",
       "short_labels": [
@@ -76,16 +90,21 @@
         "证据",
         "验收"
       ],
-      "overlay_text_candidate": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具"
+      "overlay_text_candidate": "验证"
     },
     {
       "shot_id": "03-s2-结尾",
       "segment_id": "S2",
       "segment_role": "host_voiceover",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
       "style_preset": "explainer-sketch",
       "structure_type": "Conveyor Split",
       "timing": "sync_with_voiceover_anchor",
       "voiceover_summary": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不能混在一起。",
+      "script_summary_excerpt": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不",
       "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
       "mr_ai_action": "Mr.Ai nudges cards along a thin conveyor that splits good output from noise.",
       "short_labels": [
@@ -93,7 +112,7 @@
         "噪音",
         "行动"
       ],
-      "overlay_text_candidate": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不"
+      "overlay_text_candidate": "引用与解释"
     }
   ]
 }

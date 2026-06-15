@@ -35,6 +35,7 @@ script_position:
 voiceover_summary:
 visual_purpose:
 format:
+formats:
 structure_type:
 mr_ai_action:
 main_metaphor:
@@ -55,10 +56,64 @@ role: host_voiceover | quoted_source
 visual_treatment: brand | explainer-sketch | quote-card-or-overlay | subtitle-or-no-image
 timing: sync_with_voiceover_anchor | hold_during_quote | keep_voiceover_primary
 voiceover_anchor:
+script_summary_excerpt:
 overlay_text_candidate:
 ```
 
+`overlay_text_candidate` should be a short overlay seed, usually 1-7 Chinese characters or one compact phrase. It is not a full subtitle.
+
+`script_summary_excerpt` carries a short source excerpt for debugging and downstream prompt review.
+
 `audio-visual-map.json` carries the same plan in machine-readable form for other agents, Remotion, ffmpeg pipelines, or later batch tooling.
+
+## Audio/visual map fields
+
+Top-level:
+
+```json
+{
+  "topic": "string",
+  "style_preset": "brand | explainer-sketch | auto",
+  "segments": [],
+  "shots": []
+}
+```
+
+Each segment:
+
+```json
+{
+  "segment_id": "S2",
+  "role": "host_voiceover | quoted_source",
+  "title": "string",
+  "voiceover_summary": "string",
+  "script_summary_excerpt": "string",
+  "selected_for_image": true,
+  "visual_treatment": "brand | explainer-sketch | quote-card-or-overlay | subtitle-or-no-image",
+  "timing": "sync_with_voiceover_anchor | hold_during_quote | keep_voiceover_primary",
+  "overlay_text_candidate": "string"
+}
+```
+
+Each shot:
+
+```json
+{
+  "shot_id": "01-s2-topic",
+  "segment_id": "S2",
+  "segment_role": "host_voiceover",
+  "formats": ["16x9", "9x16"],
+  "style_preset": "brand | explainer-sketch",
+  "structure_type": "string",
+  "timing": "sync_with_voiceover_anchor",
+  "voiceover_summary": "string",
+  "script_summary_excerpt": "string",
+  "visual_purpose": "string",
+  "mr_ai_action": "string",
+  "short_labels": ["string"],
+  "overlay_text_candidate": "string"
+}
+```
 
 ## S/B handling
 

@@ -31,6 +31,7 @@ LAYOUT_RULES = [
 ]
 
 EXPLAINER_LAYOUT_RULES = [
+    ("共处|不是互斥|支持|和声|飞吻|侧台|不只属于|来自他们", "Coexistence Stage", "Mr.Ai lights two small stage lamps that overlap without merging."),
     ("第三条路|两条路|模仿|叛逃|选边|只做自己|只做父亲", "Third Path", "Mr.Ai stands at a fork with two blocked paths and opens a small third path."),
     ("标签|误解|理解成你|父母的名字|是谁的孩子|是谁的女儿", "Label Frame", "Mr.Ai peels oversized name labels off a small portrait frame."),
     ("依赖|消费|怎么用|终点|起点|改写", "Use vs Rewrite", "Mr.Ai moves one song card from a consumption basket into a rewrite workbench."),
@@ -67,7 +68,11 @@ EXPLAINER_LABELS_BY_LAYOUT = {
     "Third Path": ["模仿", "拒绝", "改写"],
     "Label Frame": ["标签", "误解", "本人"],
     "Use vs Rewrite": ["消费", "改写", "起点"],
+    "Coexistence Stage": ["来处", "自己", "共处"],
 }
+
+DEFAULT_FORMATS = ["16x9", "9x16"]
+MAX_SAME_LAYOUT = 2
 
 
 @dataclass
@@ -207,6 +212,35 @@ def summarize(text: str, limit: int = 72) -> str:
     return clean[:limit] + ("..." if len(clean) > limit else "")
 
 
+def make_overlay_text(text: str, layout: str | None = None, limit: int = 7) -> str:
+    """Produce a short overlay seed, not a subtitle excerpt."""
+    keyword_groups = [
+        "重新编织|重新表达|同一个表达|影响的焦虑|第三条路|不是选边|没有接受选边|依赖还是改写|依赖和改写|消费|改写|共处|不是互斥|支持|和声|飞吻|标签|误解|主体性|边界|答案",
+        "目标|状态|验证|错误|放大|证据|验收|风险|工具链|工作流|输入|输出",
+    ]
+    for group in keyword_groups:
+        match = re.search(group, text, re.IGNORECASE)
+        if match:
+            return match.group(0)[:limit]
+    if layout:
+        layout_labels = {
+            "Label Frame": "标签误读",
+            "Third Path": "第三条路",
+            "Use vs Rewrite": "依赖还是改写",
+            "Reweaving Loom": "重新编织",
+            "Coexistence Stage": "共处",
+            "Checkpoint Rope": "闭环检查",
+            "Feedback Leak": "错误闭环",
+            "Decision Gates": "四道门",
+            "Evidence Clamp": "证据验收",
+            "Conveyor Split": "引用与解释",
+        }
+        if layout in layout_labels:
+            return layout_labels[layout]
+    clean = re.sub(r"[“”\"'《》。，、：:；;！？!?（）()\[\]【】\s]+", "", text)
+    return clean[:limit]
+
+
 def yaml_string(text: str) -> str:
     return json.dumps(text, ensure_ascii=False)
 
@@ -229,6 +263,53 @@ def choose_layout(text: str, style: str = "brand") -> str:
         if re.search(pattern, text, re.IGNORECASE):
             return layout
     return "Black Box Reveal"
+
+
+def choose_diverse_layout(layout: str, style: str, text: str, used_layouts: dict[str, int]) -> str:
+    layout_key = f"{style}:{layout}"
+    if used_layouts.get(layout_key, 0) < MAX_SAME_LAYOUT:
+        return layout
+
+    if style == "explainer-sketch":
+        if re.search(r"共处|不是互斥|支持|和声|飞吻|侧台|不只属于|来自他们", text):
+            preferred = "Coexistence Stage"
+            if used_layouts.get(f"{style}:{preferred}", 0) < MAX_SAME_LAYOUT:
+                return preferred
+        fallback_layouts = [
+            "Label Frame",
+            "Use vs Rewrite",
+            "Coexistence Stage",
+            "Checkpoint Rope",
+            "Feedback Leak",
+            "Decision Gates",
+            "Nested Rings",
+            "Evidence Clamp",
+            "Conveyor Split",
+            "Third Path",
+        ]
+    else:
+        fallback_layouts = [
+            "Reweaving Loom",
+            "Label Frame",
+            "Use vs Rewrite",
+            "Coexistence Stage",
+            "Before/After Desk",
+            "Toolchain Thread",
+            "Guardrail Pit",
+            "Mini Comic Correction",
+            "Black Box Reveal",
+            "Evidence Scale",
+            "Third Path",
+        ]
+
+    return next(
+        (
+            candidate
+            for candidate in fallback_layouts
+            if candidate != layout and used_layouts.get(f"{style}:{candidate}", 0) < MAX_SAME_LAYOUT
+        ),
+        layout,
+    )
 
 
 def is_forced_layout(text: str) -> bool:
@@ -412,38 +493,13 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
     }
 
     used_layouts: dict[str, int] = {}
-    brand_fallback_layouts = [
-        "Reweaving Loom",
-        "Third Path",
-        "Label Frame",
-        "Use vs Rewrite",
-        "Coexistence Stage",
-        "Before/After Desk",
-        "Toolchain Thread",
-        "Guardrail Pit",
-        "Mini Comic Correction",
-        "Black Box Reveal",
-        "Evidence Scale",
-    ]
-    explainer_fallback_layouts = [
-        "Third Path",
-        "Label Frame",
-        "Use vs Rewrite",
-        "Checkpoint Rope",
-        "Feedback Leak",
-        "Decision Gates",
-        "Nested Rings",
-        "Evidence Clamp",
-        "Conveyor Split",
-    ]
-
     for segment in segments:
         shot_style = choose_style_for_segment(segment, style)
         selected = segment.segment_id in chosen_ids
         treatment = visual_treatment_for_segment(segment, selected, shot_style)
         timing = timing_for_segment(segment, selected)
         summary = summarize(segment.body, 80)
-        overlay_text = summary[:28]
+        overlay_text = make_overlay_text(segment.body)
         timeline_lines.extend(
             [
                 f"## {segment.segment_id} · {segment.title}",
@@ -452,6 +508,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
                 f"- Visual treatment: {treatment}",
                 f"- Timing: {timing}",
                 f"- Voiceover anchor: {summary}",
+                f"- Script summary excerpt: {summary[:28]}",
                 f"- Overlay text candidate: {overlay_text}",
                 "- Note: B segments should preserve quoted meaning; prefer quote cards or overlays instead of metaphorical rewriting." if segment.role == "B" else "- Note: Use an image only if it reduces explanation time; otherwise let voiceover and subtitles lead.",
                 "",
@@ -463,6 +520,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
                 "role": "host_voiceover" if segment.role == "S" else "quoted_source",
                 "title": segment.title,
                 "voiceover_summary": summary,
+                "script_summary_excerpt": summary[:28],
                 "selected_for_image": selected,
                 "visual_treatment": treatment,
                 "timing": timing,
@@ -476,30 +534,30 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
         shot_style = choose_style_for_segment(segment, style)
         section_text = section_title + body
         layout = choose_layout(section_text, shot_style)
+        layout = choose_diverse_layout(layout, shot_style, section_text, used_layouts)
         layout_key = f"{shot_style}:{layout}"
-        if not is_forced_layout(section_text) and used_layouts.get(layout_key, 0) >= 2:
-            fallback_layouts = explainer_fallback_layouts if shot_style == "explainer-sketch" else brand_fallback_layouts
-            layout = next((candidate for candidate in fallback_layouts if used_layouts.get(f"{shot_style}:{candidate}", 0) == 0), layout)
-            layout_key = f"{shot_style}:{layout}"
         used_layouts[layout_key] = used_layouts.get(layout_key, 0) + 1
         label_map = EXPLAINER_LABELS_BY_LAYOUT if shot_style == "explainer-sketch" else LABELS_BY_LAYOUT
         labels = label_map.get(layout, ["概念", "动作", "结果"])
         action = action_for_layout(layout)
         shot_id = f"{idx:02d}-{segment.segment_id.lower()}-{slugify(segment.title)[:42]}"
         summary = summarize(body)
+        overlay_text = make_overlay_text(section_text, layout)
         audio_visual_map["shots"].append(
             {
                 "shot_id": shot_id,
                 "segment_id": segment.segment_id,
                 "segment_role": "host_voiceover",
+                "formats": DEFAULT_FORMATS,
                 "style_preset": shot_style,
                 "structure_type": layout,
                 "timing": "sync_with_voiceover_anchor",
                 "voiceover_summary": summary,
+                "script_summary_excerpt": summary[:28],
                 "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
                 "mr_ai_action": action,
                 "short_labels": labels,
-                "overlay_text_candidate": summary[:28],
+                "overlay_text_candidate": overlay_text,
             }
         )
 
@@ -515,6 +573,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
                 f"voiceover_summary: {yaml_string(summary)}",
                 "visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.",
                 "format: both",
+                f"formats: {json.dumps(DEFAULT_FORMATS)}",
                 f"structure_type: {layout}",
                 f"style_preset: {shot_style}",
                 "image_timing: sync_with_voiceover_anchor",
@@ -551,7 +610,8 @@ def write_package(script: str, out: Path, title: str, max_shots: int, style: str
             [
                 f"## {shot_id}",
                 "",
-                f"- Overlay text candidate: {summary[:28]}",
+                f"- Script summary excerpt: {summary[:28]}",
+                f"- Overlay text candidate: {overlay_text}",
                 "- Add exact Chinese text in post-production if the generated bitmap text drifts.",
                 "- Keep subtitles outside the main character and prop area.",
                 "",

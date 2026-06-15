@@ -30,6 +30,19 @@ bin/mrai gen script.md --out samples/my-topic --style auto
 - `explainer-sketch`: sparse whiteboard explanation. Use for mechanisms, workflows, risks, verification, loops, decision criteria, and xiaohei-like video inserts.
 - `auto`: choose `brand` or `explainer-sketch` per selected S segment. Review before production.
 
+`auto` is deterministic and keyword-based. It is useful for first-pass scaffolds, not final art direction.
+
+Common explainer-sketch triggers:
+
+- mechanism words: `概念`, `结构`, `机制`, `区别`, `判断`, `边界`, `验证`, `循环`, `Loop`
+- culture/person reasoning words: `第三条路`, `误解`, `标签`, `依赖`, `消费`, `改写`
+
+Common brand triggers:
+
+- emotional or identity words: `钩子`, `结尾`, `飞吻`, `支持`, `共处`, `人物`, `舞台`, `音乐`, `编织`
+
+The CLI limits repeated layouts: a single style/layout pair should not appear more than twice in one package. If the first match repeats too much, the CLI falls back to a related physical metaphor. Still review `shot-list.md`; if two images feel visually redundant, rewrite one shot before image generation.
+
 ## S/B script handling
 
 The CLI recognizes standard video script headings such as:
@@ -86,6 +99,8 @@ Use image generation tools for:
 ## Current limitation
 
 The CLI uses deterministic heuristics. Treat its shot list as a first draft. For production, the agent should review and revise at least the best 2-3 prompts before generating images.
+
+`overlay_text_candidate` is a short overlay seed, not a full subtitle. `script_summary_excerpt` carries the truncated script summary when downstream tools need a longer source excerpt.
 
 Future versions may add:
 
