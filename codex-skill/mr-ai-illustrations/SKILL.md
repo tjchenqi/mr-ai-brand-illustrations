@@ -47,14 +47,24 @@ Unless the user explicitly asks to generate images immediately, first output a c
 Each shot should include:
 
 - script position
+- script segment when S/B headings are available
+- segment role: host voiceover or quoted source
 - voiceover summary
 - visual purpose
 - format: 16:9, 9:16, or both
 - structure type
+- style preset: brand or explainer-sketch
+- image timing
 - Mr.Ai action
 - main metaphor
 - short Chinese labels
 - optional overlay notes
+
+For S/B scripts, preserve the distinction:
+
+- S segments are required host narration units. Every S segment should appear in `timeline-plan.md`, though not every S segment needs a generated image.
+- B segments are optional quoted source material and should usually become quote cards or overlays, not metaphor images.
+- Scripts with S segments and no B segments are valid.
 
 ### 3. Write image prompts
 
@@ -85,6 +95,8 @@ For a full script package, produce:
 
 - `shot-list.md`
 - `image-prompts.md`
+- `timeline-plan.md`
+- `audio-visual-map.json`
 - `qa-report.md`
 - `16x9/`
 - `9x16/`

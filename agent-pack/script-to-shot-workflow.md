@@ -13,6 +13,14 @@ Extract:
 
 Do not illustrate every paragraph. Choose moments where a visual metaphor can clarify the voiceover.
 
+If the script uses `S` and `B` headings:
+
+- Treat `S` as host voiceover. S is the required standard unit for口播 scripts.
+- Treat `B` as optional quoted source material.
+- A script with S segments and no B segments is valid.
+- Use B segments as quote cards, source cards, or overlays unless the producer explicitly asks for a visual interpretation.
+- Do not rewrite quoted meaning into a metaphor image.
+
 ## Step 2: Select cognitive anchors
 
 Good anchors:
@@ -46,6 +54,28 @@ For each shot, write:
 - `main metaphor`
 - `short labels`
 - `overlay notes`: optional
+
+Choose a style preset for each shot:
+
+- Use `brand` when the shot should carry栏目识别、封面感、情绪氛围、人物温度.
+- Use `explainer-sketch` when the shot must explain a mechanism quickly inside a口播视频.
+
+For `explainer-sketch`, bias toward xiaohei-like physical metaphors:
+
+- well: too much noise, filtering, first scoop
+- conveyor: before/after, broken handoff, missing acceptance
+- drawer/cabinet: sources, evidence, memory, assets
+- rope/route line: loop, sequence, dependency, retry path
+- gate: decision criteria, pass/fail, whether to continue
+- bucket/pipe: feedback, leakage, state pollution
+- clamp/scale: goal plus evidence, judgment, verification
+
+Also create an audio/visual sync plan:
+
+- `timeline-plan.md` for human review.
+- `audio-visual-map.json` for downstream agents or video pipelines.
+
+Each segment should state whether it gets a generated image, a quote card, subtitles only, or no image.
 
 Default count:
 
@@ -89,4 +119,3 @@ Check each image or prompt against:
 - Text policy.
 - Format safety.
 - Delivery naming.
-

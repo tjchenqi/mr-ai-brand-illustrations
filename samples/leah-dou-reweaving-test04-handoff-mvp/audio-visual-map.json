@@ -1,0 +1,183 @@
+{
+  "topic": "Leah Dou handoff MVP",
+  "style_preset": "auto",
+  "segments": [
+    {
+      "segment_id": "S0",
+      "role": "host_voiceover",
+      "title": "钩子",
+      "voiceover_summary": "窦靖童在《歌手2026》做了一件事。她把自己的歌，和父亲三十五年前写的那首歌，编在了一起。它不像一次普通翻唱，也不只是简单致敬。更像是一次重新编织。真正值得注意...",
+      "selected_for_image": false,
+      "visual_treatment": "subtitle-or-no-image",
+      "timing": "keep_voiceover_primary",
+      "overlay_text_candidate": "窦靖童在《歌手2026》做了一件事。她把自己的歌，和父亲"
+    },
+    {
+      "segment_id": "S1",
+      "role": "host_voiceover",
+      "title": "事实底线",
+      "voiceover_summary": "5月22日晚，《歌手2026》首期直播。窦靖童第六个出场。她的表演分两部分：自己的原创《同一片天空下》，紧接着转入父亲窦唯1991年为黑豹乐队写的《Don'tB...",
+      "selected_for_image": false,
+      "visual_treatment": "subtitle-or-no-image",
+      "timing": "keep_voiceover_primary",
+      "overlay_text_candidate": "5月22日晚，《歌手2026》首期直播。窦靖童第六个出场"
+    },
+    {
+      "segment_id": "S2",
+      "role": "host_voiceover",
+      "title": "普通人的疑问与解释缺口",
+      "voiceover_summary": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什么\"，而是\"你爸当年……\"\"你妈那时候……\"。面试时，别人翻简历翻到家庭那一栏，眼神停了一下。发一首歌在...",
+      "selected_for_image": true,
+      "visual_treatment": "explainer-sketch",
+      "timing": "sync_with_voiceover_anchor",
+      "overlay_text_candidate": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什"
+    },
+    {
+      "segment_id": "S3",
+      "role": "host_voiceover",
+      "title": "思想核心切入",
+      "voiceover_summary": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提出过一个说法，叫\"影响的焦虑\"。大意是：每一个后来的创作者，都活在前人的阴影里。前辈越伟大，后辈越难。不...",
+      "selected_for_image": true,
+      "visual_treatment": "explainer-sketch",
+      "timing": "sync_with_voiceover_anchor",
+      "overlay_text_candidate": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提"
+    },
+    {
+      "segment_id": "S4",
+      "role": "host_voiceover",
+      "title": "现实机制",
+      "voiceover_summary": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自己的歌——\"我不用靠父母\"。可以只唱父亲的歌——\"我能继承家学\"。两条路她都没选。她选了第三条：把《同一...",
+      "selected_for_image": true,
+      "visual_treatment": "explainer-sketch",
+      "timing": "sync_with_voiceover_anchor",
+      "overlay_text_candidate": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自"
+    },
+    {
+      "segment_id": "S5",
+      "role": "host_voiceover",
+      "title": "反方问题",
+      "voiceover_summary": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王菲和窦唯，再想起...",
+      "selected_for_image": true,
+      "visual_treatment": "explainer-sketch",
+      "timing": "sync_with_voiceover_anchor",
+      "overlay_text_candidate": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父"
+    },
+    {
+      "segment_id": "S6",
+      "role": "host_voiceover",
+      "title": "分析纵深",
+      "voiceover_summary": "整场表演还有一个人，几乎没被注意到。窦唯的妹妹，窦靖童的姑姑——窦颖。她站在舞台侧方。灯光照不到。她做了一件事：和声。唱完，抬手，向窦靖童送了一个飞吻。这个飞吻...",
+      "selected_for_image": false,
+      "visual_treatment": "subtitle-or-no-image",
+      "timing": "keep_voiceover_primary",
+      "overlay_text_candidate": "整场表演还有一个人，几乎没被注意到。窦唯的妹妹，窦靖童的"
+    },
+    {
+      "segment_id": "S7",
+      "role": "host_voiceover",
+      "title": "边界声明",
+      "voiceover_summary": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是\"主体性的胜利\"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受\"选边\"。没有选择只做自己，也...",
+      "selected_for_image": true,
+      "visual_treatment": "explainer-sketch",
+      "timing": "sync_with_voiceover_anchor",
+      "overlay_text_candidate": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是"
+    },
+    {
+      "segment_id": "S8",
+      "role": "host_voiceover",
+      "title": "结尾",
+      "voiceover_summary": "节目结束后，媒体用了各种标题。\"王菲的女儿唱了窦唯的歌。\"\"一代人终将老去。\"\"那英哭了。\"但这些标题都在说别人。窦靖童那天晚上没有说太多话。她唱完，谢幕，离开...",
+      "selected_for_image": false,
+      "visual_treatment": "subtitle-or-no-image",
+      "timing": "keep_voiceover_primary",
+      "overlay_text_candidate": "节目结束后，媒体用了各种标题。\"王菲的女儿唱了窦唯的歌。"
+    }
+  ],
+  "shots": [
+    {
+      "shot_id": "01-s2-普通人的疑问与解释缺口",
+      "segment_id": "S2",
+      "segment_role": "host_voiceover",
+      "style_preset": "explainer-sketch",
+      "structure_type": "Label Frame",
+      "timing": "sync_with_voiceover_anchor",
+      "voiceover_summary": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什么\"，而是\"你爸当年……\"\"你妈那时候……\"。面试时，别人翻简历翻到家庭那一栏，眼神停了...",
+      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "mr_ai_action": "Mr.Ai peels oversized name labels off a small portrait frame.",
+      "short_labels": [
+        "标签",
+        "误解",
+        "本人"
+      ],
+      "overlay_text_candidate": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什"
+    },
+    {
+      "shot_id": "02-s3-思想核心切入",
+      "segment_id": "S3",
+      "segment_role": "host_voiceover",
+      "style_preset": "explainer-sketch",
+      "structure_type": "Third Path",
+      "timing": "sync_with_voiceover_anchor",
+      "voiceover_summary": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提出过一个说法，叫\"影响的焦虑\"。大意是：每一个后来的创作者，都活在前人的阴影里。前辈越伟...",
+      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
+      "short_labels": [
+        "模仿",
+        "拒绝",
+        "改写"
+      ],
+      "overlay_text_candidate": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提"
+    },
+    {
+      "shot_id": "03-s4-现实机制",
+      "segment_id": "S4",
+      "segment_role": "host_voiceover",
+      "style_preset": "explainer-sketch",
+      "structure_type": "Third Path",
+      "timing": "sync_with_voiceover_anchor",
+      "voiceover_summary": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自己的歌——\"我不用靠父母\"。可以只唱父亲的歌——\"我能继承家学\"。两条路她都没选。她选了...",
+      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
+      "short_labels": [
+        "模仿",
+        "拒绝",
+        "改写"
+      ],
+      "overlay_text_candidate": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自"
+    },
+    {
+      "shot_id": "04-s5-反方问题",
+      "segment_id": "S5",
+      "segment_role": "host_voiceover",
+      "style_preset": "explainer-sketch",
+      "structure_type": "Use vs Rewrite",
+      "timing": "sync_with_voiceover_anchor",
+      "voiceover_summary": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王...",
+      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "mr_ai_action": "Mr.Ai moves one song card from a consumption basket into a rewrite workbench.",
+      "short_labels": [
+        "消费",
+        "改写",
+        "起点"
+      ],
+      "overlay_text_candidate": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父"
+    },
+    {
+      "shot_id": "05-s7-边界声明",
+      "segment_id": "S7",
+      "segment_role": "host_voiceover",
+      "style_preset": "explainer-sketch",
+      "structure_type": "Third Path",
+      "timing": "sync_with_voiceover_anchor",
+      "voiceover_summary": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是\"主体性的胜利\"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受\"选边\"。没有...",
+      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
+      "short_labels": [
+        "模仿",
+        "拒绝",
+        "改写"
+      ],
+      "overlay_text_candidate": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是"
+    }
+  ]
+}

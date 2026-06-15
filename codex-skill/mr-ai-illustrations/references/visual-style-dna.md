@@ -6,6 +6,11 @@ Colored cartoon brand IP plus clean explanatory sketch logic.
 
 Mr.Ai stays colorful and brand-consistent. The surrounding explanatory objects stay simple, sparse, and readable.
 
+Use two production presets:
+
+- `brand`: polished Mr.Ai brand illustration for covers, hero moments, and reusable brand assets.
+- `explainer-sketch`: whiteboard explanatory sketch for voiceover-matched video inserts, closer to the xiaohei method while preserving Mr.Ai.
+
 ## Default look
 
 - Clean white or very light background.
@@ -15,6 +20,27 @@ Mr.Ai stays colorful and brand-consistent. The surrounding explanatory objects s
 - Plenty of empty space.
 - A few short Chinese labels.
 - One clear conceptual action per image.
+
+## Explainer-sketch preset
+
+Use this when the image must explain a口播段落 quickly, especially for abstract AI methods, workflows, risks, and decision frameworks.
+
+- Whiteboard-like composition with thin black marker lines.
+- Mr.Ai appears smaller, usually 10%-18% of the canvas in 16:9 or 12%-22% in 9:16.
+- Mr.Ai is the action driver, but the physical metaphor is the visual center.
+- One low-tech metaphor only: well, rope, conveyor, drawer, gate, bucket, clamp, route line, scale, simple machine.
+- Sparse color: black line first, blue for the main route or Mr.Ai clothing, yellow for one highlight, red only for warnings.
+- Avoid large filled color areas; Mr.Ai's blue shirt should identify the character without turning him into the main visual mass.
+- Keep props flatter and rougher than the `brand` preset.
+- Prefer blank label spaces. Use 2-4 short labels only when text accuracy is being tested or the labels are essential to the mechanism.
+- Prefer hand-drawn arrows, underlines, dashed routes, and simple side notes over polished UI panels.
+
+Avoid in explainer-sketch:
+
+- Large portrait-like Mr.Ai.
+- Finished poster lighting, glossy shading, realistic materials, or cute storybook detail.
+- Decorative tables, rooms, dashboards, and full-background scenes.
+- Formal architecture diagrams or PPT-style flows.
 
 ## Color system
 
@@ -61,3 +87,9 @@ Longer text should be added later by Remotion, video editing, or design tools.
 - Use 3-5 concept labels, not more than 8.
 - Use one dominant object or one small workflow, not a full architecture diagram.
 
+For `explainer-sketch`, reduce density further:
+
+- 16:9: physical metaphor uses about 45%-60% of canvas; Mr.Ai uses about 10%-18%.
+- 9:16: physical metaphor uses the middle 60%; Mr.Ai uses about 15%-25%.
+- Keep at least 35%-50% quiet space.
+- Use 2-4 labels, not 5-8.

@@ -9,6 +9,7 @@ prompt files for agents or image-generation tools to refine.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import json
 import re
 import textwrap
@@ -16,12 +17,29 @@ from pathlib import Path
 
 
 LAYOUT_RULES = [
+    ("编织|两首歌|同一个表达|重新表达|改写|旧线|图案", "Reweaving Loom", "Mr.Ai weaves two blue and yellow music ribbons through a small hand loom."),
+    ("第三条路|两条路|模仿|叛逃|选边|只做自己|只做父亲", "Third Path", "Mr.Ai stands at a fork with two blocked paths and opens a small third path."),
+    ("标签|误解|理解成你|父母的名字|是谁的孩子|是谁的女儿", "Label Frame", "Mr.Ai peels oversized name labels off a small portrait frame."),
+    ("依赖|消费|怎么用|终点|起点", "Use vs Rewrite", "Mr.Ai moves one song card from a consumption basket into a rewrite workbench."),
+    ("共处|不是互斥|支持|和声|飞吻|侧台", "Coexistence Stage", "Mr.Ai lights two small stage lamps that overlap without merging."),
     ("可靠|hallucinate|幻觉|边界|风险|出错|提前识别|规避", "Guardrail Pit", "Mr.Ai places a yellow guardrail before a red risk pit."),
     ("工作流|整合|组织方式|工具|普通人|红利|用的人|赚钱方式", "Toolchain Thread", "Mr.Ai threads a blue line through small tool blocks."),
     ("重新定义|岗位|工作|结构|职业|内涵", "Black Box Reveal", "Mr.Ai opens a work-definition box and reveals changing role cards."),
     ("情绪|恐惧|期待|公众|曲线|欢迎", "Mini Comic Correction", "Mr.Ai compares two small emotion panels."),
     ("工业革命|AI革命|像|不像|对比|重演", "Before/After Desk", "Mr.Ai moves a card from an old machine desk to an AI workflow desk."),
     ("问题|答案|结尾|姿态|选择", "Evidence Scale", "Mr.Ai weighs two choice cards on a small scale."),
+]
+
+EXPLAINER_LAYOUT_RULES = [
+    ("第三条路|两条路|模仿|叛逃|选边|只做自己|只做父亲", "Third Path", "Mr.Ai stands at a fork with two blocked paths and opens a small third path."),
+    ("标签|误解|理解成你|父母的名字|是谁的孩子|是谁的女儿", "Label Frame", "Mr.Ai peels oversized name labels off a small portrait frame."),
+    ("依赖|消费|怎么用|终点|起点|改写", "Use vs Rewrite", "Mr.Ai moves one song card from a consumption basket into a rewrite workbench."),
+    ("七个|七步|读取状态|选择工作|写回|路由或停止|任务级 Loop", "Checkpoint Rope", "Mr.Ai, drawn small, pulls one blue rope through seven simple checkpoint posts in a loose loop."),
+    ("错误也会闭环|错误状态|状态污染|反馈循环|写入状态", "Feedback Leak", "Mr.Ai plugs a leaking red pipe before it drips into a state bucket."),
+    ("四道|四个|不是所有任务|值得闭环|是否值得|适合 Loop|反馈能不能", "Decision Gates", "Mr.Ai stands beside four small gates; only one gate is open, the others are marked as blocked with simple red crosses."),
+    ("三层|层次|Agent loop|harness", "Nested Rings", "Mr.Ai points at three nested hand-drawn rings, each ring holding one small object."),
+    ("目标|验证|验收|契约|证据", "Evidence Clamp", "Mr.Ai clips a goal card and an evidence card onto one simple board."),
+    ("输入|输出|流程|过程|工作流|整合|工具", "Conveyor Split", "Mr.Ai nudges cards along a thin conveyor that splits good output from noise."),
 ]
 
 
@@ -32,7 +50,38 @@ LABELS_BY_LAYOUT = {
     "Black Box Reveal": ["黑盒", "工作", "重写"],
     "Mini Comic Correction": ["期待", "恐惧", "反转"],
     "Evidence Scale": ["选择", "行动", "判断"],
+    "Reweaving Loom": ["旧歌", "新歌", "改写"],
+    "Third Path": ["模仿", "拒绝", "改写"],
+    "Label Frame": ["父母", "标签", "本人"],
+    "Use vs Rewrite": ["消费", "改写", "起点"],
+    "Coexistence Stage": ["来处", "自己", "共处"],
 }
+
+EXPLAINER_LABELS_BY_LAYOUT = {
+    "Checkpoint Rope": ["目标", "状态", "验证"],
+    "Feedback Leak": ["错误", "状态", "放大"],
+    "Decision Gates": ["可验", "可存", "可恢复", "值得"],
+    "Nested Rings": ["Loop", "Harness", "工程"],
+    "Evidence Clamp": ["目标", "证据", "验收"],
+    "Conveyor Split": ["输入", "噪音", "行动"],
+    "Third Path": ["模仿", "拒绝", "改写"],
+    "Label Frame": ["标签", "误解", "本人"],
+    "Use vs Rewrite": ["消费", "改写", "起点"],
+}
+
+
+@dataclass
+class ScriptSegment:
+    role: str
+    number: str
+    title: str
+    body: str
+    raw_title: str
+    index: int
+
+    @property
+    def segment_id(self) -> str:
+        return f"{self.role}{self.number}" if self.number else f"S{self.index}"
 
 
 def read_input(value: str) -> str:
@@ -49,8 +98,89 @@ def slugify(text: str) -> str:
     return text or "mr-ai-task"
 
 
+def parse_script_segments(script: str) -> list[ScriptSegment]:
+    """Parse standard S/B video scripts while ignoring later editorial notes."""
+    script = script.strip()
+    heading_pattern = re.compile(
+        r"(?m)^\s{0,3}(?:#{1,6}\s*)?([SB])(\d+)\s*[·.\-:：]?\s*([^\n]*)$",
+        re.IGNORECASE,
+    )
+    matches = list(heading_pattern.finditer(script))
+    if not matches:
+        sections = split_sections_fallback(script)
+        return [
+            ScriptSegment(role="S", number=str(i), title=title, body=body, raw_title=title, index=i)
+            for i, (title, body) in enumerate(sections, start=1)
+        ]
+
+    segments: list[ScriptSegment] = []
+    for index, match in enumerate(matches, start=1):
+        start = match.end()
+        next_match_start = matches[index].start() if index < len(matches) else len(script)
+        body = script[start:next_match_start]
+        editorial = re.search(r"(?m)^\s{0,3}#{1,2}\s+(主要改动|保留的事实|仍需人工|删除或弱化|口播节奏|备注|附录)", body)
+        if editorial:
+            body = body[: editorial.start()]
+        body = body.strip()
+        if not body:
+            continue
+        role = match.group(1).upper()
+        number = match.group(2)
+        title = match.group(3).strip() or f"{role}{number}"
+        raw_title = f"{role}{number} · {title}"
+        segments.append(ScriptSegment(role=role, number=number, title=title, body=body, raw_title=raw_title, index=index))
+    return segments
+
+
+def split_sections_fallback(script: str) -> list[tuple[str, str]]:
+    script = re.sub(r"(?<!\n)([一二三四五六七八九十]、)", r"\n\1", script)
+    chinese_matches = list(re.finditer(r"(?m)^([一二三四五六七八九十]、)", script))
+    if chinese_matches:
+        sections = []
+        for i, match in enumerate(chinese_matches):
+            section_start = match.start()
+            end = chinese_matches[i + 1].start() if i + 1 < len(chinese_matches) else len(script)
+            section_text = script[section_start:end].strip()
+            title_match = re.match(r"([一二三四五六七八九十]、.{1,80}?[？。:：])", section_text)
+            if title_match:
+                title = title_match.group(1).strip()
+                body = section_text[title_match.end():].strip()
+            else:
+                title = section_text[:80].strip()
+                body = section_text[80:].strip()
+            if body:
+                sections.append((title, body))
+        return sections
+
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", script) if p.strip()]
+    return [(f"Section {i+1}", p) for i, p in enumerate(paragraphs)]
+
+
 def split_sections(script: str) -> list[tuple[str, str]]:
+    segments = parse_script_segments(script)
+    if segments:
+        return [(segment.raw_title, segment.body) for segment in segments]
+
+    script = re.sub(r"(?<!\n)([一二三四五六七八九十]、)", r"\n\1", script)
     matches = list(re.finditer(r"(?m)^(#{1,4}\s*)?(S\d+[^。\n]*|###\s*S\d+[^。\n]*|##\s*S\d+[^。\n]*)\n", script))
+    if not matches:
+        chinese_matches = list(re.finditer(r"(?m)^([一二三四五六七八九十]、)", script))
+        if chinese_matches:
+            sections = []
+            for i, match in enumerate(chinese_matches):
+                section_start = match.start()
+                end = chinese_matches[i + 1].start() if i + 1 < len(chinese_matches) else len(script)
+                section_text = script[section_start:end].strip()
+                title_match = re.match(r"([一二三四五六七八九十]、.{1,80}?[？。:：])", section_text)
+                if title_match:
+                    title = title_match.group(1).strip()
+                    body = section_text[title_match.end():].strip()
+                else:
+                    title = section_text[:80].strip()
+                    body = section_text[80:].strip()
+                if body:
+                    sections.append((title, body))
+            return sections
     if not matches:
         paragraphs = [p.strip() for p in re.split(r"\n\s*\n", script) if p.strip()]
         return [(f"Section {i+1}", p) for i, p in enumerate(paragraphs)]
@@ -67,7 +197,13 @@ def split_sections(script: str) -> list[tuple[str, str]]:
 
 
 def summarize(text: str, limit: int = 72) -> str:
-    clean = re.sub(r"\s+", "", text)
+    lines = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if re.search(r"^(if|elif|else|while|for)\b|=|_{2,}|\(|\)", stripped) and len(stripped) < 120:
+            continue
+        lines.append(stripped)
+    clean = re.sub(r"\s+", "", "".join(lines) or text)
     return clean[:limit] + ("..." if len(clean) > limit else "")
 
 
@@ -75,14 +211,43 @@ def yaml_string(text: str) -> str:
     return json.dumps(text, ensure_ascii=False)
 
 
-def choose_layout(text: str) -> str:
+def choose_layout(text: str, style: str = "brand") -> str:
+    if style == "explainer-sketch":
+        for pattern, layout, _ in EXPLAINER_LAYOUT_RULES:
+            if re.search(pattern, text, re.IGNORECASE):
+                return layout
+        return "Conveyor Split"
+    if re.search(r"三层|层次|Agent loop|harness", text, re.IGNORECASE):
+        return "Black Box Reveal"
+    if re.search(r"错误也会闭环|错误状态|状态污染|反馈循环|写入状态", text, re.IGNORECASE):
+        return "Guardrail Pit"
+    if re.search(r"四道|四个|不是所有任务|值得闭环|是否值得|适合 Loop|反馈能不能", text, re.IGNORECASE):
+        return "Guardrail Pit"
+    if re.search(r"七个|七步|读取状态|选择工作|写回|路由或停止|任务级 Loop", text, re.IGNORECASE):
+        return "Validation Loop"
     for pattern, layout, _ in LAYOUT_RULES:
         if re.search(pattern, text, re.IGNORECASE):
             return layout
     return "Black Box Reveal"
 
 
+def is_forced_layout(text: str) -> bool:
+    return bool(
+        re.search(
+            r"三层|Agent loop|harness|七个|七步|读取状态|选择工作|写回|路由或停止|任务级 Loop|"
+            r"错误也会闭环|错误状态|状态污染|反馈循环|写入状态|四道|不是所有任务|值得闭环|是否值得|适合 Loop|反馈能不能|"
+            r"编织|同一个表达|重新表达|第三条路|两条路|模仿|叛逃|选边|标签|误解|父母的名字|是谁的孩子|是谁的女儿|"
+            r"依赖|消费|怎么用|终点|起点|共处|不是互斥|支持|和声|飞吻|侧台",
+            text,
+            re.IGNORECASE,
+        )
+    )
+
+
 def action_for_layout(layout: str) -> str:
+    for _, candidate, action in EXPLAINER_LAYOUT_RULES:
+        if candidate == layout:
+            return action
     for _, candidate, action in LAYOUT_RULES:
         if candidate == layout:
             return action
@@ -100,9 +265,88 @@ def pick_sections(sections: list[tuple[str, str]], max_shots: int) -> list[tuple
     return [(title, body) for _, _, title, body in chosen]
 
 
-def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[str], fmt: str) -> str:
+def score_segment(segment: ScriptSegment) -> int:
+    text = segment.raw_title + segment.body
+    keywords = "问题|答案|关键|但|真正|区别|风险|工作流|革命|不是|而是|所以|结尾|概念|结构|机制|选择|改写|边界|判断|验证|循环|Loop"
+    score = len(re.findall(keywords, text, re.IGNORECASE))
+    if segment.role == "B":
+        score -= 6
+    if re.search(r"钩子|开头|结尾|边界|思想核心|现实机制|反方", segment.title):
+        score += 2
+    return score
+
+
+def pick_segments(segments: list[ScriptSegment], max_shots: int) -> list[ScriptSegment]:
+    candidates = [segment for segment in segments if segment.role == "S"]
+    scored = [(score_segment(segment), segment.index, segment) for segment in candidates]
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    chosen = sorted(scored[:max_shots], key=lambda item: item[1])
+    return [segment for _, _, segment in chosen]
+
+
+def choose_style_for_segment(segment: ScriptSegment, requested_style: str) -> str:
+    if requested_style != "auto":
+        return requested_style
+    text = segment.raw_title + segment.body
+    if re.search(r"概念|结构|底层|机制|区别|判断|风险|边界|流程|工作流|验证|循环|Loop|不是|而是|第三条路|误解|标签|怎么用|依赖|消费|改写", text, re.IGNORECASE):
+        return "explainer-sketch"
+    if re.search(r"钩子|结尾|飞吻|支持|共处|人物|舞台|情绪|怀旧|音乐|编织|父亲|女儿", text):
+        return "brand"
+    return "explainer-sketch"
+
+
+def visual_treatment_for_segment(segment: ScriptSegment, selected: bool, style: str) -> str:
+    if segment.role == "B":
+        return "quote-card-or-overlay"
+    if selected:
+        return style
+    return "subtitle-or-no-image"
+
+
+def timing_for_segment(segment: ScriptSegment, selected: bool) -> str:
+    if segment.role == "B":
+        return "hold_during_quote"
+    if selected:
+        return "sync_with_voiceover_anchor"
+    return "keep_voiceover_primary"
+
+
+def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[str], fmt: str, style: str) -> str:
     orientation = "16:9 horizontal" if fmt == "16x9" else "9:16 vertical"
     safe = "Leave quiet blank space on the right side." if fmt == "16x9" else "Keep safe blank space at the top and bottom for subtitles."
+    if style == "explainer-sketch":
+        return textwrap.dedent(
+            f"""\
+            Generate one standalone Mr.Ai whiteboard explanatory sketch for the AI 闲僧 video column.
+
+            Format:
+            {orientation}. Clean white background with generous empty space for later subtitles and video overlays.
+
+            Brand character:
+            Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a tiny yellow brand accent. Draw him small, about 10-18% of the canvas in 16:9 or 12-22% in 9:16, as the person performing the explanatory action. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+
+            Visual style:
+            Hand-drawn whiteboard explanation, thin black marker lines, sparse props, rough human sketch feeling, no polished render, no glossy shading, no full scene background. Use mostly unfilled black line art. Use blue only for Mr.Ai's shirt or the main process line, yellow only for one small highlight, red only for warnings. Avoid large filled color areas. The image should feel closer to a simple explanatory sketch than a finished poster.
+
+            Theme:
+            {title}
+
+            Core idea:
+            {summary}
+
+            Structure type:
+            {layout}
+
+            Composition:
+            {action} Use one physical metaphor only. Use thin arrows or a single route line if needed. {safe}
+
+            Short Chinese labels:
+            {' / '.join(labels)}
+
+            Constraints:
+            One image explains only one core idea. Prefer blank label cards when exact text is not required. If labels are used, use at most 2-4 short Chinese labels on large blank signs. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+            """
+        )
     return textwrap.dedent(
         f"""\
         Generate one standalone Mr.Ai brand illustration for the AI 闲僧 video column.
@@ -137,7 +381,7 @@ def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[
     )
 
 
-def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
+def write_package(script: str, out: Path, title: str, max_shots: int, style: str) -> None:
     out.mkdir(parents=True, exist_ok=True)
     (out / "16x9").mkdir(exist_ok=True)
     (out / "9x16").mkdir(exist_ok=True)
@@ -145,15 +389,35 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
     (out / "9x16" / ".gitkeep").write_text("", encoding="utf-8")
     (out / "source-script.md").write_text(script.strip() + "\n", encoding="utf-8")
 
-    sections = split_sections(script)
-    chosen = pick_sections(sections, max_shots)
+    segments = parse_script_segments(script)
+    chosen_segments = pick_segments(segments, max_shots)
+    chosen_ids = {segment.segment_id for segment in chosen_segments}
 
-    shot_lines = ["# Shot List", "", f"- Topic: {title}", "- Status: generated by `mrai gen`, review before production", ""]
-    prompt_lines = ["# Image Prompts", "", "These prompts are a first-pass scaffold. Review and tighten before production image generation.", ""]
+    shot_lines = ["# Shot List", "", f"- Topic: {title}", f"- Style preset: {style}", "- Status: generated by `mrai gen`, review before production", ""]
+    prompt_lines = ["# Image Prompts", "", "These prompts are a first-pass scaffold. Review and tighten before production image generation.", f"Style preset: `{style}`", ""]
     overlay_lines = ["# Optional Remotion Overlay Notes", ""]
+    timeline_lines = [
+        "# Timeline Plan",
+        "",
+        f"- Topic: {title}",
+        f"- Style preset: {style}",
+        "- Purpose: keep voiceover meaning, image choice, overlay text, and timing aligned.",
+        "",
+    ]
+    audio_visual_map = {
+        "topic": title,
+        "style_preset": style,
+        "segments": [],
+        "shots": [],
+    }
 
     used_layouts: dict[str, int] = {}
-    fallback_layouts = [
+    brand_fallback_layouts = [
+        "Reweaving Loom",
+        "Third Path",
+        "Label Frame",
+        "Use vs Rewrite",
+        "Coexistence Stage",
         "Before/After Desk",
         "Toolchain Thread",
         "Guardrail Pit",
@@ -161,16 +425,83 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
         "Black Box Reveal",
         "Evidence Scale",
     ]
+    explainer_fallback_layouts = [
+        "Third Path",
+        "Label Frame",
+        "Use vs Rewrite",
+        "Checkpoint Rope",
+        "Feedback Leak",
+        "Decision Gates",
+        "Nested Rings",
+        "Evidence Clamp",
+        "Conveyor Split",
+    ]
 
-    for idx, (section_title, body) in enumerate(chosen, start=1):
-        layout = choose_layout(section_title + body)
-        if used_layouts.get(layout, 0) >= 2:
-            layout = next((candidate for candidate in fallback_layouts if used_layouts.get(candidate, 0) == 0), layout)
-        used_layouts[layout] = used_layouts.get(layout, 0) + 1
-        labels = LABELS_BY_LAYOUT.get(layout, ["概念", "动作", "结果"])
+    for segment in segments:
+        shot_style = choose_style_for_segment(segment, style)
+        selected = segment.segment_id in chosen_ids
+        treatment = visual_treatment_for_segment(segment, selected, shot_style)
+        timing = timing_for_segment(segment, selected)
+        summary = summarize(segment.body, 80)
+        overlay_text = summary[:28]
+        timeline_lines.extend(
+            [
+                f"## {segment.segment_id} · {segment.title}",
+                "",
+                f"- Role: {'host voiceover' if segment.role == 'S' else 'quoted source'}",
+                f"- Visual treatment: {treatment}",
+                f"- Timing: {timing}",
+                f"- Voiceover anchor: {summary}",
+                f"- Overlay text candidate: {overlay_text}",
+                "- Note: B segments should preserve quoted meaning; prefer quote cards or overlays instead of metaphorical rewriting." if segment.role == "B" else "- Note: Use an image only if it reduces explanation time; otherwise let voiceover and subtitles lead.",
+                "",
+            ]
+        )
+        audio_visual_map["segments"].append(
+            {
+                "segment_id": segment.segment_id,
+                "role": "host_voiceover" if segment.role == "S" else "quoted_source",
+                "title": segment.title,
+                "voiceover_summary": summary,
+                "selected_for_image": selected,
+                "visual_treatment": treatment,
+                "timing": timing,
+                "overlay_text_candidate": overlay_text,
+            }
+        )
+
+    for idx, segment in enumerate(chosen_segments, start=1):
+        section_title = segment.raw_title
+        body = segment.body
+        shot_style = choose_style_for_segment(segment, style)
+        section_text = section_title + body
+        layout = choose_layout(section_text, shot_style)
+        layout_key = f"{shot_style}:{layout}"
+        if not is_forced_layout(section_text) and used_layouts.get(layout_key, 0) >= 2:
+            fallback_layouts = explainer_fallback_layouts if shot_style == "explainer-sketch" else brand_fallback_layouts
+            layout = next((candidate for candidate in fallback_layouts if used_layouts.get(f"{shot_style}:{candidate}", 0) == 0), layout)
+            layout_key = f"{shot_style}:{layout}"
+        used_layouts[layout_key] = used_layouts.get(layout_key, 0) + 1
+        label_map = EXPLAINER_LABELS_BY_LAYOUT if shot_style == "explainer-sketch" else LABELS_BY_LAYOUT
+        labels = label_map.get(layout, ["概念", "动作", "结果"])
         action = action_for_layout(layout)
-        shot_id = f"{idx:02d}-{slugify(section_title)[:48]}"
+        shot_id = f"{idx:02d}-{segment.segment_id.lower()}-{slugify(segment.title)[:42]}"
         summary = summarize(body)
+        audio_visual_map["shots"].append(
+            {
+                "shot_id": shot_id,
+                "segment_id": segment.segment_id,
+                "segment_role": "host_voiceover",
+                "style_preset": shot_style,
+                "structure_type": layout,
+                "timing": "sync_with_voiceover_anchor",
+                "voiceover_summary": summary,
+                "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+                "mr_ai_action": action,
+                "short_labels": labels,
+                "overlay_text_candidate": summary[:28],
+            }
+        )
 
         shot_lines.extend(
             [
@@ -179,10 +510,14 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
                 "```yaml",
                 f"id: {shot_id}",
                 f"script_position: {section_title}",
+                f"script_segment: {segment.segment_id}",
+                "segment_role: host_voiceover",
                 f"voiceover_summary: {yaml_string(summary)}",
                 "visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.",
                 "format: both",
                 f"structure_type: {layout}",
+                f"style_preset: {shot_style}",
+                "image_timing: sync_with_voiceover_anchor",
                 f"mr_ai_action: {action}",
                 f"main_metaphor: {layout}",
                 f"short_labels: {json.dumps(labels, ensure_ascii=False)}",
@@ -200,13 +535,13 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
                 "### 16:9",
                 "",
                 "```text",
-                prompt_for(section_title, summary, layout, action, labels, "16x9").strip(),
+                prompt_for(section_title, summary, layout, action, labels, "16x9", shot_style).strip(),
                 "```",
                 "",
                 "### 9:16",
                 "",
                 "```text",
-                prompt_for(section_title, summary, layout, action, labels, "9x16").strip(),
+                prompt_for(section_title, summary, layout, action, labels, "9x16", shot_style).strip(),
                 "```",
                 "",
             ]
@@ -231,6 +566,7 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
 
         - Character consistency: pending generated images.
         - Concept clarity: review every shot before generation.
+        - Timeline fit: check `timeline-plan.md` before image generation.
         - Text safety: prefer blank label cards or 1-3 short labels.
         - Format safety: both 16:9 and 9:16 prompts created.
         - Brand fit: pending generated images.
@@ -240,6 +576,8 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
         - This CLI uses deterministic heuristics; an agent should refine the shot choices.
         - Chinese labels may be duplicated or corrupted by image models.
         - Workflow layouts can drift toward formal PPT diagrams.
+        - Explainer-sketch layouts can drift back into polished brand posters if Mr.Ai is too large or the props are too detailed.
+        - S/B parsing is deterministic; review whether B segments should be quote cards, overlays, or skipped.
         """
     )
 
@@ -250,14 +588,17 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
         ## How to use this package
 
         1. Review `shot-list.md`.
-        2. Tighten the best 2-3 prompts in `image-prompts.md`.
-        3. Generate only 2-3 images for the first validation.
-        4. Record usable images, failures, and rule changes here.
+        2. Review `timeline-plan.md` and confirm the selected images match the voiceover segments.
+        3. Tighten the best 2-3 prompts in `image-prompts.md`.
+        4. Generate only 2-3 images for the first validation.
+        5. Record usable images, failures, and rule changes here.
 
         ## Review questions
 
         - Did Mr.Ai keep cap, mustache, blue clothing, and yellow accent?
         - Did each image explain one idea?
+        - Did each image appear at the right voiceover moment?
+        - Were B quote segments preserved instead of distorted into new claims?
         - Did text need to move to post-production?
         - Which layout pattern worked best?
         """
@@ -265,6 +606,8 @@ def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
 
     (out / "shot-list.md").write_text("\n".join(shot_lines), encoding="utf-8")
     (out / "image-prompts.md").write_text("\n".join(prompt_lines), encoding="utf-8")
+    (out / "timeline-plan.md").write_text("\n".join(timeline_lines), encoding="utf-8")
+    (out / "audio-visual-map.json").write_text(json.dumps(audio_visual_map, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (out / "remotion-overlay-notes.md").write_text("\n".join(overlay_lines), encoding="utf-8")
     (out / "qa-report.md").write_text(qa, encoding="utf-8")
     (out / "validation-notes.md").write_text(validation, encoding="utf-8")
@@ -278,11 +621,17 @@ def main() -> int:
     gen.add_argument("--out", required=True, help="Output directory.")
     gen.add_argument("--title", default="Mr.Ai validation task", help="Task title.")
     gen.add_argument("--max-shots", type=int, default=5, help="Maximum shot concepts.")
+    gen.add_argument(
+        "--style",
+        choices=["brand", "explainer-sketch", "auto"],
+        default="brand",
+        help="Visual preset: brand for polished Mr.Ai illustrations, explainer-sketch for xiaohei-like whiteboard explanations, auto for per-segment recommendations.",
+    )
 
     args = parser.parse_args()
     if args.command == "gen":
         script = read_input(args.input)
-        write_package(script, Path(args.out), args.title, max(1, args.max_shots))
+        write_package(script, Path(args.out), args.title, max(1, args.max_shots), args.style)
         print(f"Wrote Mr.Ai package to {args.out}")
         return 0
     return 1
