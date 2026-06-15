@@ -26,6 +26,7 @@ Start with:
 Read when needed:
 
 - `references/composition-patterns.md` for choosing the visual structure.
+- `references/cli-usage.md` when the user wants command-line or batch workflow integration.
 - `references/delivery-spec.md` for task folder layout.
 - `references/first-validation-protocol.md` when preparing a handoff to another production agent.
 - `references/remotion-optional-notes.md` only when the user wants video overlay or Remotion notes.

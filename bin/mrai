@@ -1,0 +1,292 @@
+#!/usr/bin/env python3
+"""Small CLI helper for Mr.Ai illustration packages.
+
+The CLI is intentionally lightweight: it creates a structured validation package
+from a script, proposes shot anchors with deterministic heuristics, and writes
+prompt files for agents or image-generation tools to refine.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import textwrap
+from pathlib import Path
+
+
+LAYOUT_RULES = [
+    ("可靠|hallucinate|幻觉|边界|风险|出错|提前识别|规避", "Guardrail Pit", "Mr.Ai places a yellow guardrail before a red risk pit."),
+    ("工作流|整合|组织方式|工具|普通人|红利|用的人|赚钱方式", "Toolchain Thread", "Mr.Ai threads a blue line through small tool blocks."),
+    ("重新定义|岗位|工作|结构|职业|内涵", "Black Box Reveal", "Mr.Ai opens a work-definition box and reveals changing role cards."),
+    ("情绪|恐惧|期待|公众|曲线|欢迎", "Mini Comic Correction", "Mr.Ai compares two small emotion panels."),
+    ("工业革命|AI革命|像|不像|对比|重演", "Before/After Desk", "Mr.Ai moves a card from an old machine desk to an AI workflow desk."),
+    ("问题|答案|结尾|姿态|选择", "Evidence Scale", "Mr.Ai weighs two choice cards on a small scale."),
+]
+
+
+LABELS_BY_LAYOUT = {
+    "Guardrail Pit": ["风险", "边界", "验证"],
+    "Before/After Desk": ["过去", "现在", "变化"],
+    "Toolchain Thread": ["工具", "工作流", "结果"],
+    "Black Box Reveal": ["黑盒", "工作", "重写"],
+    "Mini Comic Correction": ["期待", "恐惧", "反转"],
+    "Evidence Scale": ["选择", "行动", "判断"],
+}
+
+
+def read_input(value: str) -> str:
+    path = Path(value).expanduser()
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    return value
+
+
+def slugify(text: str) -> str:
+    text = text.strip().lower()
+    text = re.sub(r"[^\w\u4e00-\u9fff]+", "-", text)
+    text = re.sub(r"-+", "-", text).strip("-")
+    return text or "mr-ai-task"
+
+
+def split_sections(script: str) -> list[tuple[str, str]]:
+    matches = list(re.finditer(r"(?m)^(#{1,4}\s*)?(S\d+[^。\n]*|###\s*S\d+[^。\n]*|##\s*S\d+[^。\n]*)\n", script))
+    if not matches:
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", script) if p.strip()]
+        return [(f"Section {i+1}", p) for i, p in enumerate(paragraphs)]
+
+    sections: list[tuple[str, str]] = []
+    for i, match in enumerate(matches):
+        start = match.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(script)
+        title = re.sub(r"^#+\s*", "", match.group(0)).strip()
+        body = script[start:end].strip()
+        if body:
+            sections.append((title, body))
+    return sections
+
+
+def summarize(text: str, limit: int = 72) -> str:
+    clean = re.sub(r"\s+", "", text)
+    return clean[:limit] + ("..." if len(clean) > limit else "")
+
+
+def yaml_string(text: str) -> str:
+    return json.dumps(text, ensure_ascii=False)
+
+
+def choose_layout(text: str) -> str:
+    for pattern, layout, _ in LAYOUT_RULES:
+        if re.search(pattern, text, re.IGNORECASE):
+            return layout
+    return "Black Box Reveal"
+
+
+def action_for_layout(layout: str) -> str:
+    for _, candidate, action in LAYOUT_RULES:
+        if candidate == layout:
+            return action
+    return "Mr.Ai explains the concept through one small physical action."
+
+
+def pick_sections(sections: list[tuple[str, str]], max_shots: int) -> list[tuple[str, str]]:
+    scored = []
+    keywords = "问题|答案|关键|但|真正|区别|风险|工作流|革命|不是|而是|所以|结尾"
+    for index, (title, body) in enumerate(sections):
+        score = len(re.findall(keywords, title + body))
+        scored.append((score, index, title, body))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    chosen = sorted(scored[:max_shots], key=lambda item: item[1])
+    return [(title, body) for _, _, title, body in chosen]
+
+
+def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[str], fmt: str) -> str:
+    orientation = "16:9 horizontal" if fmt == "16x9" else "9:16 vertical"
+    safe = "Leave quiet blank space on the right side." if fmt == "16x9" else "Keep safe blank space at the top and bottom for subtitles."
+    return textwrap.dedent(
+        f"""\
+        Generate one standalone Mr.Ai brand illustration for the AI 闲僧 video column.
+
+        Format:
+        {orientation}. Clean composition with safe space for later subtitles and video overlays.
+
+        Brand character:
+        Mr.Ai is a friendly middle-aged AI explainer with a baseball cap, gray/dark mustache, rounded cartoon face, blue shirt, thick dark outline, and yellow brand accent. He must perform the core conceptual action, not stand as decoration. Keep him warm, calm, curious, and practical. Do not make him a robot, monk, child, black silhouette, or formal business presenter.
+
+        Visual style:
+        Colored cartoon brand IP plus clean explanatory sketch logic. White or very light background, simple conceptual props, restrained blue/yellow brand color, dark outlines, small red warnings only when needed.
+
+        Theme:
+        {title}
+
+        Core idea:
+        {summary}
+
+        Structure type:
+        {layout}
+
+        Composition:
+        {action} Use blank label cards or very short labels only. {safe}
+
+        Short Chinese labels:
+        {' / '.join(labels)}
+
+        Constraints:
+        One image explains only one core idea. Use at most 1-3 short Chinese labels, and do not repeat the same label on multiple objects. If exact Chinese text is important, leave clean blank label cards or label spaces so text can be added later in video editing. Do not write a long title, paragraph, subtitle, or structure type on the image. Do not make it a PPT infographic, dense architecture diagram, stock vector, generic mascot poster, realistic UI screenshot, sci-fi interface, or children's illustration. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+        """
+    )
+
+
+def write_package(script: str, out: Path, title: str, max_shots: int) -> None:
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "16x9").mkdir(exist_ok=True)
+    (out / "9x16").mkdir(exist_ok=True)
+    (out / "16x9" / ".gitkeep").write_text("", encoding="utf-8")
+    (out / "9x16" / ".gitkeep").write_text("", encoding="utf-8")
+    (out / "source-script.md").write_text(script.strip() + "\n", encoding="utf-8")
+
+    sections = split_sections(script)
+    chosen = pick_sections(sections, max_shots)
+
+    shot_lines = ["# Shot List", "", f"- Topic: {title}", "- Status: generated by `mrai gen`, review before production", ""]
+    prompt_lines = ["# Image Prompts", "", "These prompts are a first-pass scaffold. Review and tighten before production image generation.", ""]
+    overlay_lines = ["# Optional Remotion Overlay Notes", ""]
+
+    used_layouts: dict[str, int] = {}
+    fallback_layouts = [
+        "Before/After Desk",
+        "Toolchain Thread",
+        "Guardrail Pit",
+        "Mini Comic Correction",
+        "Black Box Reveal",
+        "Evidence Scale",
+    ]
+
+    for idx, (section_title, body) in enumerate(chosen, start=1):
+        layout = choose_layout(section_title + body)
+        if used_layouts.get(layout, 0) >= 2:
+            layout = next((candidate for candidate in fallback_layouts if used_layouts.get(candidate, 0) == 0), layout)
+        used_layouts[layout] = used_layouts.get(layout, 0) + 1
+        labels = LABELS_BY_LAYOUT.get(layout, ["概念", "动作", "结果"])
+        action = action_for_layout(layout)
+        shot_id = f"{idx:02d}-{slugify(section_title)[:48]}"
+        summary = summarize(body)
+
+        shot_lines.extend(
+            [
+                f"## {shot_id}",
+                "",
+                "```yaml",
+                f"id: {shot_id}",
+                f"script_position: {section_title}",
+                f"voiceover_summary: {yaml_string(summary)}",
+                "visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.",
+                "format: both",
+                f"structure_type: {layout}",
+                f"mr_ai_action: {action}",
+                f"main_metaphor: {layout}",
+                f"short_labels: {json.dumps(labels, ensure_ascii=False)}",
+                "prompt_status: draft",
+                "qa_status: pending review",
+                "```",
+                "",
+            ]
+        )
+
+        prompt_lines.extend(
+            [
+                f"## {shot_id}",
+                "",
+                "### 16:9",
+                "",
+                "```text",
+                prompt_for(section_title, summary, layout, action, labels, "16x9").strip(),
+                "```",
+                "",
+                "### 9:16",
+                "",
+                "```text",
+                prompt_for(section_title, summary, layout, action, labels, "9x16").strip(),
+                "```",
+                "",
+            ]
+        )
+
+        overlay_lines.extend(
+            [
+                f"## {shot_id}",
+                "",
+                f"- Overlay text candidate: {summary[:28]}",
+                "- Add exact Chinese text in post-production if the generated bitmap text drifts.",
+                "- Keep subtitles outside the main character and prop area.",
+                "",
+            ]
+        )
+
+    qa = textwrap.dedent(
+        """\
+        # QA Report
+
+        ## Package-level checks
+
+        - Character consistency: pending generated images.
+        - Concept clarity: review every shot before generation.
+        - Text safety: prefer blank label cards or 1-3 short labels.
+        - Format safety: both 16:9 and 9:16 prompts created.
+        - Brand fit: pending generated images.
+
+        ## Known risks
+
+        - This CLI uses deterministic heuristics; an agent should refine the shot choices.
+        - Chinese labels may be duplicated or corrupted by image models.
+        - Workflow layouts can drift toward formal PPT diagrams.
+        """
+    )
+
+    validation = textwrap.dedent(
+        """\
+        # Validation Notes
+
+        ## How to use this package
+
+        1. Review `shot-list.md`.
+        2. Tighten the best 2-3 prompts in `image-prompts.md`.
+        3. Generate only 2-3 images for the first validation.
+        4. Record usable images, failures, and rule changes here.
+
+        ## Review questions
+
+        - Did Mr.Ai keep cap, mustache, blue clothing, and yellow accent?
+        - Did each image explain one idea?
+        - Did text need to move to post-production?
+        - Which layout pattern worked best?
+        """
+    )
+
+    (out / "shot-list.md").write_text("\n".join(shot_lines), encoding="utf-8")
+    (out / "image-prompts.md").write_text("\n".join(prompt_lines), encoding="utf-8")
+    (out / "remotion-overlay-notes.md").write_text("\n".join(overlay_lines), encoding="utf-8")
+    (out / "qa-report.md").write_text(qa, encoding="utf-8")
+    (out / "validation-notes.md").write_text(validation, encoding="utf-8")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="mrai", description="Create Mr.Ai illustration packages.")
+    sub = parser.add_subparsers(dest="command", required=True)
+    gen = sub.add_parser("gen", help="Generate a prompt package from a script path or inline text.")
+    gen.add_argument("input", help="Script file path or inline script text.")
+    gen.add_argument("--out", required=True, help="Output directory.")
+    gen.add_argument("--title", default="Mr.Ai validation task", help="Task title.")
+    gen.add_argument("--max-shots", type=int, default=5, help="Maximum shot concepts.")
+
+    args = parser.parse_args()
+    if args.command == "gen":
+        script = read_input(args.input)
+        write_package(script, Path(args.out), args.title, max(1, args.max_shots))
+        print(f"Wrote Mr.Ai package to {args.out}")
+        return 0
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

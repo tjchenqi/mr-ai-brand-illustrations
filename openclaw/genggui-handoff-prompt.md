@@ -16,9 +16,10 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 4. agent-pack/visual-style-dna.md
 5. agent-pack/script-to-shot-workflow.md
 6. agent-pack/layout-library.md
-7. agent-pack/prompt-template.md
-8. agent-pack/qa-checklist.md
-9. agent-pack/first-validation-protocol.md
+7. agent-pack/cli-usage.md
+8. agent-pack/prompt-template.md
+9. agent-pack/qa-checklist.md
+10. agent-pack/first-validation-protocol.md
 
 任务：
 根据我提供的一篇 AI 闲僧口播稿，输出一套 Mr.Ai 配图验证包。
@@ -43,5 +44,10 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 - 默认同时规划 16:9 和 9:16。
 - 实际生成图片时先生成 2-3 张，不要一次生成完整大批量。
 - 最后明确记录：哪些图可用、哪些要重生成、哪些规则需要修改。
-```
 
+如果你在本地运行仓库，可以先用：
+
+bin/mrai gen path/to/script.md --out samples/<topic-slug> --title "<topic>" --max-shots 5
+
+然后再人工/agent 修订生成的 shot-list 和 image-prompts。
+```
