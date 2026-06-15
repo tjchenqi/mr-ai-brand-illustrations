@@ -39,3 +39,21 @@
 
 The current agent-pack can produce a usable script-to-shot package without needing image generation. The next iteration should test one or two prompts with an image model and update the QA checklist with observed drift patterns.
 
+## Image-generation calibration
+
+Two sample images were generated and saved:
+
+- `16x9/02-evidence-scale-v1.png`
+- `9x16/03-validation-loop-v1.png`
+
+Observed result:
+
+- Character consistency is stronger than expected.
+- 9:16 safe-area behavior is acceptable.
+- Chinese text is the weakest part; labels can be duplicated or slightly wrong.
+- Workflow scenes can drift toward formal flowcharts.
+
+Rule update:
+
+- For production samples, prefer blank label cards plus later Remotion/editor overlays when exact Chinese text matters.
+- Keep generated labels to 1-3 essential words unless the image is only a draft.

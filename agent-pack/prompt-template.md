@@ -30,7 +30,7 @@ Short Chinese labels:
 {label1} / {label2} / {label3} / {optional label4} / {optional label5}
 
 Constraints:
-One image explains only one core idea. Use at most 3-5 short Chinese labels. Do not write a long title, paragraph, subtitle, or structure type on the image. Do not make it a PPT infographic, dense architecture diagram, stock vector, generic mascot poster, realistic UI screenshot, sci-fi interface, or children's illustration. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
+One image explains only one core idea. Use at most 3-5 short Chinese labels, and do not repeat the same label on multiple objects. If exact Chinese text is important, leave clean blank label cards or label spaces so text can be added later in video editing. Do not write a long title, paragraph, subtitle, or structure type on the image. Do not make it a PPT infographic, dense architecture diagram, stock vector, generic mascot poster, realistic UI screenshot, sci-fi interface, or children's illustration. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
 ## 16:9 notes
@@ -41,3 +41,11 @@ Use wider left-to-right flow when explaining a process. Leave quiet space in one
 
 Use stacked vertical flow. Keep Mr.Ai and the main metaphor in the middle 70% of the frame. Avoid putting essential labels near the top or bottom edges.
 
+## Text accuracy notes
+
+Image models may distort short Chinese labels. For production-critical text, prefer one of these strategies:
+
+- Generate blank label cards and add text in Remotion or editing.
+- Use only 1-3 essential labels inside the image.
+- Avoid visually similar or easily confused labels such as `回答` if the generated model tends to corrupt them.
+- Put the exact overlay text in `remotion-overlay-notes.md` instead of relying on the bitmap.
