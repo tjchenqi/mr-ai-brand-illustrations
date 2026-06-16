@@ -75,7 +75,7 @@ bin/mrai run <job_id>
 bin/mrai query <job_id>
 ```
 
-该入口使用本地 `.mrai-jobs/`，第一版不启动 HTTP 服务。`mmx` 后端会默认使用 `assets/brand-references/MrAi_logo.png` 作为 Mr.Ai 角色参考图，并把中文标签留给后期叠字。详见 `agent-pack/b-records-interface.md`。
+该入口使用本地 `.mrai-jobs/`，第一版不启动 HTTP 服务。`mmx` 后端会默认使用 `assets/brand-references/MrAi_character_ref.png` 作为 Mr.Ai 角色参考图，并把中文标签留给后期叠字。详见 `agent-pack/b-records-interface.md`。
 
 可用 override：
 

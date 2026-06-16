@@ -1,0 +1,36 @@
+{
+  "records": [
+    {
+      "s_id": "S01",
+      "audience_takeaway": "Baseline: test whether subject reference preserves Mr.Ai in a simple standing pose.",
+      "visual_intent": "Mr.Ai standing, blank white background, full body visible, neutral pose.",
+      "mode": "brand",
+      "composition": "full_frame_centered",
+      "format": "1x1"
+    },
+    {
+      "s_id": "S02",
+      "audience_takeaway": "Baseline: test whether subject reference preserves Mr.Ai while pointing.",
+      "visual_intent": "Mr.Ai pointing forward, blank white background, half body visible.",
+      "mode": "brand",
+      "composition": "character_mid_frame",
+      "format": "3x4"
+    },
+    {
+      "s_id": "S03",
+      "audience_takeaway": "Baseline: test whether subject reference preserves Mr.Ai while holding a blank shape.",
+      "visual_intent": "Mr.Ai holding a blank white rectangle, blank white background, half body visible.",
+      "mode": "brand",
+      "composition": "character_mid_frame",
+      "format": "3x4"
+    },
+    {
+      "s_id": "S04",
+      "audience_takeaway": "Compare whether compact style keywords improve logo-like identity.",
+      "visual_intent": "Mr.Ai standing on blank white background. rounded brand mascot, simple logo-like character, thick clean outline, not anime, not tall slim body.",
+      "mode": "brand",
+      "composition": "full_frame_centered",
+      "format": "1x1"
+    }
+  ]
+}

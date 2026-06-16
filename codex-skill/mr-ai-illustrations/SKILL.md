@@ -31,6 +31,10 @@ Read when needed:
 - `references/treatment-rules.json` for S/B scoring, quote handling, and inline override syntax.
 - `references/audio-visual-map.schema.json` for the downstream JSON contract.
 - `references/b-records-interface.md` for B-side records and local image jobs.
+- `references/character-reference-spec.md` for default subject-reference asset requirements.
+- `references/reviewed-results-spec.md` for B-side manual visual QA handoff.
+- `references/pose-library.json` for the future Remotion pose-library schema.
+- `references/v1.1.3-test-plan.md` for MiniMax subject-reference boundary validation.
 - `references/composition-patterns.md` for choosing the visual structure.
 - `references/cli-usage.md` when the user wants command-line or batch workflow integration.
 - `references/delivery-spec.md` for task folder layout.

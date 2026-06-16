@@ -57,9 +57,10 @@ Optional per record:
 - `labels`: Chinese labels for post-production overlay. These are not rendered inside the bitmap.
 - `key_elements`: elements that should appear.
 - `negative_elements`: elements to avoid.
-- `reference_image`: Mr.Ai reference image path. If omitted, the CLI uses `assets/brand-references/MrAi_logo.png`.
-- `format`: `9x16` or `16x9`. V1.1.2 does not accept `both`; submit separate records instead.
+- `reference_image`: Mr.Ai reference image path. If omitted, the CLI uses `assets/brand-references/MrAi_character_ref.png` when present, then falls back to `assets/brand-references/MrAi_logo.png`.
+- `format`: `9x16`, `16x9`, `1x1`, or `3x4`. V1.1.3 does not accept `both`; submit separate records instead.
 - `beat_ref`: B-side beat id. The CLI preserves it but does not calculate timing.
+- `composition`: provider-facing composition hint. This is separate from `safe_areas`; it influences image generation, while `safe_areas` is the Remotion output contract.
 
 `reference_image` is resolved during `submit`, written into the job snapshot, and included in the cache key with an image hash. If the path does not exist, `submit` fails with `invalid_record: reference_image not found` instead of silently generating without a character reference.
 
@@ -107,7 +108,7 @@ Safe areas use normalized 0-1 coordinates:
 {"x": 0.06, "y": 0.78, "w": 0.88, "h": 0.2}
 ```
 
-V1.1.2 uses six templates:
+V1.1.3 uses six templates:
 
 - `left_text_safe`
 - `right_text_safe`
@@ -118,7 +119,7 @@ V1.1.2 uses six templates:
 
 ## Backend Policy
 
-V1.1.2 supports:
+V1.1.3 supports:
 
 - `mock`: offline test provider that writes tiny placeholder PNG files.
 - `mmx`: MiniMax/image-01 provider using `--region cn`.
@@ -126,8 +127,9 @@ V1.1.2 supports:
 The prompt policy is fixed:
 
 - Use `--subject-ref type=character,image=<reference_image>` for MiniMax/image-01 character consistency.
-- If MiniMax rejects subject reference but can still generate without it, the CLI falls back once, writes `qa_status=warning`, and marks `generation_meta.subject_ref_failed=true`.
-- If both the subject-reference call and fallback call fail, the failed result still marks `generation_meta.subject_ref_failed=true` and includes stderr/stdout excerpts in `error_message`.
+- Default fallback policy is hard-fail. If MiniMax rejects subject reference, the record fails and marks `generation_meta.subject_ref_failed=true`.
+- A no-reference fallback can only run when `--allow-no-ref-fallback` is explicitly set. That mode is for diagnostics, not production.
+- Failed provider results include stderr/stdout excerpts in `error_message`.
 - The MiniMax prompt is a compact production prompt. Keep long reasoning, timing, and exact label text in the record fields and downstream manifests rather than relying on the provider prompt.
 - Do not render any text in bitmap images: no Chinese, English, fake text, numbers, UI labels, titles, or subtitles.
 - Put Chinese labels in `overlay_labels`.

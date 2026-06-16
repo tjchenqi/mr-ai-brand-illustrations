@@ -26,9 +26,11 @@ DEFAULT_ROUTING_PATH = REPO_ROOT / "agent-pack" / "visual-routing-rules.json"
 DEFAULT_LAYOUT_LIBRARY_PATH = REPO_ROOT / "agent-pack" / "layout-library.json"
 DEFAULT_TREATMENT_RULES_PATH = REPO_ROOT / "agent-pack" / "treatment-rules.json"
 DEFAULT_AV_SCHEMA_PATH = REPO_ROOT / "agent-pack" / "audio-visual-map.schema.json"
-DEFAULT_REFERENCE_IMAGE_PATH = REPO_ROOT / "assets" / "brand-references" / "MrAi_logo.png"
+DEFAULT_CHARACTER_REFERENCE_PATH = REPO_ROOT / "assets" / "brand-references" / "MrAi_character_ref.png"
+FALLBACK_REFERENCE_IMAGE_PATH = REPO_ROOT / "assets" / "brand-references" / "MrAi_logo.png"
 JOB_STORE_DIRNAME = ".mrai-jobs"
-SUPPORTED_RECORD_FORMATS = {"9x16", "16x9"}
+SUPPORTED_RECORD_FORMATS = {"9x16", "16x9", "1x1", "3x4"}
+FORMAT_ASPECT_RATIOS = {"9x16": "9:16", "16x9": "16:9", "1x1": "1:1", "3x4": "3:4"}
 JOB_STATUSES = {"pending", "running", "completed", "failed"}
 QA_STATUSES = {"pass", "warning", "failed", "needs_human_review"}
 ERROR_CODES = {"provider_missing", "provider_failed", "qa_failed", "invalid_record", "timeout"}
@@ -290,7 +292,7 @@ def validate_records(records: list[dict]) -> list[str]:
                 errors.append(validation_error(f"{label} missing required field {key}"))
         fmt = record.get("format", "9x16")
         if fmt == "both":
-            errors.append(validation_error(f"{label}.format=both is not supported in V1.1; submit one 9x16 or 16x9 record at a time"))
+            errors.append(validation_error(f"{label}.format=both is not supported in V1.1.3; submit one supported format record at a time"))
         elif fmt not in SUPPORTED_RECORD_FORMATS:
             errors.append(validation_error(f"{label}.format must be one of {sorted(SUPPORTED_RECORD_FORMATS)!r}"))
     return errors
@@ -335,7 +337,10 @@ def hash_reference_image(path_value: str | None) -> str | None:
 
 
 def resolve_reference_image(path_value: str | None) -> Path:
-    path = Path(path_value).expanduser() if path_value else DEFAULT_REFERENCE_IMAGE_PATH
+    if path_value:
+        path = Path(path_value).expanduser()
+    else:
+        path = DEFAULT_CHARACTER_REFERENCE_PATH if DEFAULT_CHARACTER_REFERENCE_PATH.exists() else FALLBACK_REFERENCE_IMAGE_PATH
     if not path.is_absolute():
         path = (REPO_ROOT / path).resolve()
     else:
@@ -373,6 +378,13 @@ def safe_area_template_for_record(record: dict) -> str:
     if any(keyword in text for keyword in ["center", "中间", "中心"]):
         return "center_character_safe"
     return "bottom_subtitle_safe"
+
+
+def composition_hint_for_record(record: dict) -> str:
+    composition = str(record.get("composition", "")).strip()
+    if composition:
+        return composition
+    return "character_mid_frame"
 
 
 def normalize_record_defaults(record: dict) -> dict:
@@ -423,20 +435,22 @@ def prompt_for_record(record: dict) -> str:
     orientation = "9:16 vertical" if fmt == "9x16" else "16:9 horizontal"
     mode = record.get("mode", "auto")
     layout = record.get("layout", "auto physical metaphor")
+    composition = composition_hint_for_record(record)
     style_guidance = {
-        "explainer-sketch": "whiteboard sketch, white background, thin black marker, sparse props, rough hand-drawn feel",
-        "brand": "colored cartoon brand IP, white/light background, restrained blue/yellow palette, dark outlines",
+        "explainer-sketch": "whiteboard sketch, white background, thin black marker, sparse props, rough hand-drawn feel, not anime",
+        "brand": "rounded brand mascot, simple logo-like character, white/light background, restrained blue/yellow palette, thick clean outline, not anime",
         "background": "quiet reusable background, large clean overlay space, restrained brand palette",
-        "auto": "colored Mr.Ai brand IP plus sparse explanatory sketch logic, white/light background",
-    }.get(mode, "colored Mr.Ai brand IP plus sparse explanatory sketch logic")
+        "auto": "rounded brand mascot plus sparse explanatory sketch logic, white/light background, thick clean outline, not anime",
+    }.get(mode, "rounded brand mascot plus sparse explanatory sketch logic, not anime")
     prompt = textwrap.dedent(
         f"""\
         Mr.Ai image for AI 闲僧. Format: {orientation}. Mode: {mode}. Layout: {compact_text(layout, 80)}.
+        Composition: {compact_text(composition, 100)}. Place Mr.Ai in the middle third, visible from head to waist or full body as requested, occupying 45-65% of image height. Do not push him to the bottom edge.
         Scene intent: {compact_text(record.get("visual_intent", ""), 260)}
         Audience takeaway: {compact_text(record.get("audience_takeaway", ""), 220)}
         Required elements: {key_elements}.
         Overlay labels are for post-production only: {compact_text(", ".join(labels) if labels else "blank label spaces", 120)}.
-        Character: use the subject reference image as identity source. Preserve Mr.Ai: friendly middle-aged cartoon explainer, rounded face, baseball cap with curved brim, clear dark/gray mustache, blue shirt, yellow brand accent, thick dark outline. Do not redesign him as realistic man, flat-vector generic person, robot, monk, child, or business presenter.
+        Character: use the subject reference image as identity source. Preserve Mr.Ai: compact friendly proportions, rounded face, baseball cap with curved brim, clear dark/gray mustache, blue shirt, yellow brand accent, thick dark outline. Not tall, not slim, not anime, not childlike. Do not redesign him as realistic man, flat-vector generic person, robot, monk, child, or business presenter.
         Style: {style_guidance}. Simple physical metaphor, clean composition, no glossy sci-fi UI.
         Text rule: render NO text of any kind. No Chinese, English, fake letters, numbers, captions, labels, UI text, or pseudo-writing. Leave cards/signs/labels blank for later overlay.
         Avoid: formula, equation, plus-sign formula, PPT infographic, dense architecture diagram, realistic UI screenshot, robot face, {negative_elements}.
@@ -575,7 +589,7 @@ def build_mmx_command(
     seed: int,
     reference_image: str | None = None,
 ) -> list[str]:
-    aspect = "9:16" if fmt == "9x16" else "16:9"
+    aspect = FORMAT_ASPECT_RATIOS.get(fmt, "9:16")
     cmd = [
         "mmx",
         "image",
@@ -598,7 +612,16 @@ def build_mmx_command(
     return cmd
 
 
-def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed: int, timeout_seconds: int, reference_image: str | None = None) -> tuple[Path, bool]:
+def run_mmx_provider(
+    prompt: str,
+    out_dir: Path,
+    out_prefix: str,
+    fmt: str,
+    seed: int,
+    timeout_seconds: int,
+    reference_image: str | None = None,
+    allow_no_ref_fallback: bool = False,
+) -> tuple[Path, bool]:
     if shutil.which("mmx") is None:
         raise FileNotFoundError("mmx CLI not found")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -609,6 +632,8 @@ def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed
     except subprocess.CalledProcessError as first_exc:
         if not reference_image:
             raise MmxProviderError(provider_error_excerpt(first_exc), False) from first_exc
+        if not allow_no_ref_fallback:
+            raise MmxProviderError(f"subject-ref command failed: {provider_error_excerpt(first_exc)}", True) from first_exc
         fallback_cmd = build_mmx_command(prompt, out_dir, out_prefix, fmt, seed, None)
         try:
             subprocess.run(fallback_cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
@@ -670,7 +695,7 @@ def load_results_payload(job: dict) -> dict:
     return load_json_config(path)
 
 
-def submit_job(records_path: Path, out: Path, job_root: Path, backend: str, retries: int, force: bool, timeout_seconds: int) -> dict:
+def submit_job(records_path: Path, out: Path, job_root: Path, backend: str, retries: int, force: bool, timeout_seconds: int, allow_no_ref_fallback: bool) -> dict:
     records_path = records_path.resolve()
     out = out.resolve()
     job_root = job_root.resolve()
@@ -702,6 +727,8 @@ def submit_job(records_path: Path, out: Path, job_root: Path, backend: str, retr
         "retries": max(0, retries),
         "force": force,
         "timeout_seconds": timeout_seconds,
+        "allow_no_ref_fallback": allow_no_ref_fallback,
+        "fallback_policy": "allow-no-ref-fallback" if allow_no_ref_fallback else "hard-fail",
         "records": normalized_records,
         "progress": {"total": len(normalized_records), "completed": 0, "failed": 0, "cached": 0},
         "errors": [],
@@ -758,6 +785,7 @@ def generate_record(job: dict, record: dict, existing_results: list[dict]) -> di
                     seed,
                     int(job.get("timeout_seconds", 1800)),
                     record.get("reference_image"),
+                    bool(job.get("allow_no_ref_fallback", False)),
                 )
                 target = image_dir / result_filename(record["s_id"], version, fmt, produced.suffix.lower().lstrip(".") or "png")
                 if produced != target:
@@ -859,6 +887,7 @@ def query_job(job_dir: Path) -> dict:
         "progress": job.get("progress"),
         "out": job.get("out"),
         "backend": job.get("backend"),
+        "fallback_policy": job.get("fallback_policy"),
         "results": results_payload.get("results", []),
         "remotion_manifest": results_payload.get("remotion_manifest", []),
         "errors": job.get("errors", []),
@@ -1605,6 +1634,11 @@ def main() -> int:
     submit.add_argument("--retries", type=int, default=2, help="Retries per record after the first attempt.")
     submit.add_argument("--force", action="store_true", help="Bypass cache and generate the next image version.")
     submit.add_argument("--timeout-seconds", type=int, default=1800, help="Provider timeout per image.")
+    submit.add_argument(
+        "--allow-no-ref-fallback",
+        action="store_true",
+        help="Allow mmx to retry without subject reference after subject-ref failure. Default is hard-fail.",
+    )
     run_cmd = sub.add_parser("run", help="Run a submitted local job.")
     run_cmd.add_argument("job_id", help="Job id returned by submit.")
     run_cmd.add_argument("--root", default=".", help="Directory containing .mrai-jobs/. Defaults to cwd.")
@@ -1657,11 +1691,24 @@ def main() -> int:
                 args.retries,
                 args.force,
                 args.timeout_seconds,
+                args.allow_no_ref_fallback,
             )
         except (ValueError, json.JSONDecodeError, OSError) as exc:
             print(validation_error(f"invalid_record: {exc}"))
             return 1
-        print(json.dumps({"job_id": job["job_id"], "status": job["status"], "job_root": job["job_root"], "out": job["out"]}, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "job_id": job["job_id"],
+                    "status": job["status"],
+                    "job_root": job["job_root"],
+                    "out": job["out"],
+                    "fallback_policy": job["fallback_policy"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     if args.command == "run":
         job_dir = job_path_for(Path(args.root).expanduser(), args.job_id)

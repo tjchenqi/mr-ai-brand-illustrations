@@ -1,0 +1,43 @@
+{
+  "version": "0.1",
+  "purpose": "Draft schema for a future Mr.Ai pose library used by Remotion layer composition.",
+  "asset_root": "assets/character-poses",
+  "poses": [
+    {
+      "pose_id": "pointing",
+      "asset_path": "assets/character-poses/pointing.png",
+      "use_for": ["directing attention", "explaining a board", "calling out one key idea"],
+      "default_anchor": "left_bottom",
+      "suggested_scale": 0.42,
+      "safe_area_template": "right_text_safe",
+      "remotion_animation": "gentle_slide_in"
+    },
+    {
+      "pose_id": "thinking",
+      "asset_path": "assets/character-poses/thinking.png",
+      "use_for": ["uncertainty", "analysis", "pause before judgment"],
+      "default_anchor": "center_bottom",
+      "suggested_scale": 0.38,
+      "safe_area_template": "top_subtitle_safe",
+      "remotion_animation": "subtle_float"
+    },
+    {
+      "pose_id": "holding-card",
+      "asset_path": "assets/character-poses/holding-card.png",
+      "use_for": ["short label", "quote card", "one takeaway"],
+      "default_anchor": "left_bottom",
+      "suggested_scale": 0.44,
+      "safe_area_template": "right_text_safe",
+      "remotion_animation": "card_pop"
+    },
+    {
+      "pose_id": "explaining",
+      "asset_path": "assets/character-poses/explaining.png",
+      "use_for": ["mechanism", "workflow", "step-by-step explanation"],
+      "default_anchor": "left_center",
+      "suggested_scale": 0.4,
+      "safe_area_template": "right_text_safe",
+      "remotion_animation": "marker_trace"
+    }
+  ]
+}

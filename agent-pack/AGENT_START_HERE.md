@@ -10,7 +10,9 @@ Read in this order:
 4. `script-to-shot-workflow.md`
 5. `cli-usage.md`
 6. `b-records-interface.md`
-7. `qa-checklist.md`
+7. `character-reference-spec.md`
+8. `reviewed-results-spec.md`
+9. `qa-checklist.md`
 
 Run:
 

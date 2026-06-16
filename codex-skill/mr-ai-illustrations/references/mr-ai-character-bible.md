@@ -52,6 +52,8 @@ Bad roles:
 
 Use these only as character references, not as full composition templates:
 
+- `assets/brand-references/MrAi_character_ref.png`
 - `assets/brand-references/MrAi_logo.png`
 - `assets/brand-references/AI_xianseng_cover.jpg`
 
+Use `MrAi_character_ref.png` as the default subject reference for image-to-image jobs. Use the logo for brand QA, not as the main subject reference.

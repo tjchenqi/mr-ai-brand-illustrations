@@ -120,8 +120,10 @@ def main() -> int:
         )
         submitted = json.loads(submit.stdout)
         job_id = submitted["job_id"]
+        assert submitted["fallback_policy"] == "hard-fail"
         pending = json.loads(run("query", job_id, "--root", str(tmp)).stdout)
         assert pending["status"] == "pending"
+        assert pending["fallback_policy"] == "hard-fail"
         assert pending["results"] == []
         assert pending["remotion_manifest"] == []
 
@@ -140,7 +142,7 @@ def main() -> int:
         assert completed["results"][0]["overlay_labels"] == ["判断", "工具", "人"]
         assert "Text rule: render NO text" in completed["results"][0]["generation_meta"]["prompt"]
         assert len(completed["results"][0]["generation_meta"]["prompt"]) <= 1400
-        assert completed["results"][0]["generation_meta"]["reference_image"].endswith("assets/brand-references/MrAi_logo.png")
+        assert completed["results"][0]["generation_meta"]["reference_image"].endswith("assets/brand-references/MrAi_character_ref.png")
         assert completed["results"][0]["generation_meta"]["subject_ref_requested"] is False
         assert completed["results"][0]["qa_status"] == "needs_human_review"
         assert completed["results"][1]["image_path"].endswith("S02_v1_16x9.png")
@@ -209,7 +211,7 @@ printf "fake image" > "$out_dir/${out_prefix}_001.jpg"
             ),
             encoding="utf-8",
         )
-        submit_mmx = run(
+        submit_mmx_hard_fail = run(
             "submit",
             str(mmx_records),
             "--out",
@@ -224,8 +226,34 @@ printf "fake image" > "$out_dir/${out_prefix}_001.jpg"
             "5",
             env=fake_env,
         )
-        mmx_job_id = json.loads(submit_mmx.stdout)["job_id"]
-        mmx_completed = json.loads(run("run", mmx_job_id, "--root", str(tmp), env=fake_env).stdout)
+        mmx_hard_fail_job_id = json.loads(submit_mmx_hard_fail.stdout)["job_id"]
+        mmx_hard_failed = json.loads(run("run", mmx_hard_fail_job_id, "--root", str(tmp), env=fake_env).stdout)
+        mmx_hard_result = mmx_hard_failed["results"][0]
+        assert mmx_hard_result["error_code"] == "provider_failed"
+        assert mmx_hard_result["usable"] is False
+        assert mmx_hard_result["generation_meta"]["subject_ref_requested"] is True
+        assert mmx_hard_result["generation_meta"]["subject_ref_used"] is False
+        assert mmx_hard_result["generation_meta"]["subject_ref_failed"] is True
+
+        submit_mmx_fallback = run(
+            "submit",
+            str(mmx_records),
+            "--out",
+            str(tmp / "records-mmx-fallback"),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mmx",
+            "--retries",
+            "0",
+            "--timeout-seconds",
+            "5",
+            "--allow-no-ref-fallback",
+            env=fake_env,
+        )
+        assert json.loads(submit_mmx_fallback.stdout)["fallback_policy"] == "allow-no-ref-fallback"
+        mmx_fallback_job_id = json.loads(submit_mmx_fallback.stdout)["job_id"]
+        mmx_completed = json.loads(run("run", mmx_fallback_job_id, "--root", str(tmp), env=fake_env).stdout)
         mmx_result = mmx_completed["results"][0]
         assert mmx_result["qa_status"] == "warning"
         assert mmx_result["usable"] is True
@@ -291,6 +319,24 @@ exit 23
         assert long_result["generation_meta"]["subject_ref_failed"] is True
         assert "subject-ref command failed" in long_result["error_message"]
         assert "prompt length must be less than 1500" in long_result["error_message"]
+
+        baseline_out = tmp / "records-baseline"
+        submit_baseline = run(
+            "submit",
+            str(FIXTURES / "b-records-character-baseline.json"),
+            "--out",
+            str(baseline_out),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mock",
+        )
+        baseline_job_id = json.loads(submit_baseline.stdout)["job_id"]
+        baseline_completed = json.loads(run("run", baseline_job_id, "--root", str(tmp)).stdout)
+        assert baseline_completed["progress"]["total"] == 4
+        assert [result["format"] for result in baseline_completed["results"]] == ["1x1", "3x4", "3x4", "1x1"]
+        assert baseline_completed["results"][0]["generation_meta"]["reference_image"].endswith("assets/brand-references/MrAi_character_ref.png")
+        assert "Composition: full_frame_centered" in baseline_completed["results"][0]["generation_meta"]["prompt"]
 
         submit_force = run(
             "submit",
