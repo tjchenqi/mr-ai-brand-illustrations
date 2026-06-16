@@ -38,6 +38,8 @@ def assert_no_b_images(data: dict) -> None:
     b_segments = {segment["segment_id"] for segment in data["segments"] if segment["role"] == "quoted_source"}
     shot_segments = {shot["segment_id"] for shot in data["shots"]}
     assert not (b_segments & shot_segments)
+    assert all(segment["cognitive_role"] == "quote_source" for segment in data["segments"] if segment["role"] == "quoted_source")
+    assert all(segment["visual_treatment"] == "quote-card-or-overlay" for segment in data["segments"] if segment["role"] == "quoted_source")
 
 
 def main() -> int:
@@ -47,6 +49,7 @@ def main() -> int:
             ("ai-technical-sb.md", "AI Technical Fixture", "4"),
             ("culture-person-sb.md", "Culture Person Fixture", "4"),
             ("quote-heavy-sb.md", "Quote Heavy Fixture", "3"),
+            ("mixed-brand-explainer-sb.md", "Mixed Brand Explainer Fixture", "3"),
         ]
         for fixture, title, max_shots in cases:
             out = tmp / fixture.removesuffix(".md")
@@ -54,8 +57,19 @@ def main() -> int:
             data = load_map(out)
             assert data["shots"], fixture
             assert all(shot["formats"] == ["16x9", "9x16"] for shot in data["shots"])
+            assert all("cognitive_role" in segment for segment in data["segments"])
+            assert all("expression_pace" in segment for segment in data["segments"])
+            assert all("visual_purpose" in segment for segment in data["segments"])
+            assert all("timing_hint" in segment for segment in data["segments"])
+            assert all("cognitive_role" in shot for shot in data["shots"])
+            assert all("expression_pace" in shot for shot in data["shots"])
             assert_no_b_images(data)
             assert_prompt_policy(out)
+
+        mixed = tmp / "mixed-brand-explainer-sb"
+        mixed_styles = [shot["style_preset"] for shot in load_map(mixed)["shots"]]
+        assert "brand" in mixed_styles
+        assert "explainer-sketch" in mixed_styles
 
         forced = tmp / "forced"
         run("gen", str(FIXTURES / "culture-person-sb.md"), "--out", str(forced), "--style", "auto", "--max-shots", "2", "--segments", "S3,S4")

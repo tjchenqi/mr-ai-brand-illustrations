@@ -52,10 +52,22 @@ Inline segment override:
 
 ```markdown
 ### S4 · 核心判断
-<!-- visual: style: explainer-sketch, layout: Third Path, labels: 模仿|拒绝|改写 -->
+<!-- visual: style: explainer-sketch, layout: Third Path, labels: 模仿|拒绝|改写, cognitive_role: turning_point, pace: turn -->
 
 这里是口播正文。
 ```
+
+## Audio-visual decision fields
+
+`audio-visual-map.json` is the downstream interface for Remotion, ffmpeg, or another video agent. Each segment includes:
+
+- `visual_treatment`: `brand`, `explainer-sketch`, `subtitle-or-no-image`, or `quote-card-or-overlay`.
+- `cognitive_role`: why this segment matters in the argument, such as `hook`, `misconception`, `turning_point`, `mechanism`, `evidence_or_boundary`, or `conclusion`.
+- `expression_pace`: how the visual should behave in time, such as `hook`, `turn`, `explain`, `quote`, or `landing`.
+- `timing_hint`: a human/agent-readable timing note.
+- `visual_purpose`: the reason to show, skip, hold, or replace the image.
+
+These fields are generated from `agent-pack/treatment-rules.json` and can be overridden inline when the automatic reading is too rough.
 
 The CLI limits repeated layouts: a single style/layout pair should not appear more than twice in one package. If the first match repeats too much, the CLI falls back to a related physical metaphor. Still review `shot-list.md`; if two images feel visually redundant, rewrite one shot before image generation.
 

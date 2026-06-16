@@ -10,7 +10,11 @@
       "script_summary_excerpt": "窦靖童在《歌手2026》做了一件事。她把自己的歌，和父亲",
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
+      "cognitive_role": "hook",
+      "expression_pace": "hook",
+      "visual_purpose": "Establish attention and make the viewer care before the explanation starts.",
       "timing": "keep_voiceover_primary",
+      "timing_hint": "early visual anchor, short hold",
       "overlay_text_candidate": "窦靖童在歌手2"
     },
     {
@@ -21,7 +25,11 @@
       "script_summary_excerpt": "5月22日晚，《歌手2026》首期直播。窦靖童第六个出场",
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
+      "cognitive_role": "conclusion",
+      "expression_pace": "quote",
+      "visual_purpose": "Land the idea and make the takeaway memorable.",
       "timing": "keep_voiceover_primary",
+      "timing_hint": "hold quote card or overlay without metaphorical rewriting",
       "overlay_text_candidate": "5月22日晚歌"
     },
     {
@@ -32,7 +40,11 @@
       "script_summary_excerpt": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "misconception",
+      "expression_pace": "turn",
+      "visual_purpose": "Name the misleading frame so the next segment can correct it.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "误解"
     },
     {
@@ -43,7 +55,11 @@
       "script_summary_excerpt": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "第三条路"
     },
     {
@@ -54,7 +70,11 @@
       "script_summary_excerpt": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "改写"
     },
     {
@@ -65,7 +85,11 @@
       "script_summary_excerpt": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "改写"
     },
     {
@@ -76,7 +100,11 @@
       "script_summary_excerpt": "整场表演还有一个人，几乎没被注意到。窦唯的妹妹，窦靖童的",
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "timing": "keep_voiceover_primary",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "支持"
     },
     {
@@ -87,7 +115,11 @@
       "script_summary_excerpt": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "misconception",
+      "expression_pace": "turn",
+      "visual_purpose": "Name the misleading frame so the next segment can correct it.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "共处"
     },
     {
@@ -98,7 +130,11 @@
       "script_summary_excerpt": "节目结束后，媒体用了各种标题。\"王菲的女儿唱了窦唯的歌。",
       "selected_for_image": false,
       "visual_treatment": "subtitle-or-no-image",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "timing": "keep_voiceover_primary",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "节目结束后媒体"
     }
   ],
@@ -113,10 +149,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Label Frame",
+      "cognitive_role": "misconception",
+      "expression_pace": "turn",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "voiceover_summary": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什么\"，而是\"你爸当年……\"\"你妈那时候……\"。面试时，别人翻简历翻到家庭那一栏，眼神停了...",
       "script_summary_excerpt": "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Name the misleading frame so the next segment can correct it.",
       "mr_ai_action": "Mr.Ai peels oversized labels off a small portrait or object frame.",
       "short_labels": [
         "标签",
@@ -135,10 +174,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Third Path",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "voiceover_summary": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提出过一个说法，叫\"影响的焦虑\"。大意是：每一个后来的创作者，都活在前人的阴影里。前辈越伟...",
       "script_summary_excerpt": "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
       "short_labels": [
         "选项A",
@@ -157,10 +199,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Third Path",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "voiceover_summary": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自己的歌——\"我不用靠父母\"。可以只唱父亲的歌——\"我能继承家学\"。两条路她都没选。她选了...",
       "script_summary_excerpt": "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "mr_ai_action": "Mr.Ai stands at a fork with two blocked paths and opens a small third path.",
       "short_labels": [
         "选项A",
@@ -179,10 +224,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Label Frame",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "voiceover_summary": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王...",
       "script_summary_excerpt": "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "mr_ai_action": "Mr.Ai peels oversized labels off a small portrait or object frame.",
       "short_labels": [
         "标签",
@@ -201,10 +249,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Coexistence Stage",
+      "cognitive_role": "misconception",
+      "expression_pace": "turn",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "voiceover_summary": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是\"主体性的胜利\"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受\"选边\"。没有...",
       "script_summary_excerpt": "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Name the misleading frame so the next segment can correct it.",
       "mr_ai_action": "Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula.",
       "short_labels": [
         "来处",

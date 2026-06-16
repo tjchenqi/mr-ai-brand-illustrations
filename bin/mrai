@@ -310,6 +310,38 @@ def score_segment(treatment: dict, segment: ScriptSegment) -> int:
     return score
 
 
+def first_matching_rule(rules: list[dict], text: str, default: dict) -> dict:
+    for rule in rules:
+        if contains_any(text, rule.get("match", [])):
+            return rule
+    return default
+
+
+def classify_cognitive_role(treatment: dict, segment: ScriptSegment) -> tuple[str, str]:
+    override = segment.override
+    if override.get("cognitive_role"):
+        return override["cognitive_role"], override.get("visual_purpose", "Use the explicit cognitive role override.")
+    if segment.role == "B":
+        return "quote_source", "Preserve quoted source meaning; use quote card or overlay instead of metaphor rewriting."
+    default = {
+        "role": "explanation",
+        "visual_purpose": "Support the voiceover only if a visual metaphor reduces explanation time.",
+    }
+    rule = first_matching_rule(treatment.get("cognitive_roles", []), segment.raw_title + segment.body, default)
+    return rule["role"], rule["visual_purpose"]
+
+
+def classify_expression_pace(treatment: dict, segment: ScriptSegment) -> tuple[str, str]:
+    override = segment.override
+    if override.get("pace"):
+        return override["pace"], override.get("timing_hint", "Use explicit timing override.")
+    if segment.role == "B":
+        return "quote", "hold quote card or overlay without metaphorical rewriting"
+    default = {"pace": "explain", "timing_hint": "keep voiceover primary"}
+    rule = first_matching_rule(treatment.get("expression_pacing", []), segment.raw_title + segment.body, default)
+    return rule["pace"], rule["timing_hint"]
+
+
 def pick_segments(treatment: dict, segments: list[ScriptSegment], max_shots: int, forced_ids: set[str] | None = None) -> list[ScriptSegment]:
     forced_ids = forced_ids or set()
     candidates = [segment for segment in segments if segment.role == "S"]
@@ -328,9 +360,13 @@ def choose_style_for_segment(config: dict, segment: ScriptSegment, requested_sty
     if override.get("style") in config["styles"]:
         return override["style"]
     text = segment.raw_title + segment.body
-    if contains_any(text, style_rules(config, "explainer-sketch").get("triggers", [])):
+    brand_score = count_keywords(text, style_rules(config, "brand").get("triggers", []))
+    explainer_score = count_keywords(text, style_rules(config, "explainer-sketch").get("triggers", []))
+    if brand_score > explainer_score:
+        return "brand"
+    if explainer_score > 0:
         return "explainer-sketch"
-    if contains_any(text, style_rules(config, "brand").get("triggers", [])):
+    if brand_score > 0:
         return "brand"
     return config["defaults"]["default_style"]
 
@@ -479,6 +515,8 @@ def write_package(
         selected = segment.segment_id in chosen_ids
         segment_treatment = visual_treatment_for_segment(treatment_rules, segment, selected, shot_style)
         timing = timing_for_segment(treatment_rules, segment, selected)
+        cognitive_role, segment_visual_purpose = classify_cognitive_role(treatment_rules, segment)
+        expression_pace, timing_hint = classify_expression_pace(treatment_rules, segment)
         summary = summarize(segment.body, 80)
         overlay_text = make_overlay_text(routing, segment.body)
         timeline_lines.extend(
@@ -487,7 +525,11 @@ def write_package(
                 "",
                 f"- Role: {'host voiceover' if segment.role == 'S' else 'quoted source'}",
                 f"- Visual treatment: {segment_treatment}",
+                f"- Cognitive role: {cognitive_role}",
+                f"- Expression pace: {expression_pace}",
                 f"- Timing: {timing}",
+                f"- Timing hint: {timing_hint}",
+                f"- Visual purpose: {segment_visual_purpose}",
                 f"- Voiceover anchor: {summary}",
                 f"- Script summary excerpt: {summary[:28]}",
                 f"- Overlay text candidate: {overlay_text}",
@@ -504,7 +546,11 @@ def write_package(
                 "script_summary_excerpt": summary[:28],
                 "selected_for_image": selected,
                 "visual_treatment": segment_treatment,
+                "cognitive_role": cognitive_role,
+                "expression_pace": expression_pace,
+                "visual_purpose": segment_visual_purpose,
                 "timing": timing,
+                "timing_hint": timing_hint,
                 "overlay_text_candidate": overlay_text,
             }
         )
@@ -524,6 +570,8 @@ def write_package(
         shot_id = f"{idx:02d}-{segment.segment_id.lower()}-{slugify(segment.title)[:42]}"
         summary = summarize(body)
         overlay_text = make_overlay_text(routing, section_text, layout)
+        cognitive_role, segment_visual_purpose = classify_cognitive_role(treatment_rules, segment)
+        expression_pace, timing_hint = classify_expression_pace(treatment_rules, segment)
         audio_visual_map["shots"].append(
             {
                 "shot_id": shot_id,
@@ -532,10 +580,13 @@ def write_package(
                 "formats": formats,
                 "style_preset": shot_style,
                 "structure_type": layout,
+                "cognitive_role": cognitive_role,
+                "expression_pace": expression_pace,
                 "timing": "sync_with_voiceover_anchor",
+                "timing_hint": timing_hint,
                 "voiceover_summary": summary,
                 "script_summary_excerpt": summary[:28],
-                "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+                "visual_purpose": segment_visual_purpose,
                 "mr_ai_action": action,
                 "short_labels": labels,
                 "overlay_text_candidate": overlay_text,
@@ -552,12 +603,15 @@ def write_package(
                 f"script_segment: {segment.segment_id}",
                 "segment_role: host_voiceover",
                 f"voiceover_summary: {yaml_string(summary)}",
-                "visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.",
+                f"cognitive_role: {cognitive_role}",
+                f"expression_pace: {expression_pace}",
+                f"visual_purpose: {segment_visual_purpose}",
                 "format: both",
                 f"formats: {json.dumps(formats)}",
                 f"structure_type: {layout}",
                 f"style_preset: {shot_style}",
                 "image_timing: sync_with_voiceover_anchor",
+                f"timing_hint: {timing_hint}",
                 f"mr_ai_action: {action}",
                 f"main_metaphor: {layout}",
                 f"short_labels: {json.dumps(labels, ensure_ascii=False)}",

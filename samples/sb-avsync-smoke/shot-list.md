@@ -12,12 +12,15 @@ script_position: S0 · 开场
 script_segment: S0
 segment_role: host_voiceover
 voiceover_summary: "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。"
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: evidence_or_boundary
+expression_pace: quote
+visual_purpose: Show what must be checked, accepted, or constrained.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Guardrail Pit
 style_preset: brand
 image_timing: sync_with_voiceover_anchor
+timing_hint: hold quote card or overlay without metaphorical rewriting
 mr_ai_action: Mr.Ai places a yellow guardrail before a red risk pit.
 main_metaphor: Guardrail Pit
 short_labels: ["风险", "边界", "验证"]
@@ -33,12 +36,15 @@ script_position: S1 · 主播解释
 script_segment: S1
 segment_role: host_voiceover
 voiceover_summary: "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具进入流程之后，人的判断、验证和复盘必须跟着改变。"
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: turning_point
+expression_pace: turn
+visual_purpose: Make the cognitive turn visible at the exact voiceover moment.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Conveyor Split
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: change image exactly at the turn
 mr_ai_action: Mr.Ai nudges cards along a thin conveyor that splits useful output from noise.
 main_metaphor: Conveyor Split
 short_labels: ["输入", "噪音", "行动"]
@@ -54,12 +60,15 @@ script_position: S2 · 结尾
 script_segment: S2
 segment_role: host_voiceover
 voiceover_summary: "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不能混在一起。"
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: mechanism
+expression_pace: explain
+visual_purpose: Convert an abstract mechanism into a physical metaphor.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Black Box Reveal
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: hold long enough for the metaphor to be read
 mr_ai_action: Mr.Ai opens a simple dark box and reveals mechanism cards inside.
 main_metaphor: Black Box Reveal
 short_labels: ["黑盒", "机制", "证据"]

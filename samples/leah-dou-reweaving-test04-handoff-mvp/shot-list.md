@@ -12,12 +12,15 @@ script_position: S2 · 普通人的疑问与解释缺口
 script_segment: S2
 segment_role: host_voiceover
 voiceover_summary: "你很可能也经历过这件事。过年回家，亲戚问的不是\"你在做什么\"，而是\"你爸当年……\"\"你妈那时候……\"。面试时，别人翻简历翻到家庭那一栏，眼神停了..."
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: misconception
+expression_pace: turn
+visual_purpose: Name the misleading frame so the next segment can correct it.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Label Frame
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: change image exactly at the turn
 mr_ai_action: Mr.Ai peels oversized labels off a small portrait or object frame.
 main_metaphor: Label Frame
 short_labels: ["标签", "误解", "本体"]
@@ -33,12 +36,15 @@ script_position: S3 · 思想核心切入
 script_segment: S3
 segment_role: host_voiceover
 voiceover_summary: "有一个概念能帮我们看见这件事的底层结构。哈罗德·布鲁姆提出过一个说法，叫\"影响的焦虑\"。大意是：每一个后来的创作者，都活在前人的阴影里。前辈越伟..."
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: turning_point
+expression_pace: turn
+visual_purpose: Make the cognitive turn visible at the exact voiceover moment.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Third Path
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: change image exactly at the turn
 mr_ai_action: Mr.Ai stands at a fork with two blocked paths and opens a small third path.
 main_metaphor: Third Path
 short_labels: ["选项A", "选项B", "第三路"]
@@ -54,12 +60,15 @@ script_position: S4 · 现实机制
 script_segment: S4
 segment_role: host_voiceover
 voiceover_summary: "回到那天晚上的舞台。窦靖童只有一次出手机会。她可以只唱自己的歌——\"我不用靠父母\"。可以只唱父亲的歌——\"我能继承家学\"。两条路她都没选。她选了..."
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: turning_point
+expression_pace: turn
+visual_purpose: Make the cognitive turn visible at the exact voiceover moment.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Third Path
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: change image exactly at the turn
 mr_ai_action: Mr.Ai stands at a fork with two blocked paths and opens a small third path.
 main_metaphor: Third Path
 short_labels: ["选项A", "选项B", "第三路"]
@@ -75,12 +84,15 @@ script_position: S5 · 反方问题
 script_segment: S5
 segment_role: host_voiceover
 voiceover_summary: "你可能会说：这难道不是依赖？她毕竟用了父亲的歌。站在了父母积累的知名度上。姓窦。这些问题是真实的。她确实没有从零开始。她的名字确实会让人先想起王..."
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: turning_point
+expression_pace: turn
+visual_purpose: Make the cognitive turn visible at the exact voiceover moment.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Label Frame
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: change image exactly at the turn
 mr_ai_action: Mr.Ai peels oversized labels off a small portrait or object frame.
 main_metaphor: Label Frame
 short_labels: ["标签", "误解", "本体"]
@@ -96,12 +108,15 @@ script_position: S7 · 边界声明
 script_segment: S7
 segment_role: host_voiceover
 voiceover_summary: "我的判断停在这里。窦靖童把两首歌放进同一个表达——是不是\"主体性的胜利\"，我不知道。那是她自己的答案。但有一点是确定的：她没有接受\"选边\"。没有..."
-visual_purpose: Turn this cognitive anchor into one memorable Mr.Ai action.
+cognitive_role: misconception
+expression_pace: turn
+visual_purpose: Name the misleading frame so the next segment can correct it.
 format: both
 formats: ["16x9", "9x16"]
 structure_type: Coexistence Stage
 style_preset: explainer-sketch
 image_timing: sync_with_voiceover_anchor
+timing_hint: change image exactly at the turn
 mr_ai_action: Mr.Ai turns on two small stage lamps whose light overlaps without merging into a formula.
 main_metaphor: Coexistence Stage
 short_labels: ["来处", "自己", "共处"]

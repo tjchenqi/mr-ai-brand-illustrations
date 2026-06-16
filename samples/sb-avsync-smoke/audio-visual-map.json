@@ -10,7 +10,11 @@
       "script_summary_excerpt": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自",
       "selected_for_image": true,
       "visual_treatment": "brand",
+      "cognitive_role": "evidence_or_boundary",
+      "expression_pace": "quote",
+      "visual_purpose": "Show what must be checked, accepted, or constrained.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "hold quote card or overlay without metaphorical rewriting",
       "overlay_text_candidate": "今天我们用一个"
     },
     {
@@ -21,7 +25,11 @@
       "script_summary_excerpt": "\"真正重要的不是工具本身，而是人如何重新组织工作。\"",
       "selected_for_image": false,
       "visual_treatment": "quote-card-or-overlay",
+      "cognitive_role": "quote_source",
+      "expression_pace": "quote",
+      "visual_purpose": "Preserve quoted source meaning; use quote card or overlay instead of metaphor rewriting.",
       "timing": "hold_during_quote",
+      "timing_hint": "hold quote card or overlay without metaphorical rewriting",
       "overlay_text_candidate": "真正重要的不是"
     },
     {
@@ -32,7 +40,11 @@
       "script_summary_excerpt": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "overlay_text_candidate": "验证"
     },
     {
@@ -43,7 +55,11 @@
       "script_summary_excerpt": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不",
       "selected_for_image": true,
       "visual_treatment": "explainer-sketch",
+      "cognitive_role": "mechanism",
+      "expression_pace": "explain",
+      "visual_purpose": "Convert an abstract mechanism into a physical metaphor.",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "hold long enough for the metaphor to be read",
       "overlay_text_candidate": "所以引用负责保"
     }
   ],
@@ -58,10 +74,13 @@
       ],
       "style_preset": "brand",
       "structure_type": "Guardrail Pit",
+      "cognitive_role": "evidence_or_boundary",
+      "expression_pace": "quote",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "hold quote card or overlay without metaphorical rewriting",
       "voiceover_summary": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自己的观点。",
       "script_summary_excerpt": "今天我们用一个小例子解释：为什么一段引用不能直接被画成自",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Show what must be checked, accepted, or constrained.",
       "mr_ai_action": "Mr.Ai places a yellow guardrail before a red risk pit.",
       "short_labels": [
         "风险",
@@ -80,10 +99,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Conveyor Split",
+      "cognitive_role": "turning_point",
+      "expression_pace": "turn",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "change image exactly at the turn",
       "voiceover_summary": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具进入流程之后，人的判断、验证和复盘必须跟着改变。",
       "script_summary_excerpt": "这句话不能只做成一句漂亮金句。它背后真正要解释的是：工具",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment.",
       "mr_ai_action": "Mr.Ai nudges cards along a thin conveyor that splits useful output from noise.",
       "short_labels": [
         "输入",
@@ -102,10 +124,13 @@
       ],
       "style_preset": "explainer-sketch",
       "structure_type": "Black Box Reveal",
+      "cognitive_role": "mechanism",
+      "expression_pace": "explain",
       "timing": "sync_with_voiceover_anchor",
+      "timing_hint": "hold long enough for the metaphor to be read",
       "voiceover_summary": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不能混在一起。",
       "script_summary_excerpt": "所以，引用负责保留原意，解释图负责把结构讲清楚。两件事不",
-      "visual_purpose": "Turn this cognitive anchor into one memorable Mr.Ai action.",
+      "visual_purpose": "Convert an abstract mechanism into a physical metaphor.",
       "mr_ai_action": "Mr.Ai opens a simple dark box and reveals mechanism cards inside.",
       "short_labels": [
         "黑盒",

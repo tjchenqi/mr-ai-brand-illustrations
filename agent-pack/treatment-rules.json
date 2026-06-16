@@ -6,6 +6,65 @@
     "title_bonus_keywords": ["钩子", "开头", "结尾", "边界", "核心", "机制", "反方", "验证", "结论"],
     "quoted_source_penalty": 6
   },
+  "cognitive_roles": [
+    {
+      "role": "hook",
+      "match": ["钩子", "开头", "第一句", "看到", "你有没有", "问题来了"],
+      "visual_purpose": "Establish attention and make the viewer care before the explanation starts."
+    },
+    {
+      "role": "misconception",
+      "match": ["误解", "以为", "看起来", "简化成", "标签", "刻板印象"],
+      "visual_purpose": "Name the misleading frame so the next segment can correct it."
+    },
+    {
+      "role": "turning_point",
+      "match": ["但", "真正", "关键", "问题是", "转折", "更准确", "不是", "而是"],
+      "visual_purpose": "Make the cognitive turn visible at the exact voiceover moment."
+    },
+    {
+      "role": "mechanism",
+      "match": ["机制", "结构", "流程", "工作流", "步骤", "状态", "循环", "Loop", "输入", "输出"],
+      "visual_purpose": "Convert an abstract mechanism into a physical metaphor."
+    },
+    {
+      "role": "evidence_or_boundary",
+      "match": ["证据", "验证", "验收", "边界", "风险", "不能", "不要", "通过", "不通过"],
+      "visual_purpose": "Show what must be checked, accepted, or constrained."
+    },
+    {
+      "role": "conclusion",
+      "match": ["所以", "结论", "最后", "收束", "答案", "回到", "这就是"],
+      "visual_purpose": "Land the idea and make the takeaway memorable."
+    }
+  ],
+  "expression_pacing": [
+    {
+      "pace": "hook",
+      "match": ["钩子", "开头", "第一句", "你有没有"],
+      "timing_hint": "early visual anchor, short hold"
+    },
+    {
+      "pace": "turn",
+      "match": ["但", "真正", "关键", "不是", "而是", "问题是"],
+      "timing_hint": "change image exactly at the turn"
+    },
+    {
+      "pace": "explain",
+      "match": ["机制", "结构", "流程", "步骤", "工作流", "验证"],
+      "timing_hint": "hold long enough for the metaphor to be read"
+    },
+    {
+      "pace": "quote",
+      "match": ["引用", "原文", "报告称", "研究者"],
+      "timing_hint": "hold quote card or overlay without metaphorical rewriting"
+    },
+    {
+      "pace": "landing",
+      "match": ["所以", "结论", "最后", "收束", "答案"],
+      "timing_hint": "hold as takeaway or transition out"
+    }
+  ],
   "role_treatments": {
     "S": {
       "meaning": "host voiceover; eligible for brand or explainer images",
@@ -21,7 +80,7 @@
     }
   },
   "inline_override_schema": {
-    "syntax": "<!-- visual: style: explainer-sketch, layout: Third Path, labels: A|B|C -->",
-    "supported_keys": ["style", "layout", "labels", "action", "treatment", "timing"]
+    "syntax": "<!-- visual: style: explainer-sketch, layout: Third Path, labels: A|B|C, cognitive_role: turning_point, pace: turn -->",
+    "supported_keys": ["style", "layout", "labels", "action", "treatment", "timing", "cognitive_role", "visual_purpose", "pace", "timing_hint"]
   }
 }
