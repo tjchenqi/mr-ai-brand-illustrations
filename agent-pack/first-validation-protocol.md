@@ -63,6 +63,12 @@ bin/mrai validate samples/<topic-slug>
 
 If validation fails, stop and fix the package or report the failing fields before generating images.
 
+List expected image slots:
+
+```bash
+bin/mrai assets samples/<topic-slug>
+```
+
 ## Image generation step
 
 Generate only 2-3 actual images for the first validation. Choose the shots from `shot-list.md` and `asset-manifest.json`.
@@ -77,6 +83,14 @@ For each generated image:
 
 If a tool cannot write directly to the manifest path, copy or rename the image afterward so the package still matches the manifest.
 
+After generation, run the asset inventory again:
+
+```bash
+bin/mrai assets samples/<topic-slug>
+```
+
+The first validation may leave untested shot slots as `missing`; the generated 2-3 test images should be `ok`.
+
 ## Pass criteria
 
 The first validation passes if:
@@ -89,6 +103,7 @@ The first validation passes if:
 - The output could be used in a voiceover plus image-carousel video without major redesign.
 - `bin/mrai validate samples/<topic-slug>` passes before the final report.
 - Generated image files are placed in the `asset-manifest.json` slots or the report clearly explains why not.
+- `bin/mrai assets samples/<topic-slug>` shows the generated test images as `ok`.
 
 ## Fail criteria
 
@@ -115,6 +130,7 @@ After the validation, answer:
 - Which instruction was missing or ambiguous?
 - Did `bin/mrai validate` pass before and after image generation?
 - Did the `asset-manifest.json` slots make video assembly easier or harder?
+- Which `mrai assets` slots are still missing after the 2-3 image test?
 
 ## Report template
 
@@ -128,6 +144,7 @@ End the validation with:
 - Output folder:
 - Command used:
 - Validation result:
+- Asset inventory result:
 - Shots selected:
 - Images generated:
 - Usable images:

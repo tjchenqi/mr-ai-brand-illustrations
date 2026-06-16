@@ -163,6 +163,14 @@ Each shot:
 }
 ```
 
+Use the CLI to inspect the current slot state:
+
+```bash
+bin/mrai assets samples/<topic-slug>
+```
+
+The command prints each expected slot as `ok` or `missing`. A first validation run may leave untested shots as `missing`; the 2-3 generated test images should become `ok`.
+
 ## S/B handling
 
 - `S` segments are required host narration units. Every S segment should appear in `timeline-plan.md`.

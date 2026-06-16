@@ -16,6 +16,7 @@ Run:
 ```bash
 bin/mrai gen path/to/script.md --out samples/my-topic --title "My Topic" --style auto --max-shots 5
 bin/mrai validate samples/my-topic
+bin/mrai assets samples/my-topic
 ```
 
 Review before image generation:

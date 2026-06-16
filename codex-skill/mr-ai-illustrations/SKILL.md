@@ -112,4 +112,4 @@ For a full script package, produce:
 
 Use `references/delivery-spec.md` for naming and folder structure.
 
-When using the repository CLI, run `bin/mrai validate <package>` before handing the package to another agent or video pipeline.
+When using the repository CLI, run `bin/mrai validate <package>` before handing the package to another agent or video pipeline. Run `bin/mrai assets <package>` after image generation to confirm which manifest slots have files.

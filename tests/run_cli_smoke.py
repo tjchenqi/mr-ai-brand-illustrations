@@ -19,8 +19,8 @@ BIN = ROOT / "bin" / "mrai"
 FIXTURES = ROOT / "tests" / "fixtures"
 
 
-def run(*args: str) -> None:
-    subprocess.run([str(BIN), *args], cwd=ROOT, check=True)
+def run(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([str(BIN), *args], cwd=ROOT, check=True, text=True, capture_output=True)
 
 
 def load_map(path: Path) -> dict:
@@ -55,9 +55,19 @@ def main() -> int:
             out = tmp / fixture.removesuffix(".md")
             run("gen", str(FIXTURES / fixture), "--out", str(out), "--title", title, "--style", "auto", "--max-shots", max_shots)
             run("validate", str(out))
+            assets_output = run("assets", str(out)).stdout
+            assert "9x16:" in assets_output
+            assert "missing" in assets_output
             data = load_map(out)
             assert data["shots"], fixture
             assert all(shot["formats"] == ["16x9", "9x16"] for shot in data["shots"])
+            assert all(
+                shot["asset_slots"] == {
+                    "16x9": f"16x9/{shot['shot_id']}-16x9.png",
+                    "9x16": f"9x16/{shot['shot_id']}-9x16.png",
+                }
+                for shot in data["shots"]
+            )
             assert all("cognitive_role" in segment for segment in data["segments"])
             assert all("expression_pace" in segment for segment in data["segments"])
             assert all("visual_purpose" in segment for segment in data["segments"])

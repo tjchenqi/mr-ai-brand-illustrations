@@ -38,10 +38,18 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 
    bin/mrai validate samples/<topic-slug>
 
-5. 阅读 `shot-list.md`、`image-prompts.md`、`audio-visual-map.json`、`asset-manifest.json`。
-6. 只选 2-3 个 shot 生成图片，优先测试 9:16。
-7. 将图片放入 `asset-manifest.json` 指定的路径。
-8. 完成 QA，并报告哪些规则需要更新。
+5. 运行：
+
+   bin/mrai assets samples/<topic-slug>
+
+6. 阅读 `shot-list.md`、`image-prompts.md`、`audio-visual-map.json`、`asset-manifest.json`。
+7. 只选 2-3 个 shot 生成图片，优先测试 9:16。
+8. 将图片放入 `asset-manifest.json` 指定的路径。
+9. 再运行：
+
+   bin/mrai assets samples/<topic-slug>
+
+10. 完成 QA，并报告哪些规则需要更新。
 
 请生成或整理这些文件：
 
@@ -67,6 +75,7 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 - 实际生成图片时先生成 2-3 张，不要一次生成完整大批量。
 - 图片必须尽量落到 `asset-manifest.json` 指定路径，方便 ffmpeg/Remotion 后续读取。
 - 生成图片前后都要跑 `bin/mrai validate samples/<topic-slug>`；如果失败，先报告失败项。
+- 生成图片后要跑 `bin/mrai assets samples/<topic-slug>`，说明哪些槽位是 `ok`，哪些仍然 `missing`。
 - 最后明确记录：哪些图可用、哪些要重生成、哪些规则需要修改。
 
 最后请按这个格式回复：
@@ -78,6 +87,7 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 - Output folder:
 - Command used:
 - Validation result:
+- Asset inventory result:
 - Shots selected:
 - Images generated:
 - Usable images:

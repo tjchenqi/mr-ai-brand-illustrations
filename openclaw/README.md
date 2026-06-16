@@ -38,6 +38,7 @@ Always run:
 ```bash
 bin/mrai gen path/to/script.md --out samples/<topic-slug> --title "<topic>" --style auto --max-shots 5
 bin/mrai validate samples/<topic-slug>
+bin/mrai assets samples/<topic-slug>
 ```
 
 For the first validation, generate only 2-3 images and place them in the paths declared by `asset-manifest.json`.

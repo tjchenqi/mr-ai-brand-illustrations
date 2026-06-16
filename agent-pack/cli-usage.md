@@ -22,6 +22,12 @@ Validate a generated package before handoff:
 bin/mrai validate samples/my-topic
 ```
 
+List expected image slots and whether generated files exist:
+
+```bash
+bin/mrai assets samples/my-topic
+```
+
 ## Style presets
 
 Choose the visual mode explicitly:
@@ -122,6 +128,8 @@ It verifies:
 - `asset-manifest.json` matches `audio-visual-map.json`
 
 Run it before handing a package to Remotion, ffmpeg, 耿鬼, OpenClaw, or another production agent.
+
+`bin/mrai assets <package>` is a non-blocking asset inventory. It prints every expected 16:9 and 9:16 image path from `asset-manifest.json` and marks each one as `ok` or `missing`. Use it after image generation to confirm whether the image files landed in the expected slots.
 
 ## Role in the production pipeline
 

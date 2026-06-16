@@ -184,6 +184,43 @@ def validate_package(package_path: Path, schema_path: Path) -> list[str]:
     return errors
 
 
+def asset_inventory(package_path: Path) -> tuple[list[str], list[str]]:
+    """Return human-readable asset slot lines and structural errors."""
+    errors: list[str] = []
+    manifest_path = package_path / "asset-manifest.json"
+    if not manifest_path.exists():
+        return [], [validation_error("missing package file asset-manifest.json")]
+    try:
+        manifest = load_json_config(manifest_path)
+    except json.JSONDecodeError as exc:
+        return [], [validation_error(f"invalid asset-manifest.json: {exc}")]
+    assets = manifest.get("assets")
+    if not isinstance(assets, list):
+        return [], [validation_error("asset-manifest.json assets must be a list")]
+
+    lines: list[str] = []
+    for asset in assets:
+        if not isinstance(asset, dict):
+            errors.append(validation_error("asset-manifest asset must be an object"))
+            continue
+        shot_id = asset.get("shot_id", "unknown-shot")
+        status = asset.get("status", "unknown")
+        slots = asset.get("asset_slots", {})
+        if not isinstance(slots, dict):
+            errors.append(validation_error(f"{shot_id}.asset_slots must be an object"))
+            continue
+        lines.append(f"{shot_id} [{status}]")
+        for fmt in ["16x9", "9x16"]:
+            rel = slots.get(fmt)
+            if not rel:
+                errors.append(validation_error(f"{shot_id}.asset_slots missing {fmt}"))
+                continue
+            exists = (package_path / rel).exists()
+            marker = "ok" if exists else "missing"
+            lines.append(f"  {fmt}: {marker} {rel}")
+    return lines, errors
+
+
 def contains_any(text: str, keywords: list[str]) -> bool:
     lowered = text.lower()
     return any(keyword.lower() in lowered for keyword in keywords)
@@ -913,6 +950,8 @@ def main() -> int:
         default=str(DEFAULT_AV_SCHEMA_PATH),
         help="Path to audio-visual-map schema JSON. Defaults to agent-pack/audio-visual-map.schema.json.",
     )
+    assets = sub.add_parser("assets", help="List expected image asset slots and whether files exist.")
+    assets.add_argument("package", help="Generated package directory.")
 
     args = parser.parse_args()
     if args.command == "gen":
@@ -938,6 +977,15 @@ def main() -> int:
                 print(error)
             return 1
         print(f"Package is valid: {args.package}")
+        return 0
+    if args.command == "assets":
+        lines, errors = asset_inventory(Path(args.package).expanduser())
+        for line in lines:
+            print(line)
+        if errors:
+            for error in errors:
+                print(error)
+            return 1
         return 0
     return 1
 
