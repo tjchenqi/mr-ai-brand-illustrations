@@ -1,0 +1,7 @@
+[
+  {
+    "s_id": "S01",
+    "audience_takeaway": "缺少 visual intent 时应该报 invalid_record。",
+    "format": "9x16"
+  }
+]

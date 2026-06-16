@@ -23,6 +23,10 @@ def run(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run([str(BIN), *args], cwd=ROOT, check=True, text=True, capture_output=True)
 
 
+def run_unchecked(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([str(BIN), *args], cwd=ROOT, check=False, text=True, capture_output=True)
+
+
 def load_map(path: Path) -> dict:
     return json.loads((path / "audio-visual-map.json").read_text(encoding="utf-8"))
 
@@ -40,6 +44,14 @@ def assert_no_b_images(data: dict) -> None:
     assert not (b_segments & shot_segments)
     assert all(segment["cognitive_role"] == "quote_source" for segment in data["segments"] if segment["role"] == "quoted_source")
     assert all(segment["visual_treatment"] == "quote-card-or-overlay" for segment in data["segments"] if segment["role"] == "quoted_source")
+
+
+def assert_safe_areas(result: dict) -> None:
+    for area in result["safe_areas"]:
+        for key in ["x", "y", "w", "h"]:
+            assert 0 <= area[key] <= 1
+        assert area["x"] + area["w"] <= 1.0001
+        assert area["y"] + area["h"] <= 1.0001
 
 
 def main() -> int:
@@ -89,6 +101,80 @@ def main() -> int:
         preferred = tmp / "preferred"
         run("gen", str(FIXTURES / "culture-person-sb.md"), "--out", str(preferred), "--style", "explainer-sketch", "--max-shots", "2", "--prefer-layout", "Evidence Clamp")
         assert all(shot["structure_type"] == "Evidence Clamp" for shot in load_map(preferred)["shots"])
+
+        records_out = tmp / "records-job"
+        submit = run(
+            "submit",
+            str(FIXTURES / "b-records-valid.json"),
+            "--out",
+            str(records_out),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mock",
+            "--retries",
+            "1",
+        )
+        submitted = json.loads(submit.stdout)
+        job_id = submitted["job_id"]
+        pending = json.loads(run("query", job_id, "--root", str(tmp)).stdout)
+        assert pending["status"] == "pending"
+        assert pending["results"] == []
+
+        completed = json.loads(run("run", job_id, "--root", str(tmp)).stdout)
+        assert completed["status"] == "completed"
+        assert completed["progress"]["total"] == 3
+        assert completed["progress"]["completed"] == 2
+        assert completed["progress"]["failed"] == 1
+        assert completed["results"][0]["s_id"] == "S01"
+        assert completed["results"][0]["beat_ref"] == "beat-001"
+        assert completed["results"][0]["image_path"].endswith("S01_v1_9x16.png")
+        assert completed["results"][0]["version"] == 1
+        assert completed["results"][0]["cache_hit"] is False
+        assert completed["results"][0]["overlay_labels"] == ["判断", "工具", "人"]
+        assert completed["results"][0]["generation_meta"]["prompt"].find("Do NOT render any Chinese characters") >= 0
+        assert completed["results"][0]["qa_status"] == "needs_human_review"
+        assert completed["results"][1]["image_path"].endswith("S02_v1_16x9.png")
+        assert completed["results"][2]["error_code"] == "provider_failed"
+        assert_safe_areas(completed["results"][0])
+
+        submit_cached = run(
+            "submit",
+            str(FIXTURES / "b-records-valid.json"),
+            "--out",
+            str(records_out),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mock",
+        )
+        cached_job_id = json.loads(submit_cached.stdout)["job_id"]
+        cached = json.loads(run("run", cached_job_id, "--root", str(tmp)).stdout)
+        assert cached["results"][0]["cache_hit"] is True
+        assert cached["results"][0]["version"] == 1
+
+        submit_force = run(
+            "submit",
+            str(FIXTURES / "b-records-valid.json"),
+            "--out",
+            str(records_out),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mock",
+            "--force",
+        )
+        force_job_id = json.loads(submit_force.stdout)["job_id"]
+        forced_results = json.loads(run("run", force_job_id, "--root", str(tmp)).stdout)
+        assert forced_results["results"][0]["cache_hit"] is False
+        assert forced_results["results"][0]["version"] == 2
+
+        missing = run_unchecked("submit", str(FIXTURES / "b-records-missing-required.json"), "--out", str(tmp / "bad"), "--backend", "mock")
+        assert missing.returncode == 1
+        assert "invalid_record" in missing.stdout
+        both = run_unchecked("submit", str(FIXTURES / "b-records-format-both.json"), "--out", str(tmp / "both"), "--backend", "mock")
+        assert both.returncode == 1
+        assert "format=both is not supported" in both.stdout
     finally:
         shutil.rmtree(tmp)
 

@@ -9,7 +9,8 @@ Read in this order:
 3. `visual-style-dna.md`
 4. `script-to-shot-workflow.md`
 5. `cli-usage.md`
-6. `qa-checklist.md`
+6. `b-records-interface.md`
+7. `qa-checklist.md`
 
 Run:
 
@@ -26,6 +27,16 @@ Review before image generation:
 - `audio-visual-map.json`: machine-readable contract for Remotion, ffmpeg, or another video agent.
 - `asset-manifest.json`: expected image output slots for each selected shot.
 - `image-prompts.md`: prompts are drafts; tighten the best 2-3 before generating images.
+
+B-side records image generation:
+
+```bash
+bin/mrai submit records.json --out samples/my-topic --backend mmx
+bin/mrai run <job_id>
+bin/mrai query <job_id>
+```
+
+Use `--backend mock` for offline validation.
 
 Validate machine-readable output against `agent-pack/audio-visual-map.schema.json` when building automation around this package.
 

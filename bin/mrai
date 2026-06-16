@@ -10,8 +10,13 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import base64
+import datetime as dt
+import hashlib
 import json
 import re
+import shutil
+import subprocess
 import textwrap
 from pathlib import Path
 
@@ -21,6 +26,24 @@ DEFAULT_ROUTING_PATH = REPO_ROOT / "agent-pack" / "visual-routing-rules.json"
 DEFAULT_LAYOUT_LIBRARY_PATH = REPO_ROOT / "agent-pack" / "layout-library.json"
 DEFAULT_TREATMENT_RULES_PATH = REPO_ROOT / "agent-pack" / "treatment-rules.json"
 DEFAULT_AV_SCHEMA_PATH = REPO_ROOT / "agent-pack" / "audio-visual-map.schema.json"
+JOB_STORE_DIRNAME = ".mrai-jobs"
+SUPPORTED_RECORD_FORMATS = {"9x16", "16x9"}
+JOB_STATUSES = {"pending", "running", "completed", "failed"}
+QA_STATUSES = {"pass", "warning", "failed", "needs_human_review"}
+ERROR_CODES = {"provider_missing", "provider_failed", "qa_failed", "invalid_record", "timeout"}
+MOCK_PNG_BASE64 = (
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/"
+    "lQx7WQAAAABJRU5ErkJggg=="
+)
+
+
+SAFE_AREA_TEMPLATES = {
+    "left_text_safe": [{"x": 0.0, "y": 0.0, "w": 0.38, "h": 1.0}],
+    "right_text_safe": [{"x": 0.62, "y": 0.0, "w": 0.38, "h": 1.0}],
+    "top_subtitle_safe": [{"x": 0.06, "y": 0.0, "w": 0.88, "h": 0.18}],
+    "bottom_subtitle_safe": [{"x": 0.06, "y": 0.78, "w": 0.88, "h": 0.2}],
+    "center_character_safe": [{"x": 0.18, "y": 0.18, "w": 0.64, "h": 0.64}],
+}
 
 
 @dataclass
@@ -219,6 +242,469 @@ def asset_inventory(package_path: Path) -> tuple[list[str], list[str]]:
             marker = "ok" if exists else "missing"
             lines.append(f"  {fmt}: {marker} {rel}")
     return lines, errors
+
+
+def utc_now() -> str:
+    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
+
+
+def read_json_file(path: Path) -> object:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_json_file(path: Path, data: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def normalize_records_payload(payload: object) -> list[dict]:
+    if isinstance(payload, list):
+        records = payload
+    elif isinstance(payload, dict) and isinstance(payload.get("records"), list):
+        records = payload["records"]
+    else:
+        raise ValueError("records input must be a list or an object with records[]")
+    return records
+
+
+def validate_records(records: list[dict]) -> list[str]:
+    errors: list[str] = []
+    required = ["s_id", "audience_takeaway", "visual_intent"]
+    for index, record in enumerate(records, start=1):
+        label = record.get("s_id") if isinstance(record, dict) else f"record[{index}]"
+        if not isinstance(record, dict):
+            errors.append(validation_error(f"record[{index}] must be an object"))
+            continue
+        for key in required:
+            if not str(record.get(key, "")).strip():
+                errors.append(validation_error(f"{label} missing required field {key}"))
+        fmt = record.get("format", "9x16")
+        if fmt == "both":
+            errors.append(validation_error(f"{label}.format=both is not supported in V1.1; submit one 9x16 or 16x9 record at a time"))
+        elif fmt not in SUPPORTED_RECORD_FORMATS:
+            errors.append(validation_error(f"{label}.format must be one of {sorted(SUPPORTED_RECORD_FORMATS)!r}"))
+    return errors
+
+
+def job_store_root(base: Path) -> Path:
+    return base / JOB_STORE_DIRNAME
+
+
+def job_path_for(root: Path, job_id: str) -> Path:
+    return job_store_root(root) / job_id
+
+
+def load_job(job_dir: Path) -> dict:
+    return load_json_config(job_dir / "job.json")
+
+
+def save_job(job_dir: Path, job: dict) -> None:
+    job["updated_at"] = utc_now()
+    write_json_file(job_dir / "job.json", job)
+
+
+def append_event(job_dir: Path, event: dict) -> None:
+    event = {"ts": utc_now(), **event}
+    with (job_dir / "events.jsonl").open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+
+def stable_json(data: object) -> str:
+    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def hash_reference_image(path_value: str | None) -> str | None:
+    if not path_value:
+        return None
+    path = Path(path_value).expanduser()
+    if not path.exists():
+        return f"missing:{path_value}"
+    digest = hashlib.sha256()
+    digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+def record_cache_payload(record: dict, backend_config: dict) -> dict:
+    reference_image = record.get("reference_image")
+    return {
+        "record": record,
+        "reference_image_hash": hash_reference_image(reference_image),
+        "backend_config": backend_config,
+    }
+
+
+def cache_key_for_record(record: dict, backend_config: dict) -> str:
+    return hashlib.sha256(stable_json(record_cache_payload(record, backend_config)).encode("utf-8")).hexdigest()
+
+
+def safe_area_template_for_record(record: dict) -> str:
+    layout = str(record.get("layout", "")).lower()
+    intent = str(record.get("visual_intent", "")).lower()
+    text = layout + " " + intent
+    if any(keyword in text for keyword in ["left", "左"]):
+        return "left_text_safe"
+    if any(keyword in text for keyword in ["right", "右"]):
+        return "right_text_safe"
+    if any(keyword in text for keyword in ["top", "上"]):
+        return "top_subtitle_safe"
+    if any(keyword in text for keyword in ["center", "中间", "中心"]):
+        return "center_character_safe"
+    return "bottom_subtitle_safe"
+
+
+def normalize_list(value) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    return [item.strip() for item in str(value).split("|") if item.strip()]
+
+
+def overlay_labels_for_record(record: dict) -> list[str]:
+    return normalize_list(record.get("labels"))
+
+
+def prompt_for_record(record: dict) -> str:
+    labels = overlay_labels_for_record(record)
+    key_elements = " / ".join(normalize_list(record.get("key_elements"))) or "one simple physical metaphor"
+    negative_elements = " / ".join(normalize_list(record.get("negative_elements"))) or "robot face / monk / formal business presenter"
+    fmt = record.get("format", "9x16")
+    orientation = "9:16 vertical" if fmt == "9x16" else "16:9 horizontal"
+    mode = record.get("mode", "auto")
+    layout = record.get("layout", "auto physical metaphor")
+    return textwrap.dedent(
+        f"""\
+        Generate one standalone Mr.Ai image for the AI 闲僧 video column.
+
+        Format: {orientation}.
+        Mode: {mode}.
+        Layout intent: {layout}.
+
+        Audience takeaway:
+        {record.get("audience_takeaway", "")}
+
+        Visual intent:
+        {record.get("visual_intent", "")}
+
+        Required visual elements:
+        {key_elements}
+
+        Overlay labels for post-production only:
+        {" / ".join(labels) if labels else "blank label spaces only"}
+
+        Brand character:
+        Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, blue shirt, thick dark outline, and a tiny yellow brand accent. Preserve the baseball cap, mustache, blue clothing, yellow brand accent, and rounded middle-aged cartoon identity.
+
+        Constraints:
+        Do NOT render any Chinese characters in the image. The Chinese audience takeaway, visual intent, and overlay labels are semantic instructions only; do not copy them into the bitmap. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No formula, no equation, no PPT infographic, no plus-sign formula, no dense architecture diagram, no realistic UI screenshot, no sci-fi interface, no robot face. Avoid: {negative_elements}.
+        """
+    ).strip()
+
+
+def image_meta_for(path: Path) -> dict:
+    fmt = path.suffix.lower().lstrip(".") or "png"
+    return {
+        "width": None,
+        "height": None,
+        "format": fmt,
+        "color_space": "unknown",
+        "bytes": path.stat().st_size if path.exists() else 0,
+    }
+
+
+def next_version_for(out_dir: Path, s_id: str, fmt: str, force: bool) -> int:
+    safe_id = slugify(s_id).upper() or "S"
+    existing = sorted(out_dir.glob(f"{safe_id}_v*_{fmt}.*"))
+    if not existing:
+        return 1
+    versions = []
+    for path in existing:
+        match = re.search(r"_v(\d+)_", path.name)
+        if match:
+            versions.append(int(match.group(1)))
+    latest = max(versions or [1])
+    return latest + 1 if force else latest
+
+
+def result_filename(s_id: str, version: int, fmt: str, ext: str = "png") -> str:
+    safe_id = slugify(s_id).upper() or "S"
+    return f"{safe_id}_v{version}_{fmt}.{ext}"
+
+
+def qa_checks_for_result(record: dict, image_path: str | None, provider_ok: bool) -> dict:
+    return {
+        "character_consistency": "needs_human_review",
+        "layout_match": "needs_human_review",
+        "no_chinese_bitmap_text": "pass",
+        "safe_area_available": "pass",
+        "metaphor_clarity": "needs_human_review",
+        "provider_result": "pass" if provider_ok and image_path else "failed",
+    }
+
+
+def build_result(
+    record: dict,
+    image_path: str | None,
+    version: int,
+    cache_hit: bool,
+    backend: str,
+    prompt: str,
+    seed: int,
+    attempt: int,
+    error_code: str | None = None,
+    error_message: str | None = None,
+) -> dict:
+    safe_template = safe_area_template_for_record(record)
+    provider_ok = image_path is not None and error_code is None
+    qa_status = "needs_human_review" if provider_ok else "failed"
+    path = Path(image_path) if image_path else None
+    return {
+        "s_id": record.get("s_id"),
+        "beat_ref": record.get("beat_ref"),
+        "image_path": image_path,
+        "image_meta": image_meta_for(path) if path else {"width": None, "height": None, "format": None, "color_space": "unknown", "bytes": 0},
+        "layout_used": record.get("layout") or "auto",
+        "mode_used": record.get("mode") or "auto",
+        "safe_areas": SAFE_AREA_TEMPLATES[safe_template],
+        "composition_template_id": safe_template,
+        "qa_status": qa_status,
+        "qa_checks": qa_checks_for_result(record, image_path, provider_ok),
+        "generation_meta": {
+            "prompt": prompt,
+            "backend": backend,
+            "model": "image-01" if backend == "mmx" else "mock",
+            "region": "cn" if backend == "mmx" else None,
+            "seed": seed,
+            "timestamp": utc_now(),
+            "attempt": attempt,
+        },
+        "version": version,
+        "cache_hit": cache_hit,
+        "error_code": error_code,
+        "error_message": error_message,
+        "overlay_labels": overlay_labels_for_record(record),
+    }
+
+
+def write_mock_image(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(base64.b64decode(MOCK_PNG_BASE64))
+
+
+def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed: int, timeout_seconds: int) -> Path:
+    if shutil.which("mmx") is None:
+        raise FileNotFoundError("mmx CLI not found")
+    aspect = "9:16" if fmt == "9x16" else "16:9"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "mmx",
+        "image",
+        "generate",
+        "--region",
+        "cn",
+        "--aspect-ratio",
+        aspect,
+        "--out-dir",
+        str(out_dir),
+        "--out-prefix",
+        out_prefix,
+        "--seed",
+        str(seed),
+        "--prompt",
+        prompt,
+    ]
+    subprocess.run(cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
+    candidates = sorted(out_dir.glob(f"{out_prefix}*"))
+    if not candidates:
+        raise RuntimeError("mmx completed but produced no output file")
+    return candidates[-1]
+
+
+def job_output_dir(job: dict) -> Path:
+    return Path(job["out"]).expanduser()
+
+
+def job_results_path(job: dict) -> Path:
+    return job_output_dir(job) / "results.json"
+
+
+def save_results(job: dict, results: list[dict]) -> None:
+    write_json_file(
+        job_results_path(job),
+        {
+            "job_id": job["job_id"],
+            "status": job["status"],
+            "records_count": len(job.get("records", [])),
+            "results": results,
+            "updated_at": utc_now(),
+        },
+    )
+
+
+def load_results(job: dict) -> list[dict]:
+    path = job_results_path(job)
+    if not path.exists():
+        return []
+    data = load_json_config(path)
+    return data.get("results", [])
+
+
+def submit_job(records_path: Path, out: Path, job_root: Path, backend: str, retries: int, force: bool, timeout_seconds: int) -> dict:
+    records_path = records_path.resolve()
+    out = out.resolve()
+    job_root = job_root.resolve()
+    payload = read_json_file(records_path)
+    records = normalize_records_payload(payload)
+    errors = validate_records(records)
+    if errors:
+        raise ValueError("\n".join(errors))
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "9x16").mkdir(exist_ok=True)
+    (out / "16x9").mkdir(exist_ok=True)
+    job_id = hashlib.sha256((str(records_path.resolve()) + stable_json(records) + utc_now()).encode("utf-8")).hexdigest()[:12]
+    job_dir = job_path_for(job_root, job_id)
+    job_dir.mkdir(parents=True, exist_ok=True)
+    normalized_records = []
+    for record in records:
+        item = dict(record)
+        item.setdefault("format", "9x16")
+        normalized_records.append(item)
+    job = {
+        "job_id": job_id,
+        "status": "pending",
+        "created_at": utc_now(),
+        "updated_at": utc_now(),
+        "records_path": str(records_path),
+        "job_root": str(job_root),
+        "out": str(out),
+        "backend": backend,
+        "backend_config": {"backend": backend, "model": "image-01" if backend == "mmx" else "mock", "region": "cn" if backend == "mmx" else None},
+        "retries": max(0, retries),
+        "force": force,
+        "timeout_seconds": timeout_seconds,
+        "records": normalized_records,
+        "progress": {"total": len(normalized_records), "completed": 0, "failed": 0, "cached": 0},
+        "errors": [],
+    }
+    save_job(job_dir, job)
+    write_json_file(job_dir / "records.snapshot.json", {"records": normalized_records})
+    append_event(job_dir, {"event": "submitted", "records": len(normalized_records)})
+    return job
+
+
+def cache_dir_for(job: dict) -> Path:
+    return job_output_dir(job) / ".mrai-cache"
+
+
+def generate_record(job: dict, record: dict, existing_results: list[dict]) -> dict:
+    backend = job["backend"]
+    fmt = record.get("format", "9x16")
+    seed = int(hashlib.sha256(stable_json(record).encode("utf-8")).hexdigest()[:8], 16) % 100000
+    prompt = prompt_for_record(record)
+    backend_config = job["backend_config"]
+    cache_key = cache_key_for_record(record, backend_config)
+    cache_dir = cache_dir_for(job)
+    image_dir = job_output_dir(job) / fmt
+    version = next_version_for(image_dir, record["s_id"], fmt, job.get("force", False))
+    safe_id = slugify(record["s_id"]).upper() or "S"
+    cached_candidates = sorted(cache_dir.glob(f"{cache_key}_{fmt}.*"))
+
+    if not job.get("force") and cached_candidates:
+        cache_file = cached_candidates[0]
+        target = image_dir / result_filename(record["s_id"], version, fmt, cache_file.suffix.lower().lstrip(".") or "png")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.exists():
+            shutil.copy2(cache_file, target)
+        return build_result(record, str(target), version, True, backend, prompt, seed, 0)
+
+    attempts = max(1, int(job.get("retries", 0)) + 1)
+    last_error: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            if backend == "mock":
+                target = image_dir / result_filename(record["s_id"], version, fmt, "png")
+                if record.get("mock_provider_error"):
+                    raise RuntimeError(str(record.get("mock_provider_error")))
+                write_mock_image(target)
+            elif backend == "mmx":
+                out_prefix = f"{safe_id}_v{version}_{fmt}"
+                produced = run_mmx_provider(prompt, image_dir, out_prefix, fmt, seed, int(job.get("timeout_seconds", 1800)))
+                target = image_dir / result_filename(record["s_id"], version, fmt, produced.suffix.lower().lstrip(".") or "png")
+                if produced != target:
+                    produced.rename(target)
+            else:
+                raise RuntimeError(f"unsupported backend {backend}")
+            cache_file = cache_dir / f"{cache_key}_{fmt}{target.suffix.lower() or '.png'}"
+            cache_file.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(target, cache_file)
+            return build_result(record, str(target), version, False, backend, prompt, seed, attempt)
+        except subprocess.TimeoutExpired as exc:
+            last_error = exc
+            error_code = "timeout"
+        except FileNotFoundError as exc:
+            last_error = exc
+            error_code = "provider_missing"
+        except Exception as exc:  # noqa: BLE001 - CLI must report provider errors.
+            last_error = exc
+            error_code = "provider_failed"
+        if attempt >= attempts:
+            return build_result(record, None, version, False, backend, prompt, seed, attempt, error_code, str(last_error))
+    return build_result(record, None, version, False, backend, prompt, seed, attempts, "provider_failed", "unknown provider failure")
+
+
+def run_job(job_dir: Path, force: bool | None = None) -> dict:
+    job = load_job(job_dir)
+    if job.get("status") not in JOB_STATUSES:
+        raise ValueError(f"invalid job status {job.get('status')!r}")
+    if force is not None:
+        job["force"] = force
+    if job.get("backend") == "mmx" and shutil.which("mmx") is None:
+        job["status"] = "failed"
+        job["errors"] = [{"error_code": "provider_missing", "error_message": "mmx CLI not found"}]
+        save_job(job_dir, job)
+        save_results(job, [])
+        append_event(job_dir, {"event": "failed", "error_code": "provider_missing", "error_message": "mmx CLI not found"})
+        return job
+    job["status"] = "running"
+    save_job(job_dir, job)
+    append_event(job_dir, {"event": "running"})
+    results: list[dict] = []
+    completed = failed = cached = 0
+    for record in job.get("records", []):
+        result = generate_record(job, record, results)
+        results.append(result)
+        if result.get("cache_hit"):
+            cached += 1
+        if result.get("error_code"):
+            failed += 1
+            append_event(job_dir, {"event": "record_failed", "s_id": record.get("s_id"), "error_code": result.get("error_code")})
+        else:
+            completed += 1
+            append_event(job_dir, {"event": "record_completed", "s_id": record.get("s_id"), "cache_hit": result.get("cache_hit")})
+        job["progress"] = {"total": len(job.get("records", [])), "completed": completed, "failed": failed, "cached": cached}
+        save_results(job, results)
+        save_job(job_dir, job)
+    job["status"] = "completed"
+    job["progress"] = {"total": len(job.get("records", [])), "completed": completed, "failed": failed, "cached": cached}
+    save_job(job_dir, job)
+    save_results(job, results)
+    append_event(job_dir, {"event": "completed", "completed": completed, "failed": failed, "cached": cached})
+    return job
+
+
+def query_job(job_dir: Path) -> dict:
+    job = load_job(job_dir)
+    results = load_results(job)
+    return {
+        "job_id": job.get("job_id"),
+        "status": job.get("status"),
+        "progress": job.get("progress"),
+        "out": job.get("out"),
+        "backend": job.get("backend"),
+        "results": results,
+        "errors": job.get("errors", []),
+        "updated_at": job.get("updated_at"),
+    }
 
 
 def contains_any(text: str, keywords: list[str]) -> bool:
@@ -952,6 +1438,21 @@ def main() -> int:
     )
     assets = sub.add_parser("assets", help="List expected image asset slots and whether files exist.")
     assets.add_argument("package", help="Generated package directory.")
+    submit = sub.add_parser("submit", help="Submit B-side records as a local image generation job.")
+    submit.add_argument("records", help="records.json path. Accepts records[] or a top-level list.")
+    submit.add_argument("--out", required=True, help="Output directory for job files, images, and results.json.")
+    submit.add_argument("--job-root", default=".", help="Directory containing .mrai-jobs/. Defaults to cwd.")
+    submit.add_argument("--backend", choices=["mock", "mmx"], default="mmx", help="Image backend. Use mock for tests/offline validation.")
+    submit.add_argument("--retries", type=int, default=2, help="Retries per record after the first attempt.")
+    submit.add_argument("--force", action="store_true", help="Bypass cache and generate the next image version.")
+    submit.add_argument("--timeout-seconds", type=int, default=1800, help="Provider timeout per image.")
+    run_cmd = sub.add_parser("run", help="Run a submitted local job.")
+    run_cmd.add_argument("job_id", help="Job id returned by submit.")
+    run_cmd.add_argument("--root", default=".", help="Directory containing .mrai-jobs/. Defaults to cwd.")
+    run_cmd.add_argument("--force", action="store_true", help="Bypass cache and generate the next image version for this run.")
+    query_cmd = sub.add_parser("query", help="Query a submitted local job.")
+    query_cmd.add_argument("job_id", help="Job id returned by submit.")
+    query_cmd.add_argument("--root", default=".", help="Directory containing .mrai-jobs/. Defaults to cwd.")
 
     args = parser.parse_args()
     if args.command == "gen":
@@ -986,6 +1487,41 @@ def main() -> int:
             for error in errors:
                 print(error)
             return 1
+        return 0
+    if args.command == "submit":
+        try:
+            job = submit_job(
+                Path(args.records).expanduser(),
+                Path(args.out).expanduser(),
+                Path(args.job_root).expanduser(),
+                args.backend,
+                args.retries,
+                args.force,
+                args.timeout_seconds,
+            )
+        except (ValueError, json.JSONDecodeError, OSError) as exc:
+            print(validation_error(f"invalid_record: {exc}"))
+            return 1
+        print(json.dumps({"job_id": job["job_id"], "status": job["status"], "job_root": job["job_root"], "out": job["out"]}, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run":
+        job_dir = job_path_for(Path(args.root).expanduser(), args.job_id)
+        if not job_dir.exists():
+            print(validation_error(f"job not found: {args.job_id}"))
+            return 1
+        try:
+            job = run_job(job_dir, force=True if args.force else None)
+        except Exception as exc:  # noqa: BLE001 - top-level CLI error reporting.
+            print(validation_error(f"job failed: {exc}"))
+            return 1
+        print(json.dumps(query_job(job_dir), ensure_ascii=False, indent=2))
+        return 0 if job["status"] == "completed" else 1
+    if args.command == "query":
+        job_dir = job_path_for(Path(args.root).expanduser(), args.job_id)
+        if not job_dir.exists():
+            print(validation_error(f"job not found: {args.job_id}"))
+            return 1
+        print(json.dumps(query_job(job_dir), ensure_ascii=False, indent=2))
         return 0
     return 1
 

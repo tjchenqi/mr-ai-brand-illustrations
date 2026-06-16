@@ -28,6 +28,16 @@ List expected image slots and whether generated files exist:
 bin/mrai assets samples/my-topic
 ```
 
+B-side records image generation:
+
+```bash
+bin/mrai submit records.json --out samples/my-topic --backend mmx
+bin/mrai run <job_id>
+bin/mrai query <job_id>
+```
+
+Use `--backend mock` for offline validation. The records interface is documented in `agent-pack/b-records-interface.md`.
+
 ## Style presets
 
 Choose the visual mode explicitly:
@@ -136,6 +146,7 @@ Run it before handing a package to Remotion, ffmpeg, 耿鬼, OpenClaw, or anothe
 Use CLI for:
 
 - Batch package creation.
+- B-side records image job submission.
 - Stable folder naming.
 - ffmpeg or video pipeline integration.
 - First-pass audio/visual alignment through `timeline-plan.md`.

@@ -1,0 +1,34 @@
+{
+  "records": [
+    {
+      "s_id": "S01",
+      "audience_takeaway": "理解 AI 工具不是替代人，而是帮人把判断流程拆清楚。",
+      "visual_intent": "Mr.Ai 在一张空白路线图旁，把人类判断和 AI 工具并排摆好。",
+      "mode": "explainer-sketch",
+      "layout": "right text safe",
+      "labels": ["判断", "工具", "人"],
+      "key_elements": ["blank route line", "two small props"],
+      "negative_elements": ["robot face", "PPT boxes"],
+      "format": "9x16",
+      "beat_ref": "beat-001"
+    },
+    {
+      "s_id": "S02",
+      "audience_takeaway": "知道引用材料应该保留原意，不要被改写成新的观点。",
+      "visual_intent": "Mr.Ai 把一张引用卡放到空白展示板上，旁边留出字幕区。",
+      "mode": "brand",
+      "layout": "left text safe",
+      "labels": ["引用", "原意"],
+      "format": "16x9",
+      "beat_ref": "beat-002"
+    },
+    {
+      "s_id": "S03",
+      "audience_takeaway": "看到失败项也能继续推进，不需要整批返工。",
+      "visual_intent": "mock partial failure",
+      "format": "9x16",
+      "beat_ref": "beat-003",
+      "mock_provider_error": "simulated provider failure"
+    }
+  ]
+}

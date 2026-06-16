@@ -19,9 +19,10 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 7. agent-pack/layout-library.md
 8. agent-pack/cli-usage.md
 9. agent-pack/delivery-spec.md
-10. agent-pack/prompt-template.md
-11. agent-pack/qa-checklist.md
-12. agent-pack/first-validation-protocol.md
+10. agent-pack/b-records-interface.md
+11. agent-pack/prompt-template.md
+12. agent-pack/qa-checklist.md
+13. agent-pack/first-validation-protocol.md
 
 任务：
 根据我提供的一篇 AI 闲僧口播稿，输出一套 Mr.Ai 配图验证包，并实际生成 2-3 张图片做第一次验证。
@@ -51,6 +52,23 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 
 10. 完成 QA，并报告哪些规则需要更新。
 
+如果你已经有 B 侧 `records.json`，可以改用 records/job 出图入口：
+
+1. 运行：
+
+   bin/mrai submit records.json --out samples/<topic-slug> --backend mmx
+
+2. 记录返回的 `job_id`。
+3. 运行：
+
+   bin/mrai run <job_id>
+
+4. 运行：
+
+   bin/mrai query <job_id>
+
+这个 job 接口是服务工具，不替代 B 侧 beat_manifest、VTT、时间轴或 Remotion 合成逻辑。
+
 请生成或整理这些文件：
 
 - source-script.md
@@ -76,6 +94,7 @@ https://github.com/tjchenqi/mr-ai-brand-illustrations
 - 图片必须尽量落到 `asset-manifest.json` 指定路径，方便 ffmpeg/Remotion 后续读取。
 - 生成图片前后都要跑 `bin/mrai validate samples/<topic-slug>`；如果失败，先报告失败项。
 - 生成图片后要跑 `bin/mrai assets samples/<topic-slug>`，说明哪些槽位是 `ok`，哪些仍然 `missing`。
+- 如果使用 records/job 接口，输出里的 `safe_areas` 是 0-1 归一化坐标，`overlay_labels` 是后期叠字建议，不要求图片模型直接生成中文。
 - 最后明确记录：哪些图可用、哪些要重生成、哪些规则需要修改。
 
 最后请按这个格式回复：

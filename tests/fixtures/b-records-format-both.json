@@ -1,0 +1,8 @@
+[
+  {
+    "s_id": "S01",
+    "audience_takeaway": "横竖双版本后续再做。",
+    "visual_intent": "同一条 record 不应该一次生成 both。",
+    "format": "both"
+  }
+]

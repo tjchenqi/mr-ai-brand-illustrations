@@ -67,6 +67,16 @@ bin/mrai assets samples/my-topic
 
 CLI 负责目录、文件、S/B 解析、第一版音画决策表和 prompt scaffold；agent 负责判断、修订、生成图片和 QA。详见 `agent-pack/cli-usage.md`。
 
+B 侧耿鬼如果已经整理好 `records.json`，可以使用本地 job 出图入口：
+
+```bash
+bin/mrai submit records.json --out samples/my-topic --backend mmx
+bin/mrai run <job_id>
+bin/mrai query <job_id>
+```
+
+该入口使用本地 `.mrai-jobs/`，第一版不启动 HTTP 服务。详见 `agent-pack/b-records-interface.md`。
+
 可用 override：
 
 ```bash
@@ -82,6 +92,7 @@ bin/mrai gen script.md --out samples/my-topic --prefer-layout "Third Path"
 - `agent-pack/layout-library.json`：layout 的动作、默认标签、禁忌。
 - `agent-pack/treatment-rules.json`：S/B 选段、引用卡、字幕/无图处理。
 - `agent-pack/audio-visual-map.schema.json`：`audio-visual-map.json` 的下游接口契约。
+- `agent-pack/b-records-interface.md`：B 侧 records/job 出图接口。
 - `asset-manifest.json`：每个生成包内的图片落盘槽位契约。
 
 这些规则应使用可迁移语义模式，避免堆某几篇测试稿的具体名字或情节。

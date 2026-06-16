@@ -15,7 +15,8 @@ Read these files in order:
 7. `../agent-pack/qa-checklist.md`
 8. `../agent-pack/delivery-spec.md`
 9. `../agent-pack/first-validation-protocol.md`
-10. `genggui-handoff-prompt.md` when running the first real validation.
+10. `../agent-pack/b-records-interface.md`
+11. `genggui-handoff-prompt.md` when running the first real validation.
 
 ## Default task
 
@@ -42,6 +43,14 @@ bin/mrai assets samples/<topic-slug>
 ```
 
 For the first validation, generate only 2-3 images and place them in the paths declared by `asset-manifest.json`.
+
+If B already has `records.json`, use the local job interface:
+
+```bash
+bin/mrai submit records.json --out samples/<topic-slug> --backend mmx
+bin/mrai run <job_id>
+bin/mrai query <job_id>
+```
 
 ## Agent instruction
 
