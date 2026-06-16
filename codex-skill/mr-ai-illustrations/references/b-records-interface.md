@@ -57,9 +57,11 @@ Optional per record:
 - `labels`: Chinese labels for post-production overlay. These are not rendered inside the bitmap.
 - `key_elements`: elements that should appear.
 - `negative_elements`: elements to avoid.
-- `reference_image`: Mr.Ai reference image path.
-- `format`: `9x16` or `16x9`. V1.1 does not accept `both`; submit separate records instead.
+- `reference_image`: Mr.Ai reference image path. If omitted, the CLI uses `assets/brand-references/MrAi_logo.png`.
+- `format`: `9x16` or `16x9`. V1.1.1 does not accept `both`; submit separate records instead.
 - `beat_ref`: B-side beat id. The CLI preserves it but does not calculate timing.
+
+`reference_image` is resolved during `submit`, written into the job snapshot, and included in the cache key with an image hash. If the path does not exist, `submit` fails with `invalid_record: reference_image not found` instead of silently generating without a character reference.
 
 ## Output
 
@@ -74,12 +76,14 @@ Each result includes:
 
 - `s_id`
 - `beat_ref`
+- `format`
 - `image_path`
 - `image_meta`
 - `layout_used`
 - `mode_used`
 - `safe_areas`
 - `composition_template_id`
+- `usable`: machine-readable shortcut. `true` only when the image exists and the QA status is `pass` or `warning`.
 - `qa_status`: `pass`, `warning`, `failed`, or `needs_human_review`
 - `qa_checks`
 - `generation_meta`
@@ -88,6 +92,8 @@ Each result includes:
 - `error_code`
 - `error_message`
 - `overlay_labels`
+
+`mrai query <job_id>` also returns a top-level `remotion_manifest` array so B can map images back into Remotion without reparsing every result object. Each item includes `s_id`, `beat_ref`, `image_path`, `safe_areas`, `overlay_labels`, `format`, and `usable`.
 
 Single-record failures do not make the whole job fail. A job can be `completed` with failed result items. B decides which images can enter Remotion.
 
@@ -99,24 +105,27 @@ Safe areas use normalized 0-1 coordinates:
 {"x": 0.06, "y": 0.78, "w": 0.88, "h": 0.2}
 ```
 
-V1.1 uses five templates:
+V1.1.1 uses six templates:
 
 - `left_text_safe`
 - `right_text_safe`
 - `top_subtitle_safe`
 - `bottom_subtitle_safe`
 - `center_character_safe`
+- `actor_top_subtitle_bottom`
 
 ## Backend Policy
 
-V1.1 supports:
+V1.1.1 supports:
 
 - `mock`: offline test provider that writes tiny placeholder PNG files.
 - `mmx`: MiniMax/image-01 provider using `--region cn`.
 
 The prompt policy is fixed:
 
-- Do not render Chinese in bitmap images.
+- Use `--subject-ref type=character,image=<reference_image>` for MiniMax/image-01 character consistency.
+- If MiniMax rejects subject reference but can still generate without it, the CLI falls back once, writes `qa_status=warning`, and marks `generation_meta.subject_ref_failed=true`.
+- Do not render any text in bitmap images: no Chinese, English, fake text, numbers, UI labels, titles, or subtitles.
 - Put Chinese labels in `overlay_labels`.
 - Preserve Mr.Ai's baseball cap, mustache, blue clothing, yellow brand accent, and friendly middle-aged cartoon identity.
 - Avoid formula, equation, PPT infographic, plus-sign formula, dense architecture diagram, robot face, and sci-fi UI.

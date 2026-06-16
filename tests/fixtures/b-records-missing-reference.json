@@ -1,0 +1,9 @@
+[
+  {
+    "s_id": "S01",
+    "audience_takeaway": "缺失参考图应该在 submit 阶段报错。",
+    "visual_intent": "不要静默退化为无参考图生成。",
+    "reference_image": "assets/brand-references/not-found.png",
+    "format": "9x16"
+  }
+]

@@ -26,6 +26,7 @@ DEFAULT_ROUTING_PATH = REPO_ROOT / "agent-pack" / "visual-routing-rules.json"
 DEFAULT_LAYOUT_LIBRARY_PATH = REPO_ROOT / "agent-pack" / "layout-library.json"
 DEFAULT_TREATMENT_RULES_PATH = REPO_ROOT / "agent-pack" / "treatment-rules.json"
 DEFAULT_AV_SCHEMA_PATH = REPO_ROOT / "agent-pack" / "audio-visual-map.schema.json"
+DEFAULT_REFERENCE_IMAGE_PATH = REPO_ROOT / "assets" / "brand-references" / "MrAi_logo.png"
 JOB_STORE_DIRNAME = ".mrai-jobs"
 SUPPORTED_RECORD_FORMATS = {"9x16", "16x9"}
 JOB_STATUSES = {"pending", "running", "completed", "failed"}
@@ -43,6 +44,7 @@ SAFE_AREA_TEMPLATES = {
     "top_subtitle_safe": [{"x": 0.06, "y": 0.0, "w": 0.88, "h": 0.18}],
     "bottom_subtitle_safe": [{"x": 0.06, "y": 0.78, "w": 0.88, "h": 0.2}],
     "center_character_safe": [{"x": 0.18, "y": 0.18, "w": 0.64, "h": 0.64}],
+    "actor_top_subtitle_bottom": [{"x": 0.06, "y": 0.76, "w": 0.88, "h": 0.22}],
 }
 
 
@@ -324,6 +326,17 @@ def hash_reference_image(path_value: str | None) -> str | None:
     return digest.hexdigest()
 
 
+def resolve_reference_image(path_value: str | None) -> Path:
+    path = Path(path_value).expanduser() if path_value else DEFAULT_REFERENCE_IMAGE_PATH
+    if not path.is_absolute():
+        path = (REPO_ROOT / path).resolve()
+    else:
+        path = path.resolve()
+    if not path.exists():
+        raise FileNotFoundError(f"reference_image not found: {path}")
+    return path
+
+
 def record_cache_payload(record: dict, backend_config: dict) -> dict:
     reference_image = record.get("reference_image")
     return {
@@ -341,6 +354,8 @@ def safe_area_template_for_record(record: dict) -> str:
     layout = str(record.get("layout", "")).lower()
     intent = str(record.get("visual_intent", "")).lower()
     text = layout + " " + intent
+    if any(keyword in text for keyword in ["actor_top_subtitle_bottom", "actor top", "人物上方", "字幕下方"]):
+        return "actor_top_subtitle_bottom"
     if any(keyword in text for keyword in ["left", "左"]):
         return "left_text_safe"
     if any(keyword in text for keyword in ["right", "右"]):
@@ -350,6 +365,13 @@ def safe_area_template_for_record(record: dict) -> str:
     if any(keyword in text for keyword in ["center", "中间", "中心"]):
         return "center_character_safe"
     return "bottom_subtitle_safe"
+
+
+def normalize_record_defaults(record: dict) -> dict:
+    item = dict(record)
+    item.setdefault("format", "9x16")
+    item["reference_image"] = str(resolve_reference_image(item.get("reference_image")))
+    return item
 
 
 def normalize_list(value) -> list[str]:
@@ -372,6 +394,12 @@ def prompt_for_record(record: dict) -> str:
     orientation = "9:16 vertical" if fmt == "9x16" else "16:9 horizontal"
     mode = record.get("mode", "auto")
     layout = record.get("layout", "auto physical metaphor")
+    style_guidance = {
+        "explainer-sketch": "Hand-drawn whiteboard explanation, clean white background, thin black marker lines, sparse props, rough human sketch feeling, no glossy shading, no full scene background. Mr.Ai should be small but readable and perform the explanatory action.",
+        "brand": "Colored cartoon brand IP plus clean explanatory sketch logic, white or very light background, restrained blue/yellow brand palette, dark outlines, simple conceptual props, warm but practical.",
+        "background": "Quiet reusable background illustration with Mr.Ai present but not overpowering, large clean safe areas for overlays, restrained brand palette, no decorative clutter.",
+        "auto": "Colored cartoon Mr.Ai brand IP with sparse explanatory sketch logic, white or very light background, restrained blue/yellow brand palette, dark outlines, simple conceptual props.",
+    }.get(mode, "Colored cartoon Mr.Ai brand IP with sparse explanatory sketch logic, white or very light background, restrained blue/yellow brand palette.")
     return textwrap.dedent(
         f"""\
         Generate one standalone Mr.Ai image for the AI 闲僧 video column.
@@ -393,10 +421,13 @@ def prompt_for_record(record: dict) -> str:
         {" / ".join(labels) if labels else "blank label spaces only"}
 
         Brand character:
-        Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, blue shirt, thick dark outline, and a tiny yellow brand accent. Preserve the baseball cap, mustache, blue clothing, yellow brand accent, and rounded middle-aged cartoon identity.
+        Use the provided character reference image as the identity source. Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a visible yellow brand accent on the cap or clothing. Preserve the reference character's rounded proportions, cap shape, mustache shape, blue clothing, yellow accent, and friendly middle-aged cartoon identity. Do not redesign him as a realistic man, generic flat-vector person, robot, monk, child, or formal business presenter.
+
+        Visual style:
+        {style_guidance}
 
         Constraints:
-        Do NOT render any Chinese characters in the image. The Chinese audience takeaway, visual intent, and overlay labels are semantic instructions only; do not copy them into the bitmap. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No formula, no equation, no PPT infographic, no plus-sign formula, no dense architecture diagram, no realistic UI screenshot, no sci-fi interface, no robot face. Avoid: {negative_elements}.
+        Do NOT render any text, letters, words, numbers, captions, labels, fake English, fake Chinese, pseudo-writing, symbols that look like text, titles, subtitles, or UI text in the image. The Chinese audience takeaway, visual intent, and overlay labels are semantic instructions only; do not copy them into the bitmap. Leave all label cards, signs, and text spaces completely blank so exact Chinese can be added in post-production overlay. Use blank cards, blank signs, and blank lines only. No formula, no equation, no PPT infographic, no plus-sign formula, no dense architecture diagram, no realistic UI screenshot, no sci-fi interface, no robot face. Avoid: {negative_elements}.
         """
     ).strip()
 
@@ -453,20 +484,26 @@ def build_result(
     attempt: int,
     error_code: str | None = None,
     error_message: str | None = None,
+    qa_status_override: str | None = None,
+    subject_ref_failed: bool = False,
 ) -> dict:
     safe_template = safe_area_template_for_record(record)
     provider_ok = image_path is not None and error_code is None
-    qa_status = "needs_human_review" if provider_ok else "failed"
+    qa_status = qa_status_override or ("needs_human_review" if provider_ok else "failed")
     path = Path(image_path) if image_path else None
+    usable = provider_ok and qa_status in {"pass", "warning"}
+    subject_ref_requested = backend == "mmx" and bool(record.get("reference_image"))
     return {
         "s_id": record.get("s_id"),
         "beat_ref": record.get("beat_ref"),
+        "format": record.get("format", "9x16"),
         "image_path": image_path,
         "image_meta": image_meta_for(path) if path else {"width": None, "height": None, "format": None, "color_space": "unknown", "bytes": 0},
         "layout_used": record.get("layout") or "auto",
         "mode_used": record.get("mode") or "auto",
         "safe_areas": SAFE_AREA_TEMPLATES[safe_template],
         "composition_template_id": safe_template,
+        "usable": usable,
         "qa_status": qa_status,
         "qa_checks": qa_checks_for_result(record, image_path, provider_ok),
         "generation_meta": {
@@ -477,6 +514,10 @@ def build_result(
             "seed": seed,
             "timestamp": utc_now(),
             "attempt": attempt,
+            "reference_image": record.get("reference_image"),
+            "subject_ref_requested": subject_ref_requested,
+            "subject_ref_used": subject_ref_requested and not subject_ref_failed,
+            "subject_ref_failed": subject_ref_failed,
         },
         "version": version,
         "cache_hit": cache_hit,
@@ -491,11 +532,22 @@ def write_mock_image(path: Path) -> None:
     path.write_bytes(base64.b64decode(MOCK_PNG_BASE64))
 
 
-def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed: int, timeout_seconds: int) -> Path:
-    if shutil.which("mmx") is None:
-        raise FileNotFoundError("mmx CLI not found")
+def mmx_output_for(out_dir: Path, out_prefix: str) -> Path:
+    candidates = sorted(out_dir.glob(f"{out_prefix}*"))
+    if not candidates:
+        raise RuntimeError("mmx completed but produced no output file")
+    return candidates[-1]
+
+
+def build_mmx_command(
+    prompt: str,
+    out_dir: Path,
+    out_prefix: str,
+    fmt: str,
+    seed: int,
+    reference_image: str | None = None,
+) -> list[str]:
     aspect = "9:16" if fmt == "9x16" else "16:9"
-    out_dir.mkdir(parents=True, exist_ok=True)
     cmd = [
         "mmx",
         "image",
@@ -513,11 +565,25 @@ def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed
         "--prompt",
         prompt,
     ]
-    subprocess.run(cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
-    candidates = sorted(out_dir.glob(f"{out_prefix}*"))
-    if not candidates:
-        raise RuntimeError("mmx completed but produced no output file")
-    return candidates[-1]
+    if reference_image:
+        cmd.extend(["--subject-ref", f"type=character,image={reference_image}"])
+    return cmd
+
+
+def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed: int, timeout_seconds: int, reference_image: str | None = None) -> tuple[Path, bool]:
+    if shutil.which("mmx") is None:
+        raise FileNotFoundError("mmx CLI not found")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cmd = build_mmx_command(prompt, out_dir, out_prefix, fmt, seed, reference_image)
+    try:
+        subprocess.run(cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
+        return mmx_output_for(out_dir, out_prefix), False
+    except subprocess.CalledProcessError:
+        if not reference_image:
+            raise
+        fallback_cmd = build_mmx_command(prompt, out_dir, out_prefix, fmt, seed, None)
+        subprocess.run(fallback_cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
+        return mmx_output_for(out_dir, out_prefix), True
 
 
 def job_output_dir(job: dict) -> Path:
@@ -529,6 +595,18 @@ def job_results_path(job: dict) -> Path:
 
 
 def save_results(job: dict, results: list[dict]) -> None:
+    remotion_manifest = [
+        {
+            "s_id": result.get("s_id"),
+            "beat_ref": result.get("beat_ref"),
+            "image_path": result.get("image_path"),
+            "safe_areas": result.get("safe_areas", []),
+            "overlay_labels": result.get("overlay_labels", []),
+            "format": result.get("format"),
+            "usable": result.get("usable", False),
+        }
+        for result in results
+    ]
     write_json_file(
         job_results_path(job),
         {
@@ -536,6 +614,7 @@ def save_results(job: dict, results: list[dict]) -> None:
             "status": job["status"],
             "records_count": len(job.get("records", [])),
             "results": results,
+            "remotion_manifest": remotion_manifest,
             "updated_at": utc_now(),
         },
     )
@@ -547,6 +626,13 @@ def load_results(job: dict) -> list[dict]:
         return []
     data = load_json_config(path)
     return data.get("results", [])
+
+
+def load_results_payload(job: dict) -> dict:
+    path = job_results_path(job)
+    if not path.exists():
+        return {"results": [], "remotion_manifest": []}
+    return load_json_config(path)
 
 
 def submit_job(records_path: Path, out: Path, job_root: Path, backend: str, retries: int, force: bool, timeout_seconds: int) -> dict:
@@ -566,8 +652,7 @@ def submit_job(records_path: Path, out: Path, job_root: Path, backend: str, retr
     job_dir.mkdir(parents=True, exist_ok=True)
     normalized_records = []
     for record in records:
-        item = dict(record)
-        item.setdefault("format", "9x16")
+        item = normalize_record_defaults(record)
         normalized_records.append(item)
     job = {
         "job_id": job_id,
@@ -620,6 +705,7 @@ def generate_record(job: dict, record: dict, existing_results: list[dict]) -> di
     attempts = max(1, int(job.get("retries", 0)) + 1)
     last_error: Exception | None = None
     for attempt in range(1, attempts + 1):
+        subject_ref_failed = False
         try:
             if backend == "mock":
                 target = image_dir / result_filename(record["s_id"], version, fmt, "png")
@@ -628,16 +714,36 @@ def generate_record(job: dict, record: dict, existing_results: list[dict]) -> di
                 write_mock_image(target)
             elif backend == "mmx":
                 out_prefix = f"{safe_id}_v{version}_{fmt}"
-                produced = run_mmx_provider(prompt, image_dir, out_prefix, fmt, seed, int(job.get("timeout_seconds", 1800)))
+                produced, subject_ref_failed = run_mmx_provider(
+                    prompt,
+                    image_dir,
+                    out_prefix,
+                    fmt,
+                    seed,
+                    int(job.get("timeout_seconds", 1800)),
+                    record.get("reference_image"),
+                )
                 target = image_dir / result_filename(record["s_id"], version, fmt, produced.suffix.lower().lstrip(".") or "png")
                 if produced != target:
                     produced.rename(target)
             else:
                 raise RuntimeError(f"unsupported backend {backend}")
-            cache_file = cache_dir / f"{cache_key}_{fmt}{target.suffix.lower() or '.png'}"
-            cache_file.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(target, cache_file)
-            return build_result(record, str(target), version, False, backend, prompt, seed, attempt)
+            if not subject_ref_failed:
+                cache_file = cache_dir / f"{cache_key}_{fmt}{target.suffix.lower() or '.png'}"
+                cache_file.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(target, cache_file)
+            return build_result(
+                record,
+                str(target),
+                version,
+                False,
+                backend,
+                prompt,
+                seed,
+                attempt,
+                qa_status_override="warning" if backend == "mmx" and subject_ref_failed else None,
+                subject_ref_failed=backend == "mmx" and subject_ref_failed,
+            )
         except subprocess.TimeoutExpired as exc:
             last_error = exc
             error_code = "timeout"
@@ -694,14 +800,15 @@ def run_job(job_dir: Path, force: bool | None = None) -> dict:
 
 def query_job(job_dir: Path) -> dict:
     job = load_job(job_dir)
-    results = load_results(job)
+    results_payload = load_results_payload(job)
     return {
         "job_id": job.get("job_id"),
         "status": job.get("status"),
         "progress": job.get("progress"),
         "out": job.get("out"),
         "backend": job.get("backend"),
-        "results": results,
+        "results": results_payload.get("results", []),
+        "remotion_manifest": results_payload.get("remotion_manifest", []),
         "errors": job.get("errors", []),
         "updated_at": job.get("updated_at"),
     }

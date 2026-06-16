@@ -8,6 +8,7 @@ S/B parsing, machine-readable AV maps, blank-text prompt policy, and overrides.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -19,12 +20,14 @@ BIN = ROOT / "bin" / "mrai"
 FIXTURES = ROOT / "tests" / "fixtures"
 
 
-def run(*args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([str(BIN), *args], cwd=ROOT, check=True, text=True, capture_output=True)
+def run(*args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+    command_env = {**os.environ, **(env or {})}
+    return subprocess.run([str(BIN), *args], cwd=ROOT, check=True, text=True, capture_output=True, env=command_env)
 
 
-def run_unchecked(*args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([str(BIN), *args], cwd=ROOT, check=False, text=True, capture_output=True)
+def run_unchecked(*args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+    command_env = {**os.environ, **(env or {})}
+    return subprocess.run([str(BIN), *args], cwd=ROOT, check=False, text=True, capture_output=True, env=command_env)
 
 
 def load_map(path: Path) -> dict:
@@ -120,6 +123,7 @@ def main() -> int:
         pending = json.loads(run("query", job_id, "--root", str(tmp)).stdout)
         assert pending["status"] == "pending"
         assert pending["results"] == []
+        assert pending["remotion_manifest"] == []
 
         completed = json.loads(run("run", job_id, "--root", str(tmp)).stdout)
         assert completed["status"] == "completed"
@@ -131,12 +135,20 @@ def main() -> int:
         assert completed["results"][0]["image_path"].endswith("S01_v1_9x16.png")
         assert completed["results"][0]["version"] == 1
         assert completed["results"][0]["cache_hit"] is False
+        assert completed["results"][0]["format"] == "9x16"
+        assert completed["results"][0]["usable"] is False
         assert completed["results"][0]["overlay_labels"] == ["判断", "工具", "人"]
-        assert completed["results"][0]["generation_meta"]["prompt"].find("Do NOT render any Chinese characters") >= 0
+        assert "Do NOT render any text" in completed["results"][0]["generation_meta"]["prompt"]
+        assert completed["results"][0]["generation_meta"]["reference_image"].endswith("assets/brand-references/MrAi_logo.png")
+        assert completed["results"][0]["generation_meta"]["subject_ref_requested"] is False
         assert completed["results"][0]["qa_status"] == "needs_human_review"
         assert completed["results"][1]["image_path"].endswith("S02_v1_16x9.png")
         assert completed["results"][2]["error_code"] == "provider_failed"
         assert_safe_areas(completed["results"][0])
+        queried_completed = json.loads(run("query", job_id, "--root", str(tmp)).stdout)
+        assert queried_completed["remotion_manifest"][0]["s_id"] == "S01"
+        assert queried_completed["remotion_manifest"][0]["format"] == "9x16"
+        assert queried_completed["remotion_manifest"][0]["usable"] is False
 
         submit_cached = run(
             "submit",
@@ -152,6 +164,74 @@ def main() -> int:
         cached = json.loads(run("run", cached_job_id, "--root", str(tmp)).stdout)
         assert cached["results"][0]["cache_hit"] is True
         assert cached["results"][0]["version"] == 1
+
+        fake_bin = tmp / "fake-bin"
+        fake_bin.mkdir()
+        fake_mmx = fake_bin / "mmx"
+        fake_mmx.write_text(
+            """#!/bin/sh
+out_dir=""
+out_prefix=""
+has_ref=0
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --out-dir) shift; out_dir="$1" ;;
+    --out-prefix) shift; out_prefix="$1" ;;
+    --subject-ref) has_ref=1; shift ;;
+  esac
+  shift
+done
+if [ "$has_ref" = "1" ]; then
+  exit 17
+fi
+mkdir -p "$out_dir"
+printf "fake image" > "$out_dir/${out_prefix}_001.jpg"
+""",
+            encoding="utf-8",
+        )
+        fake_mmx.chmod(0o755)
+        fake_env = {"PATH": f"{fake_bin}{os.pathsep}{os.environ.get('PATH', '')}"}
+        mmx_records = tmp / "mmx-records.json"
+        mmx_records.write_text(
+            json.dumps(
+                {
+                    "records": [
+                        {
+                            "s_id": "S09",
+                            "audience_takeaway": "验证 subject-ref 失败时可以有痕迹地降级。",
+                            "visual_intent": "actor_top_subtitle_bottom, Mr.Ai above a blank subtitle area",
+                            "format": "9x16",
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        submit_mmx = run(
+            "submit",
+            str(mmx_records),
+            "--out",
+            str(tmp / "records-mmx"),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mmx",
+            "--retries",
+            "0",
+            "--timeout-seconds",
+            "5",
+            env=fake_env,
+        )
+        mmx_job_id = json.loads(submit_mmx.stdout)["job_id"]
+        mmx_completed = json.loads(run("run", mmx_job_id, "--root", str(tmp), env=fake_env).stdout)
+        mmx_result = mmx_completed["results"][0]
+        assert mmx_result["qa_status"] == "warning"
+        assert mmx_result["usable"] is True
+        assert mmx_result["composition_template_id"] == "actor_top_subtitle_bottom"
+        assert mmx_result["generation_meta"]["subject_ref_requested"] is True
+        assert mmx_result["generation_meta"]["subject_ref_used"] is False
+        assert mmx_result["generation_meta"]["subject_ref_failed"] is True
 
         submit_force = run(
             "submit",
@@ -175,6 +255,9 @@ def main() -> int:
         both = run_unchecked("submit", str(FIXTURES / "b-records-format-both.json"), "--out", str(tmp / "both"), "--backend", "mock")
         assert both.returncode == 1
         assert "format=both is not supported" in both.stdout
+        bad_ref = run_unchecked("submit", str(FIXTURES / "b-records-missing-reference.json"), "--out", str(tmp / "bad-ref"), "--backend", "mock")
+        assert bad_ref.returncode == 1
+        assert "reference_image not found" in bad_ref.stdout
     finally:
         shutil.rmtree(tmp)
 
