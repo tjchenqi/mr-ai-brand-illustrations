@@ -17,7 +17,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BIN = ROOT / "bin" / "mrai"
 FIXTURES = ROOT / "tests" / "fixtures"
-AV_SCHEMA = ROOT / "agent-pack" / "audio-visual-map.schema.json"
 
 
 def run(*args: str) -> None:
@@ -26,49 +25,6 @@ def run(*args: str) -> None:
 
 def load_map(path: Path) -> dict:
     return json.loads((path / "audio-visual-map.json").read_text(encoding="utf-8"))
-
-
-def load_schema() -> dict:
-    return json.loads(AV_SCHEMA.read_text(encoding="utf-8"))
-
-
-def assert_allowed(value, allowed, label: str) -> None:
-    assert value in allowed, f"{label}: {value!r} not in {allowed!r}"
-
-
-def assert_av_map_schema(data: dict, schema: dict) -> None:
-    for key in schema["top_level_required"]:
-        assert key in data, f"missing top-level field {key}"
-    assert_allowed(data["style_preset"], schema["enums"]["top_level.style_preset"], "style_preset")
-
-    segment_ids = set()
-    selected_host_ids = set()
-    for segment in data["segments"]:
-        for key in schema["segment_required"]:
-            assert key in segment, f"segment {segment.get('segment_id')} missing {key}"
-        segment_ids.add(segment["segment_id"])
-        assert_allowed(segment["role"], schema["enums"]["segment.role"], f"{segment['segment_id']}.role")
-        assert_allowed(segment["visual_treatment"], schema["enums"]["segment.visual_treatment"], f"{segment['segment_id']}.visual_treatment")
-        assert_allowed(segment["cognitive_role"], schema["enums"]["segment.cognitive_role"], f"{segment['segment_id']}.cognitive_role")
-        assert_allowed(segment["expression_pace"], schema["enums"]["segment.expression_pace"], f"{segment['segment_id']}.expression_pace")
-        assert_allowed(segment["timing"], schema["enums"]["segment.timing"], f"{segment['segment_id']}.timing")
-        assert isinstance(segment["selected_for_image"], bool)
-        if segment["role"] == "quoted_source":
-            assert segment["cognitive_role"] == "quote_source"
-            assert segment["visual_treatment"] == "quote-card-or-overlay"
-        if segment["role"] == "host_voiceover" and segment["selected_for_image"]:
-            selected_host_ids.add(segment["segment_id"])
-
-    for shot in data["shots"]:
-        for key in schema["shot_required"]:
-            assert key in shot, f"shot {shot.get('shot_id')} missing {key}"
-        assert shot["segment_id"] in selected_host_ids
-        assert_allowed(shot["segment_role"], schema["enums"]["shot.segment_role"], f"{shot['shot_id']}.segment_role")
-        assert shot["formats"] == schema["enums"]["shot.formats"]
-        assert_allowed(shot["style_preset"], schema["enums"]["shot.style_preset"], f"{shot['shot_id']}.style_preset")
-        assert_allowed(shot["expression_pace"], schema["enums"]["shot.expression_pace"], f"{shot['shot_id']}.expression_pace")
-        assert_allowed(shot["timing"], schema["enums"]["shot.timing"], f"{shot['shot_id']}.timing")
-        assert isinstance(shot["short_labels"], list)
 
 
 def assert_prompt_policy(path: Path) -> None:
@@ -87,7 +43,6 @@ def assert_no_b_images(data: dict) -> None:
 
 
 def main() -> int:
-    schema = load_schema()
     tmp = Path(tempfile.mkdtemp(prefix="mrai-smoke-"))
     try:
         cases = [
@@ -99,8 +54,8 @@ def main() -> int:
         for fixture, title, max_shots in cases:
             out = tmp / fixture.removesuffix(".md")
             run("gen", str(FIXTURES / fixture), "--out", str(out), "--title", title, "--style", "auto", "--max-shots", max_shots)
+            run("validate", str(out))
             data = load_map(out)
-            assert_av_map_schema(data, schema)
             assert data["shots"], fixture
             assert all(shot["formats"] == ["16x9", "9x16"] for shot in data["shots"])
             assert all("cognitive_role" in segment for segment in data["segments"])

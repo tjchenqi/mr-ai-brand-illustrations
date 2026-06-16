@@ -20,6 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ROUTING_PATH = REPO_ROOT / "agent-pack" / "visual-routing-rules.json"
 DEFAULT_LAYOUT_LIBRARY_PATH = REPO_ROOT / "agent-pack" / "layout-library.json"
 DEFAULT_TREATMENT_RULES_PATH = REPO_ROOT / "agent-pack" / "treatment-rules.json"
+DEFAULT_AV_SCHEMA_PATH = REPO_ROOT / "agent-pack" / "audio-visual-map.schema.json"
 
 
 @dataclass
@@ -50,6 +51,101 @@ def read_input(value: str) -> str:
 
 def load_json_config(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def validation_error(message: str) -> str:
+    return f"ERROR: {message}"
+
+
+def validate_allowed(errors: list[str], value, allowed, label: str) -> None:
+    if value not in allowed:
+        errors.append(validation_error(f"{label}: {value!r} not in {allowed!r}"))
+
+
+def validate_av_map(data: dict, schema: dict) -> list[str]:
+    errors: list[str] = []
+    for key in schema["top_level_required"]:
+        if key not in data:
+            errors.append(validation_error(f"missing top-level field {key}"))
+    if errors:
+        return errors
+
+    validate_allowed(errors, data.get("style_preset"), schema["enums"]["top_level.style_preset"], "style_preset")
+
+    selected_host_ids: set[str] = set()
+    for index, segment in enumerate(data.get("segments", []), start=1):
+        if not isinstance(segment, dict):
+            errors.append(validation_error(f"segment[{index}] must be an object"))
+            continue
+        label = segment.get("segment_id", f"segment[{index}]")
+        for key in schema["segment_required"]:
+            if key not in segment:
+                errors.append(validation_error(f"{label} missing {key}"))
+        validate_allowed(errors, segment.get("role"), schema["enums"]["segment.role"], f"{label}.role")
+        validate_allowed(errors, segment.get("visual_treatment"), schema["enums"]["segment.visual_treatment"], f"{label}.visual_treatment")
+        validate_allowed(errors, segment.get("cognitive_role"), schema["enums"]["segment.cognitive_role"], f"{label}.cognitive_role")
+        validate_allowed(errors, segment.get("expression_pace"), schema["enums"]["segment.expression_pace"], f"{label}.expression_pace")
+        validate_allowed(errors, segment.get("timing"), schema["enums"]["segment.timing"], f"{label}.timing")
+        if not isinstance(segment.get("selected_for_image"), bool):
+            errors.append(validation_error(f"{label}.selected_for_image must be boolean"))
+        if segment.get("role") == "quoted_source":
+            if segment.get("cognitive_role") != "quote_source":
+                errors.append(validation_error(f"{label} quoted_source must use cognitive_role=quote_source"))
+            if segment.get("visual_treatment") != "quote-card-or-overlay":
+                errors.append(validation_error(f"{label} quoted_source must use visual_treatment=quote-card-or-overlay"))
+        if segment.get("role") == "host_voiceover" and segment.get("selected_for_image"):
+            selected_host_ids.add(segment.get("segment_id"))
+
+    for index, shot in enumerate(data.get("shots", []), start=1):
+        if not isinstance(shot, dict):
+            errors.append(validation_error(f"shot[{index}] must be an object"))
+            continue
+        label = shot.get("shot_id", f"shot[{index}]")
+        for key in schema["shot_required"]:
+            if key not in shot:
+                errors.append(validation_error(f"{label} missing {key}"))
+        validate_allowed(errors, shot.get("segment_role"), schema["enums"]["shot.segment_role"], f"{label}.segment_role")
+        if shot.get("formats") != schema["enums"]["shot.formats"]:
+            errors.append(validation_error(f"{label}.formats must be {schema['enums']['shot.formats']!r}"))
+        validate_allowed(errors, shot.get("style_preset"), schema["enums"]["shot.style_preset"], f"{label}.style_preset")
+        validate_allowed(errors, shot.get("expression_pace"), schema["enums"]["shot.expression_pace"], f"{label}.expression_pace")
+        validate_allowed(errors, shot.get("timing"), schema["enums"]["shot.timing"], f"{label}.timing")
+        if shot.get("segment_id") not in selected_host_ids:
+            errors.append(validation_error(f"{label}.segment_id must reference a selected host_voiceover segment"))
+        if not isinstance(shot.get("short_labels"), list):
+            errors.append(validation_error(f"{label}.short_labels must be a list"))
+
+    return errors
+
+
+def validate_package(package_path: Path, schema_path: Path) -> list[str]:
+    errors: list[str] = []
+    av_map_path = package_path / "audio-visual-map.json"
+    required_files = [
+        "source-script.md",
+        "shot-list.md",
+        "image-prompts.md",
+        "timeline-plan.md",
+        "audio-visual-map.json",
+        "qa-report.md",
+        "remotion-overlay-notes.md",
+        "validation-notes.md",
+    ]
+    for filename in required_files:
+        if not (package_path / filename).exists():
+            errors.append(validation_error(f"missing package file {filename}"))
+    for dirname in ["16x9", "9x16"]:
+        if not (package_path / dirname).is_dir():
+            errors.append(validation_error(f"missing package directory {dirname}/"))
+    if not av_map_path.exists():
+        return errors
+    try:
+        data = load_json_config(av_map_path)
+        schema = load_json_config(schema_path)
+    except json.JSONDecodeError as exc:
+        return errors + [validation_error(f"invalid JSON: {exc}")]
+    errors.extend(validate_av_map(data, schema))
+    return errors
 
 
 def contains_any(text: str, keywords: list[str]) -> bool:
@@ -745,6 +841,13 @@ def main() -> int:
         "--prefer-layout",
         help="Optional layout override for selected shots, for example 'Third Path'. Inline visual comments still take priority.",
     )
+    validate = sub.add_parser("validate", help="Validate a generated Mr.Ai package and its audio-visual-map contract.")
+    validate.add_argument("package", help="Generated package directory.")
+    validate.add_argument(
+        "--schema",
+        default=str(DEFAULT_AV_SCHEMA_PATH),
+        help="Path to audio-visual-map schema JSON. Defaults to agent-pack/audio-visual-map.schema.json.",
+    )
 
     args = parser.parse_args()
     if args.command == "gen":
@@ -762,6 +865,14 @@ def main() -> int:
             args.prefer_layout,
         )
         print(f"Wrote Mr.Ai package to {args.out}")
+        return 0
+    if args.command == "validate":
+        errors = validate_package(Path(args.package).expanduser(), Path(args.schema).expanduser())
+        if errors:
+            for error in errors:
+                print(error)
+            return 1
+        print(f"Package is valid: {args.package}")
         return 0
     return 1
 

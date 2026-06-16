@@ -16,6 +16,12 @@ Inline text is also accepted:
 bin/mrai gen "这里是一段口播稿..." --out ./imgs --title "临时验证"
 ```
 
+Validate a generated package before handoff:
+
+```bash
+bin/mrai validate samples/my-topic
+```
+
 ## Style presets
 
 Choose the visual mode explicitly:
@@ -99,6 +105,20 @@ The command writes:
 - `validation-notes.md`
 - `16x9/`
 - `9x16/`
+
+## Validation
+
+`bin/mrai validate <package>` checks that the generated folder has the required files, required image-format directories, and a valid `audio-visual-map.json` contract.
+
+It verifies:
+
+- required AV map fields
+- allowed enum values
+- `B` segments remain quote-card/overlay material
+- every shot references a selected host voiceover segment
+- every shot carries both `16x9` and `9x16` formats in the current MVP
+
+Run it before handing a package to Remotion, ffmpeg, 耿鬼, OpenClaw, or another production agent.
 
 ## Role in the production pipeline
 
