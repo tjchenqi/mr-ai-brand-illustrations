@@ -38,7 +38,7 @@ bin/mrai query <job_id>
 
 Use `--backend mock` for offline validation. The records interface is documented in `agent-pack/b-records-interface.md`.
 
-For the `mmx` backend, the CLI resolves `reference_image` during `submit`. If B omits it, the default is `assets/brand-references/MrAi_logo.png`; if B passes a missing file, `submit` fails instead of silently drifting. MiniMax generation uses `--subject-ref type=character,image=<reference_image>` for character consistency, keeps all exact labels in `overlay_labels`, and tells the image model to leave bitmap text blank for post-production overlay.
+For the `mmx` backend, the CLI resolves `reference_image` during `submit`. If B omits it, the default is `assets/brand-references/MrAi_logo.png`; if B passes a missing file, `submit` fails instead of silently drifting. MiniMax generation uses `--subject-ref type=character,image=<reference_image>` for character consistency, keeps all exact labels in `overlay_labels`, tells the image model to leave bitmap text blank for post-production overlay, and compacts the provider prompt to 1400 characters or less.
 
 ## Style presets
 

@@ -32,6 +32,8 @@ SUPPORTED_RECORD_FORMATS = {"9x16", "16x9"}
 JOB_STATUSES = {"pending", "running", "completed", "failed"}
 QA_STATUSES = {"pass", "warning", "failed", "needs_human_review"}
 ERROR_CODES = {"provider_missing", "provider_failed", "qa_failed", "invalid_record", "timeout"}
+MMX_PROMPT_TARGET_CHARS = 1400
+PROVIDER_ERROR_SNIPPET_CHARS = 500
 MOCK_PNG_BASE64 = (
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/"
     "lQx7WQAAAABJRU5ErkJggg=="
@@ -65,6 +67,12 @@ class ScriptSegment:
     @property
     def override(self) -> dict[str, str]:
         return self.visual_override or {}
+
+
+class MmxProviderError(RuntimeError):
+    def __init__(self, message: str, subject_ref_failed: bool = False):
+        super().__init__(message)
+        self.subject_ref_failed = subject_ref_failed
 
 
 def read_input(value: str) -> str:
@@ -386,50 +394,55 @@ def overlay_labels_for_record(record: dict) -> list[str]:
     return normalize_list(record.get("labels"))
 
 
+def compact_text(value, max_chars: int) -> str:
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    if len(text) <= max_chars:
+        return text
+    return text[: max(0, max_chars - 1)].rstrip() + "..."
+
+
+def compact_join(value, max_chars: int, fallback: str) -> str:
+    items = normalize_list(value)
+    if not items:
+        return fallback
+    return compact_text(", ".join(items), max_chars)
+
+
+def clamp_prompt(prompt: str, max_chars: int = MMX_PROMPT_TARGET_CHARS) -> str:
+    if len(prompt) <= max_chars:
+        return prompt
+    keep = max_chars - len("\n[trimmed]")
+    return prompt[:keep].rstrip() + "\n[trimmed]"
+
+
 def prompt_for_record(record: dict) -> str:
     labels = overlay_labels_for_record(record)
-    key_elements = " / ".join(normalize_list(record.get("key_elements"))) or "one simple physical metaphor"
-    negative_elements = " / ".join(normalize_list(record.get("negative_elements"))) or "robot face / monk / formal business presenter"
+    key_elements = compact_join(record.get("key_elements"), 160, "one simple physical metaphor")
+    negative_elements = compact_join(record.get("negative_elements"), 120, "robot face, monk, formal business presenter")
     fmt = record.get("format", "9x16")
     orientation = "9:16 vertical" if fmt == "9x16" else "16:9 horizontal"
     mode = record.get("mode", "auto")
     layout = record.get("layout", "auto physical metaphor")
     style_guidance = {
-        "explainer-sketch": "Hand-drawn whiteboard explanation, clean white background, thin black marker lines, sparse props, rough human sketch feeling, no glossy shading, no full scene background. Mr.Ai should be small but readable and perform the explanatory action.",
-        "brand": "Colored cartoon brand IP plus clean explanatory sketch logic, white or very light background, restrained blue/yellow brand palette, dark outlines, simple conceptual props, warm but practical.",
-        "background": "Quiet reusable background illustration with Mr.Ai present but not overpowering, large clean safe areas for overlays, restrained brand palette, no decorative clutter.",
-        "auto": "Colored cartoon Mr.Ai brand IP with sparse explanatory sketch logic, white or very light background, restrained blue/yellow brand palette, dark outlines, simple conceptual props.",
-    }.get(mode, "Colored cartoon Mr.Ai brand IP with sparse explanatory sketch logic, white or very light background, restrained blue/yellow brand palette.")
-    return textwrap.dedent(
+        "explainer-sketch": "whiteboard sketch, white background, thin black marker, sparse props, rough hand-drawn feel",
+        "brand": "colored cartoon brand IP, white/light background, restrained blue/yellow palette, dark outlines",
+        "background": "quiet reusable background, large clean overlay space, restrained brand palette",
+        "auto": "colored Mr.Ai brand IP plus sparse explanatory sketch logic, white/light background",
+    }.get(mode, "colored Mr.Ai brand IP plus sparse explanatory sketch logic")
+    prompt = textwrap.dedent(
         f"""\
-        Generate one standalone Mr.Ai image for the AI 闲僧 video column.
-
-        Format: {orientation}.
-        Mode: {mode}.
-        Layout intent: {layout}.
-
-        Audience takeaway:
-        {record.get("audience_takeaway", "")}
-
-        Visual intent:
-        {record.get("visual_intent", "")}
-
-        Required visual elements:
-        {key_elements}
-
-        Overlay labels for post-production only:
-        {" / ".join(labels) if labels else "blank label spaces only"}
-
-        Brand character:
-        Use the provided character reference image as the identity source. Mr.Ai is a friendly middle-aged AI explainer with a baseball cap with a curved brim, clearly visible gray/dark mustache, rounded cartoon face, simple blue shirt, thick dark outline, and a visible yellow brand accent on the cap or clothing. Preserve the reference character's rounded proportions, cap shape, mustache shape, blue clothing, yellow accent, and friendly middle-aged cartoon identity. Do not redesign him as a realistic man, generic flat-vector person, robot, monk, child, or formal business presenter.
-
-        Visual style:
-        {style_guidance}
-
-        Constraints:
-        Do NOT render any text, letters, words, numbers, captions, labels, fake English, fake Chinese, pseudo-writing, symbols that look like text, titles, subtitles, or UI text in the image. The Chinese audience takeaway, visual intent, and overlay labels are semantic instructions only; do not copy them into the bitmap. Leave all label cards, signs, and text spaces completely blank so exact Chinese can be added in post-production overlay. Use blank cards, blank signs, and blank lines only. No formula, no equation, no PPT infographic, no plus-sign formula, no dense architecture diagram, no realistic UI screenshot, no sci-fi interface, no robot face. Avoid: {negative_elements}.
+        Mr.Ai image for AI 闲僧. Format: {orientation}. Mode: {mode}. Layout: {compact_text(layout, 80)}.
+        Scene intent: {compact_text(record.get("visual_intent", ""), 260)}
+        Audience takeaway: {compact_text(record.get("audience_takeaway", ""), 220)}
+        Required elements: {key_elements}.
+        Overlay labels are for post-production only: {compact_text(", ".join(labels) if labels else "blank label spaces", 120)}.
+        Character: use the subject reference image as identity source. Preserve Mr.Ai: friendly middle-aged cartoon explainer, rounded face, baseball cap with curved brim, clear dark/gray mustache, blue shirt, yellow brand accent, thick dark outline. Do not redesign him as realistic man, flat-vector generic person, robot, monk, child, or business presenter.
+        Style: {style_guidance}. Simple physical metaphor, clean composition, no glossy sci-fi UI.
+        Text rule: render NO text of any kind. No Chinese, English, fake letters, numbers, captions, labels, UI text, or pseudo-writing. Leave cards/signs/labels blank for later overlay.
+        Avoid: formula, equation, plus-sign formula, PPT infographic, dense architecture diagram, realistic UI screenshot, robot face, {negative_elements}.
         """
     ).strip()
+    return clamp_prompt(prompt)
 
 
 def image_meta_for(path: Path) -> dict:
@@ -514,6 +527,8 @@ def build_result(
             "seed": seed,
             "timestamp": utc_now(),
             "attempt": attempt,
+            "prompt_chars": len(prompt),
+            "prompt_limit": MMX_PROMPT_TARGET_CHARS if backend == "mmx" else None,
             "reference_image": record.get("reference_image"),
             "subject_ref_requested": subject_ref_requested,
             "subject_ref_used": subject_ref_requested and not subject_ref_failed,
@@ -525,6 +540,19 @@ def build_result(
         "error_message": error_message,
         "overlay_labels": overlay_labels_for_record(record),
     }
+
+
+def provider_error_excerpt(exc: subprocess.CalledProcessError) -> str:
+    pieces = []
+    stderr = compact_text(getattr(exc, "stderr", "") or "", PROVIDER_ERROR_SNIPPET_CHARS)
+    stdout = compact_text(getattr(exc, "stdout", "") or "", PROVIDER_ERROR_SNIPPET_CHARS)
+    if stderr:
+        pieces.append(f"stderr: {stderr}")
+    if stdout:
+        pieces.append(f"stdout: {stdout}")
+    if not pieces:
+        pieces.append(str(exc))
+    return "; ".join(pieces)
 
 
 def write_mock_image(path: Path) -> None:
@@ -578,11 +606,18 @@ def run_mmx_provider(prompt: str, out_dir: Path, out_prefix: str, fmt: str, seed
     try:
         subprocess.run(cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
         return mmx_output_for(out_dir, out_prefix), False
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as first_exc:
         if not reference_image:
-            raise
+            raise MmxProviderError(provider_error_excerpt(first_exc), False) from first_exc
         fallback_cmd = build_mmx_command(prompt, out_dir, out_prefix, fmt, seed, None)
-        subprocess.run(fallback_cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
+        try:
+            subprocess.run(fallback_cmd, check=True, text=True, capture_output=True, timeout=timeout_seconds)
+        except subprocess.CalledProcessError as fallback_exc:
+            message = (
+                f"subject-ref command failed: {provider_error_excerpt(first_exc)}; "
+                f"fallback command failed: {provider_error_excerpt(fallback_exc)}"
+            )
+            raise MmxProviderError(message, True) from fallback_exc
         return mmx_output_for(out_dir, out_prefix), True
 
 
@@ -704,6 +739,7 @@ def generate_record(job: dict, record: dict, existing_results: list[dict]) -> di
 
     attempts = max(1, int(job.get("retries", 0)) + 1)
     last_error: Exception | None = None
+    last_subject_ref_failed = False
     for attempt in range(1, attempts + 1):
         subject_ref_failed = False
         try:
@@ -750,11 +786,27 @@ def generate_record(job: dict, record: dict, existing_results: list[dict]) -> di
         except FileNotFoundError as exc:
             last_error = exc
             error_code = "provider_missing"
+        except MmxProviderError as exc:
+            last_error = exc
+            last_subject_ref_failed = exc.subject_ref_failed
+            error_code = "provider_failed"
         except Exception as exc:  # noqa: BLE001 - CLI must report provider errors.
             last_error = exc
             error_code = "provider_failed"
         if attempt >= attempts:
-            return build_result(record, None, version, False, backend, prompt, seed, attempt, error_code, str(last_error))
+            return build_result(
+                record,
+                None,
+                version,
+                False,
+                backend,
+                prompt,
+                seed,
+                attempt,
+                error_code,
+                str(last_error),
+                subject_ref_failed=backend == "mmx" and last_subject_ref_failed,
+            )
     return build_result(record, None, version, False, backend, prompt, seed, attempts, "provider_failed", "unknown provider failure")
 
 

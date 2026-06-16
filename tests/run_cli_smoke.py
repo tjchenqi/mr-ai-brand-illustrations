@@ -138,7 +138,8 @@ def main() -> int:
         assert completed["results"][0]["format"] == "9x16"
         assert completed["results"][0]["usable"] is False
         assert completed["results"][0]["overlay_labels"] == ["判断", "工具", "人"]
-        assert "Do NOT render any text" in completed["results"][0]["generation_meta"]["prompt"]
+        assert "Text rule: render NO text" in completed["results"][0]["generation_meta"]["prompt"]
+        assert len(completed["results"][0]["generation_meta"]["prompt"]) <= 1400
         assert completed["results"][0]["generation_meta"]["reference_image"].endswith("assets/brand-references/MrAi_logo.png")
         assert completed["results"][0]["generation_meta"]["subject_ref_requested"] is False
         assert completed["results"][0]["qa_status"] == "needs_human_review"
@@ -232,6 +233,64 @@ printf "fake image" > "$out_dir/${out_prefix}_001.jpg"
         assert mmx_result["generation_meta"]["subject_ref_requested"] is True
         assert mmx_result["generation_meta"]["subject_ref_used"] is False
         assert mmx_result["generation_meta"]["subject_ref_failed"] is True
+        assert mmx_result["generation_meta"]["prompt_chars"] <= 1400
+
+        fake_bin_fail = tmp / "fake-bin-fail"
+        fake_bin_fail.mkdir()
+        fake_mmx_fail = fake_bin_fail / "mmx"
+        fake_mmx_fail.write_text(
+            """#!/bin/sh
+echo "API error: invalid params, prompt length must be less than 1500" >&2
+exit 23
+""",
+            encoding="utf-8",
+        )
+        fake_mmx_fail.chmod(0o755)
+        fake_fail_env = {"PATH": f"{fake_bin_fail}{os.pathsep}{os.environ.get('PATH', '')}"}
+        long_records = tmp / "long-mmx-records.json"
+        long_records.write_text(
+            json.dumps(
+                {
+                    "records": [
+                        {
+                            "s_id": "S10",
+                            "audience_takeaway": "很长的认知目标" * 120,
+                            "visual_intent": "很长的视觉意图" * 120,
+                            "key_elements": ["元素" * 80],
+                            "negative_elements": ["禁忌" * 80],
+                            "format": "9x16",
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        submit_long = run(
+            "submit",
+            str(long_records),
+            "--out",
+            str(tmp / "records-mmx-long"),
+            "--job-root",
+            str(tmp),
+            "--backend",
+            "mmx",
+            "--retries",
+            "0",
+            "--timeout-seconds",
+            "5",
+            env=fake_fail_env,
+        )
+        long_job_id = json.loads(submit_long.stdout)["job_id"]
+        long_completed = json.loads(run("run", long_job_id, "--root", str(tmp), env=fake_fail_env).stdout)
+        long_result = long_completed["results"][0]
+        assert long_result["error_code"] == "provider_failed"
+        assert long_result["generation_meta"]["prompt_chars"] <= 1400
+        assert long_result["generation_meta"]["subject_ref_requested"] is True
+        assert long_result["generation_meta"]["subject_ref_used"] is False
+        assert long_result["generation_meta"]["subject_ref_failed"] is True
+        assert "subject-ref command failed" in long_result["error_message"]
+        assert "prompt length must be less than 1500" in long_result["error_message"]
 
         submit_force = run(
             "submit",
