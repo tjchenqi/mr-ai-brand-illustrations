@@ -4,7 +4,13 @@ Use this protocol before handing the project to another production agent such as
 
 ## Goal
 
-Verify that the system can turn one real AI 闲僧 script into usable Mr.Ai illustration assets for a simple voiceover plus image-carousel video workflow.
+Verify that the system can turn one real AI 闲僧 script into a usable Mr.Ai visual package for a simple voiceover plus image-carousel video workflow.
+
+The validation must test the full handoff loop:
+
+```text
+script -> mrai gen -> mrai validate -> review shot-list -> generate 2-3 images -> QA notes -> handoff report
+```
 
 ## Scope
 
@@ -30,13 +36,46 @@ The validating agent should receive:
 The validating agent should produce:
 
 - `source-script.md`
+- `timeline-plan.md`
 - `shot-list.md`
 - `image-prompts.md`
+- `audio-visual-map.json`
+- `asset-manifest.json`
 - `qa-report.md`
+- `remotion-overlay-notes.md`
+- `validation-notes.md`
 - `16x9/`
 - `9x16/`
-- optional `remotion-overlay-notes.md`
-- `validation-notes.md`
+
+## Required commands
+
+Run the package generator:
+
+```bash
+bin/mrai gen path/to/script.md --out samples/<topic-slug> --title "<topic>" --style auto --max-shots 5
+```
+
+Validate the package before image generation:
+
+```bash
+bin/mrai validate samples/<topic-slug>
+```
+
+If validation fails, stop and fix the package or report the failing fields before generating images.
+
+## Image generation step
+
+Generate only 2-3 actual images for the first validation. Choose the shots from `shot-list.md` and `asset-manifest.json`.
+
+For each generated image:
+
+- Write it to the exact path in `asset-manifest.json`.
+- Prefer the `9x16` version first when testing short-video use.
+- Do not ask the image model to render Chinese sentences.
+- Use blank cards, blank signs, roman numerals, or simple shapes inside the bitmap.
+- Put exact Chinese text into `remotion-overlay-notes.md` or another post-production overlay layer.
+
+If a tool cannot write directly to the manifest path, copy or rename the image afterward so the package still matches the manifest.
 
 ## Pass criteria
 
@@ -48,6 +87,8 @@ The first validation passes if:
 - 16:9 and 9:16 variants are planned separately.
 - Chinese text errors are noticed and handled through QA or overlay notes.
 - The output could be used in a voiceover plus image-carousel video without major redesign.
+- `bin/mrai validate samples/<topic-slug>` passes before the final report.
+- Generated image files are placed in the `asset-manifest.json` slots or the report clearly explains why not.
 
 ## Fail criteria
 
@@ -59,6 +100,8 @@ The validation fails if:
 - The agent ignores the script and makes generic AI topic images.
 - The agent relies on long in-image Chinese text.
 - No QA notes are produced.
+- The agent generates images before reading `shot-list.md` and `asset-manifest.json`.
+- The agent changes the package structure in a way that breaks `bin/mrai validate`.
 
 ## Review questions
 
@@ -70,4 +113,27 @@ After the validation, answer:
 - Which layout pattern worked best?
 - Which file was most useful for the agent?
 - Which instruction was missing or ambiguous?
+- Did `bin/mrai validate` pass before and after image generation?
+- Did the `asset-manifest.json` slots make video assembly easier or harder?
 
+## Report template
+
+End the validation with:
+
+```markdown
+## Validation Summary
+
+- Repo commit:
+- Source script:
+- Output folder:
+- Command used:
+- Validation result:
+- Shots selected:
+- Images generated:
+- Usable images:
+- Images needing regeneration:
+- Mr.Ai trait drift:
+- Chinese text handling:
+- Files most useful downstream:
+- Rules or docs to update:
+```

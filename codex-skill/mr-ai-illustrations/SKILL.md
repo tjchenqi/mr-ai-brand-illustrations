@@ -98,13 +98,18 @@ Check every prompt or generated image against `references/qa-checklist.md`. The 
 
 For a full script package, produce:
 
+- `source-script.md`
 - `shot-list.md`
 - `image-prompts.md`
 - `timeline-plan.md`
 - `audio-visual-map.json`
+- `asset-manifest.json`
 - `qa-report.md`
+- `remotion-overlay-notes.md`
+- `validation-notes.md`
 - `16x9/`
 - `9x16/`
-- optional `remotion-overlay-notes.md`
 
 Use `references/delivery-spec.md` for naming and folder structure.
+
+When using the repository CLI, run `bin/mrai validate <package>` before handing the package to another agent or video pipeline.
