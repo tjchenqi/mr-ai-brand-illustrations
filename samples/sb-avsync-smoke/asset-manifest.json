@@ -1,0 +1,69 @@
+{
+  "topic": "S/B AV sync smoke",
+  "image_policy": "Generate images into the recommended asset slots. Keep Chinese text out of bitmap images; add exact labels in post-production overlays.",
+  "assets": [
+    {
+      "shot_id": "01-s0-guardrail-pit",
+      "segment_id": "S0",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/01-s0-guardrail-pit-16x9.png",
+        "9x16": "9x16/01-s0-guardrail-pit-9x16.png"
+      },
+      "style_preset": "brand",
+      "structure_type": "Guardrail Pit",
+      "overlay_text_candidate": "风险边界",
+      "short_labels": [
+        "风险",
+        "边界",
+        "验证"
+      ],
+      "status": "pending_generation"
+    },
+    {
+      "shot_id": "02-s1-conveyor-split",
+      "segment_id": "S1",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/02-s1-conveyor-split-16x9.png",
+        "9x16": "9x16/02-s1-conveyor-split-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Conveyor Split",
+      "overlay_text_candidate": "验证",
+      "short_labels": [
+        "输入",
+        "噪音",
+        "行动"
+      ],
+      "status": "pending_generation"
+    },
+    {
+      "shot_id": "03-s2-black-box-reveal",
+      "segment_id": "S2",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/03-s2-black-box-reveal-16x9.png",
+        "9x16": "9x16/03-s2-black-box-reveal-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Black Box Reveal",
+      "overlay_text_candidate": "打开黑盒",
+      "short_labels": [
+        "黑盒",
+        "机制",
+        "证据"
+      ],
+      "status": "pending_generation"
+    }
+  ]
+}

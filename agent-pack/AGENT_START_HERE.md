@@ -23,6 +23,7 @@ Review before image generation:
 - `timeline-plan.md`: every S/B segment should have a timing/treatment decision.
 - `shot-list.md`: selected shots only; do not generate images for every paragraph.
 - `audio-visual-map.json`: machine-readable contract for Remotion, ffmpeg, or another video agent.
+- `asset-manifest.json`: expected image output slots for each selected shot.
 - `image-prompts.md`: prompts are drafts; tighten the best 2-3 before generating images.
 
 Validate machine-readable output against `agent-pack/audio-visual-map.schema.json` when building automation around this package.

@@ -3,7 +3,7 @@
 These prompts are a first-pass scaffold. Review and tighten before production image generation.
 Style preset: `auto`
 
-## 01-s2-普通人的疑问与解释缺口
+## 01-s2-label-frame
 
 ### 16:9
 
@@ -71,7 +71,7 @@ Constraints:
 One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
-## 02-s3-思想核心切入
+## 02-s3-third-path
 
 ### 16:9
 
@@ -139,7 +139,7 @@ Constraints:
 One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
-## 03-s4-现实机制
+## 03-s4-third-path
 
 ### 16:9
 
@@ -207,7 +207,7 @@ Constraints:
 One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
-## 04-s5-反方问题
+## 04-s5-label-frame
 
 ### 16:9
 
@@ -275,7 +275,7 @@ Constraints:
 One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
-## 05-s7-边界声明
+## 05-s7-coexistence-stage
 
 ### 16:9
 

@@ -76,6 +76,7 @@ bin/mrai gen script.md --out samples/my-topic --prefer-layout "Third Path"
 - `agent-pack/layout-library.json`：layout 的动作、默认标签、禁忌。
 - `agent-pack/treatment-rules.json`：S/B 选段、引用卡、字幕/无图处理。
 - `agent-pack/audio-visual-map.schema.json`：`audio-visual-map.json` 的下游接口契约。
+- `asset-manifest.json`：每个生成包内的图片落盘槽位契约。
 
 这些规则应使用可迁移语义模式，避免堆某几篇测试稿的具体名字或情节。
 

@@ -107,6 +107,11 @@ def validate_av_map(data: dict, schema: dict) -> list[str]:
         validate_allowed(errors, shot.get("segment_role"), schema["enums"]["shot.segment_role"], f"{label}.segment_role")
         if shot.get("formats") != schema["enums"]["shot.formats"]:
             errors.append(validation_error(f"{label}.formats must be {schema['enums']['shot.formats']!r}"))
+        if shot.get("asset_slots") != {
+            "16x9": f"16x9/{shot.get('shot_id')}-16x9.png",
+            "9x16": f"9x16/{shot.get('shot_id')}-9x16.png",
+        }:
+            errors.append(validation_error(f"{label}.asset_slots must match recommended 16x9/9x16 asset paths"))
         validate_allowed(errors, shot.get("style_preset"), schema["enums"]["shot.style_preset"], f"{label}.style_preset")
         validate_allowed(errors, shot.get("expression_pace"), schema["enums"]["shot.expression_pace"], f"{label}.expression_pace")
         validate_allowed(errors, shot.get("timing"), schema["enums"]["shot.timing"], f"{label}.timing")
@@ -115,6 +120,35 @@ def validate_av_map(data: dict, schema: dict) -> list[str]:
         if not isinstance(shot.get("short_labels"), list):
             errors.append(validation_error(f"{label}.short_labels must be a list"))
 
+    return errors
+
+
+def validate_asset_manifest(package_path: Path, av_map: dict | None = None) -> list[str]:
+    errors: list[str] = []
+    manifest_path = package_path / "asset-manifest.json"
+    if not manifest_path.exists():
+        return [validation_error("missing package file asset-manifest.json")]
+    try:
+        manifest = load_json_config(manifest_path)
+    except json.JSONDecodeError as exc:
+        return [validation_error(f"invalid asset-manifest.json: {exc}")]
+    assets = manifest.get("assets")
+    if not isinstance(assets, list):
+        return [validation_error("asset-manifest.json assets must be a list")]
+    if av_map is None:
+        return errors
+    shots_by_id = {shot.get("shot_id"): shot for shot in av_map.get("shots", [])}
+    manifest_by_id = {asset.get("shot_id"): asset for asset in assets if isinstance(asset, dict)}
+    if set(shots_by_id) != set(manifest_by_id):
+        errors.append(validation_error("asset-manifest.json shot ids must match audio-visual-map.json shots"))
+    for shot_id, shot in shots_by_id.items():
+        asset = manifest_by_id.get(shot_id)
+        if not asset:
+            continue
+        if asset.get("asset_slots") != shot.get("asset_slots"):
+            errors.append(validation_error(f"asset-manifest {shot_id} asset_slots must match audio-visual-map"))
+        if asset.get("status") not in {"pending_generation", "generated", "accepted", "rejected"}:
+            errors.append(validation_error(f"asset-manifest {shot_id} status is invalid"))
     return errors
 
 
@@ -127,6 +161,7 @@ def validate_package(package_path: Path, schema_path: Path) -> list[str]:
         "image-prompts.md",
         "timeline-plan.md",
         "audio-visual-map.json",
+        "asset-manifest.json",
         "qa-report.md",
         "remotion-overlay-notes.md",
         "validation-notes.md",
@@ -145,6 +180,7 @@ def validate_package(package_path: Path, schema_path: Path) -> list[str]:
     except json.JSONDecodeError as exc:
         return errors + [validation_error(f"invalid JSON: {exc}")]
     errors.extend(validate_av_map(data, schema))
+    errors.extend(validate_asset_manifest(package_path, data))
     return errors
 
 
@@ -560,6 +596,13 @@ def prompt_for(title: str, summary: str, layout: str, action: str, labels: list[
     )
 
 
+def asset_slots_for_shot(shot_id: str) -> dict[str, str]:
+    return {
+        "16x9": f"16x9/{shot_id}-16x9.png",
+        "9x16": f"9x16/{shot_id}-9x16.png",
+    }
+
+
 def write_package(
     script: str,
     out: Path,
@@ -603,6 +646,11 @@ def write_package(
         "style_preset": style,
         "segments": [],
         "shots": [],
+    }
+    asset_manifest = {
+        "topic": title,
+        "image_policy": "Generate images into the recommended asset slots. Keep Chinese text out of bitmap images; add exact labels in post-production overlays.",
+        "assets": [],
     }
 
     used_layouts: dict[str, int] = {}
@@ -663,7 +711,8 @@ def write_package(
         override_labels = segment.override.get("labels", "")
         labels = [item.strip() for item in override_labels.split("|") if item.strip()] if override_labels else labels_for_layout(layout_library, layout)
         action = segment.override.get("action") or action_for_layout(layout_library, layout)
-        shot_id = f"{idx:02d}-{segment.segment_id.lower()}-{slugify(segment.title)[:42]}"
+        shot_id = f"{idx:02d}-{segment.segment_id.lower()}-{slugify(layout)[:42]}"
+        asset_slots = asset_slots_for_shot(shot_id)
         summary = summarize(body)
         overlay_text = make_overlay_text(routing, section_text, layout)
         cognitive_role, segment_visual_purpose = classify_cognitive_role(treatment_rules, segment)
@@ -685,7 +734,21 @@ def write_package(
                 "visual_purpose": segment_visual_purpose,
                 "mr_ai_action": action,
                 "short_labels": labels,
+                "asset_slots": asset_slots,
                 "overlay_text_candidate": overlay_text,
+            }
+        )
+        asset_manifest["assets"].append(
+            {
+                "shot_id": shot_id,
+                "segment_id": segment.segment_id,
+                "formats": formats,
+                "asset_slots": asset_slots,
+                "style_preset": shot_style,
+                "structure_type": layout,
+                "overlay_text_candidate": overlay_text,
+                "short_labels": labels,
+                "status": "pending_generation",
             }
         )
 
@@ -711,6 +774,7 @@ def write_package(
                 f"mr_ai_action: {action}",
                 f"main_metaphor: {layout}",
                 f"short_labels: {json.dumps(labels, ensure_ascii=False)}",
+                f"asset_slots: {json.dumps(asset_slots, ensure_ascii=False)}",
                 "prompt_status: draft",
                 "qa_status: pending review",
                 "```",
@@ -799,6 +863,7 @@ def write_package(
     (out / "image-prompts.md").write_text("\n".join(prompt_lines), encoding="utf-8")
     (out / "timeline-plan.md").write_text("\n".join(timeline_lines), encoding="utf-8")
     (out / "audio-visual-map.json").write_text(json.dumps(audio_visual_map, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (out / "asset-manifest.json").write_text(json.dumps(asset_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (out / "remotion-overlay-notes.md").write_text("\n".join(overlay_lines), encoding="utf-8")
     (out / "qa-report.md").write_text(qa, encoding="utf-8")
     (out / "validation-notes.md").write_text(validation, encoding="utf-8")

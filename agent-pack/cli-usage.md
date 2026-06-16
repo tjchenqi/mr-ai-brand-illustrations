@@ -100,6 +100,7 @@ The command writes:
 - `image-prompts.md`
 - `timeline-plan.md`
 - `audio-visual-map.json`
+- `asset-manifest.json`
 - `qa-report.md`
 - `remotion-overlay-notes.md`
 - `validation-notes.md`
@@ -117,6 +118,8 @@ It verifies:
 - `B` segments remain quote-card/overlay material
 - every shot references a selected host voiceover segment
 - every shot carries both `16x9` and `9x16` formats in the current MVP
+- every shot has stable `asset_slots`
+- `asset-manifest.json` matches `audio-visual-map.json`
 
 Run it before handing a package to Remotion, ffmpeg, 耿鬼, OpenClaw, or another production agent.
 

@@ -1,0 +1,111 @@
+{
+  "topic": "Leah Dou handoff MVP",
+  "image_policy": "Generate images into the recommended asset slots. Keep Chinese text out of bitmap images; add exact labels in post-production overlays.",
+  "assets": [
+    {
+      "shot_id": "01-s2-label-frame",
+      "segment_id": "S2",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/01-s2-label-frame-16x9.png",
+        "9x16": "9x16/01-s2-label-frame-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Label Frame",
+      "overlay_text_candidate": "误解",
+      "short_labels": [
+        "标签",
+        "误解",
+        "本体"
+      ],
+      "status": "pending_generation"
+    },
+    {
+      "shot_id": "02-s3-third-path",
+      "segment_id": "S3",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/02-s3-third-path-16x9.png",
+        "9x16": "9x16/02-s3-third-path-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Third Path",
+      "overlay_text_candidate": "第三条路",
+      "short_labels": [
+        "选项A",
+        "选项B",
+        "第三路"
+      ],
+      "status": "pending_generation"
+    },
+    {
+      "shot_id": "03-s4-third-path",
+      "segment_id": "S4",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/03-s4-third-path-16x9.png",
+        "9x16": "9x16/03-s4-third-path-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Third Path",
+      "overlay_text_candidate": "改写",
+      "short_labels": [
+        "选项A",
+        "选项B",
+        "第三路"
+      ],
+      "status": "pending_generation"
+    },
+    {
+      "shot_id": "04-s5-label-frame",
+      "segment_id": "S5",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/04-s5-label-frame-16x9.png",
+        "9x16": "9x16/04-s5-label-frame-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Label Frame",
+      "overlay_text_candidate": "改写",
+      "short_labels": [
+        "标签",
+        "误解",
+        "本体"
+      ],
+      "status": "pending_generation"
+    },
+    {
+      "shot_id": "05-s7-coexistence-stage",
+      "segment_id": "S7",
+      "formats": [
+        "16x9",
+        "9x16"
+      ],
+      "asset_slots": {
+        "16x9": "16x9/05-s7-coexistence-stage-16x9.png",
+        "9x16": "9x16/05-s7-coexistence-stage-9x16.png"
+      },
+      "style_preset": "explainer-sketch",
+      "structure_type": "Coexistence Stage",
+      "overlay_text_candidate": "共处",
+      "short_labels": [
+        "来处",
+        "自己",
+        "共处"
+      ],
+      "status": "pending_generation"
+    }
+  ]
+}

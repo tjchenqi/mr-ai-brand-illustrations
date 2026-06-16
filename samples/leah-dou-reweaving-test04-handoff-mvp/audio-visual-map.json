@@ -140,7 +140,7 @@
   ],
   "shots": [
     {
-      "shot_id": "01-s2-普通人的疑问与解释缺口",
+      "shot_id": "01-s2-label-frame",
       "segment_id": "S2",
       "segment_role": "host_voiceover",
       "formats": [
@@ -162,10 +162,14 @@
         "误解",
         "本体"
       ],
+      "asset_slots": {
+        "16x9": "16x9/01-s2-label-frame-16x9.png",
+        "9x16": "9x16/01-s2-label-frame-9x16.png"
+      },
       "overlay_text_candidate": "误解"
     },
     {
-      "shot_id": "02-s3-思想核心切入",
+      "shot_id": "02-s3-third-path",
       "segment_id": "S3",
       "segment_role": "host_voiceover",
       "formats": [
@@ -187,10 +191,14 @@
         "选项B",
         "第三路"
       ],
+      "asset_slots": {
+        "16x9": "16x9/02-s3-third-path-16x9.png",
+        "9x16": "9x16/02-s3-third-path-9x16.png"
+      },
       "overlay_text_candidate": "第三条路"
     },
     {
-      "shot_id": "03-s4-现实机制",
+      "shot_id": "03-s4-third-path",
       "segment_id": "S4",
       "segment_role": "host_voiceover",
       "formats": [
@@ -212,10 +220,14 @@
         "选项B",
         "第三路"
       ],
+      "asset_slots": {
+        "16x9": "16x9/03-s4-third-path-16x9.png",
+        "9x16": "9x16/03-s4-third-path-9x16.png"
+      },
       "overlay_text_candidate": "改写"
     },
     {
-      "shot_id": "04-s5-反方问题",
+      "shot_id": "04-s5-label-frame",
       "segment_id": "S5",
       "segment_role": "host_voiceover",
       "formats": [
@@ -237,10 +249,14 @@
         "误解",
         "本体"
       ],
+      "asset_slots": {
+        "16x9": "16x9/04-s5-label-frame-16x9.png",
+        "9x16": "9x16/04-s5-label-frame-9x16.png"
+      },
       "overlay_text_candidate": "改写"
     },
     {
-      "shot_id": "05-s7-边界声明",
+      "shot_id": "05-s7-coexistence-stage",
       "segment_id": "S7",
       "segment_role": "host_voiceover",
       "formats": [
@@ -262,6 +278,10 @@
         "自己",
         "共处"
       ],
+      "asset_slots": {
+        "16x9": "16x9/05-s7-coexistence-stage-16x9.png",
+        "9x16": "9x16/05-s7-coexistence-stage-9x16.png"
+      },
       "overlay_text_candidate": "共处"
     }
   ]

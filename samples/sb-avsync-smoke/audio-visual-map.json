@@ -65,7 +65,7 @@
   ],
   "shots": [
     {
-      "shot_id": "01-s0-开场",
+      "shot_id": "01-s0-guardrail-pit",
       "segment_id": "S0",
       "segment_role": "host_voiceover",
       "formats": [
@@ -87,10 +87,14 @@
         "边界",
         "验证"
       ],
+      "asset_slots": {
+        "16x9": "16x9/01-s0-guardrail-pit-16x9.png",
+        "9x16": "9x16/01-s0-guardrail-pit-9x16.png"
+      },
       "overlay_text_candidate": "风险边界"
     },
     {
-      "shot_id": "02-s1-主播解释",
+      "shot_id": "02-s1-conveyor-split",
       "segment_id": "S1",
       "segment_role": "host_voiceover",
       "formats": [
@@ -112,10 +116,14 @@
         "噪音",
         "行动"
       ],
+      "asset_slots": {
+        "16x9": "16x9/02-s1-conveyor-split-16x9.png",
+        "9x16": "9x16/02-s1-conveyor-split-9x16.png"
+      },
       "overlay_text_candidate": "验证"
     },
     {
-      "shot_id": "03-s2-结尾",
+      "shot_id": "03-s2-black-box-reveal",
       "segment_id": "S2",
       "segment_role": "host_voiceover",
       "formats": [
@@ -137,6 +145,10 @@
         "机制",
         "证据"
       ],
+      "asset_slots": {
+        "16x9": "16x9/03-s2-black-box-reveal-16x9.png",
+        "9x16": "9x16/03-s2-black-box-reveal-9x16.png"
+      },
       "overlay_text_candidate": "打开黑盒"
     }
   ]

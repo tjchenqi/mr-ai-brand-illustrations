@@ -9,6 +9,7 @@ samples/<episode-or-topic-slug>/
 ├── image-prompts.md
 ├── timeline-plan.md
 ├── audio-visual-map.json
+├── asset-manifest.json
 ├── audio-visual-map.schema.json  # project-level contract, stored in agent-pack/
 ├── qa-report.md
 ├── remotion-overlay-notes.md
@@ -43,6 +44,7 @@ structure_type:
 mr_ai_action:
 main_metaphor:
 short_labels:
+asset_slots:
 prompt_status:
 qa_status:
 ```
@@ -126,7 +128,38 @@ Each shot:
   "visual_purpose": "string",
   "mr_ai_action": "string",
   "short_labels": ["string"],
+  "asset_slots": {
+    "16x9": "16x9/01-s2-topic-16x9.png",
+    "9x16": "9x16/01-s2-topic-9x16.png"
+  },
   "overlay_text_candidate": "string"
+}
+```
+
+## Asset manifest fields
+
+`asset-manifest.json` is the image-slot contract for agents that generate images or assemble video.
+
+```json
+{
+  "topic": "string",
+  "image_policy": "string",
+  "assets": [
+    {
+      "shot_id": "01-s2-topic",
+      "segment_id": "S2",
+      "formats": ["16x9", "9x16"],
+      "asset_slots": {
+        "16x9": "16x9/01-s2-topic-16x9.png",
+        "9x16": "9x16/01-s2-topic-9x16.png"
+      },
+      "style_preset": "brand | explainer-sketch",
+      "structure_type": "string",
+      "overlay_text_candidate": "string",
+      "short_labels": ["string"],
+      "status": "pending_generation | generated | accepted | rejected"
+    }
+  ]
 }
 ```
 

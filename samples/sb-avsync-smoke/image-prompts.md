@@ -3,7 +3,7 @@
 These prompts are a first-pass scaffold. Review and tighten before production image generation.
 Style preset: `auto`
 
-## 01-s0-开场
+## 01-s0-guardrail-pit
 
 ### 16:9
 
@@ -71,7 +71,7 @@ Constraints:
 One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. Do not write a long title, paragraph, subtitle, or structure type on the image. Do not make it a PPT infographic, math equation, plus-sign formula, dense architecture diagram, stock vector, generic mascot poster, realistic UI screenshot, sci-fi interface, or children's illustration. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
-## 02-s1-主播解释
+## 02-s1-conveyor-split
 
 ### 16:9
 
@@ -139,7 +139,7 @@ Constraints:
 One image explains only one core idea. Do NOT render Chinese characters in the image. Leave all label cards, signs, and text spaces blank so exact Chinese can be added in post-production overlay. If a model insists on text, use simple blank lines, roman numerals, or abstract symbols only. No title, no paragraphs, no subtitles, no decorative background, no PPT infographic, no math equation, no plus-sign formula, no dense architecture diagram, no stock vector, no realistic UI screenshot, no sci-fi interface, no robot icon, no robot face, no children's-book scene. Preserve Mr.Ai's cap, mustache, blue clothing, yellow accent, and rounded middle-aged cartoon identity.
 ```
 
-## 03-s2-结尾
+## 03-s2-black-box-reveal
 
 ### 16:9
 

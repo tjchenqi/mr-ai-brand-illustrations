@@ -33,6 +33,7 @@
     "visual_purpose",
     "mr_ai_action",
     "short_labels",
+    "asset_slots",
     "overlay_text_candidate"
   ],
   "enums": {
@@ -53,6 +54,7 @@
     "B segments must use role=quoted_source, cognitive_role=quote_source, visual_treatment=quote-card-or-overlay, and must not appear in shots unless explicitly overridden in a future version.",
     "Every shot.segment_id must reference one host_voiceover segment with selected_for_image=true.",
     "Every shot.formats must be exactly [\"16x9\", \"9x16\"] for the current MVP.",
+    "Every shot.asset_slots must point to 16x9/<shot_id>-16x9.png and 9x16/<shot_id>-9x16.png.",
     "overlay_text_candidate is a short overlay seed, not a full subtitle."
   ]
 }
