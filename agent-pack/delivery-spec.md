@@ -9,6 +9,7 @@ samples/<episode-or-topic-slug>/
 ├── image-prompts.md
 ├── timeline-plan.md
 ├── audio-visual-map.json
+├── audio-visual-map.schema.json  # project-level contract, stored in agent-pack/
 ├── qa-report.md
 ├── remotion-overlay-notes.md
 ├── 16x9/
@@ -34,6 +35,8 @@ id:
 script_position:
 voiceover_summary:
 visual_purpose:
+ cognitive_role:
+ expression_pace:
 format:
 formats:
 structure_type:
@@ -54,7 +57,10 @@ Each segment should include:
 segment_id:
 role: host_voiceover | quoted_source
 visual_treatment: brand | explainer-sketch | quote-card-or-overlay | subtitle-or-no-image
+ cognitive_role: hook | misconception | turning_point | mechanism | evidence_or_boundary | conclusion | explanation | quote_source
+ expression_pace: hook | turn | explain | quote | landing
 timing: sync_with_voiceover_anchor | hold_during_quote | keep_voiceover_primary
+timing_hint:
 voiceover_anchor:
 script_summary_excerpt:
 overlay_text_candidate:
@@ -65,6 +71,8 @@ overlay_text_candidate:
 `script_summary_excerpt` carries a short source excerpt for debugging and downstream prompt review.
 
 `audio-visual-map.json` carries the same plan in machine-readable form for other agents, Remotion, ffmpeg pipelines, or later batch tooling.
+
+The machine-readable contract is documented in `agent-pack/audio-visual-map.schema.json`. The project test suite validates generated maps against that contract without requiring an external JSON Schema dependency.
 
 ## Audio/visual map fields
 
@@ -90,7 +98,11 @@ Each segment:
   "script_summary_excerpt": "string",
   "selected_for_image": true,
   "visual_treatment": "brand | explainer-sketch | quote-card-or-overlay | subtitle-or-no-image",
+  "cognitive_role": "hook | misconception | turning_point | mechanism | evidence_or_boundary | conclusion | explanation | quote_source",
+  "expression_pace": "hook | turn | explain | quote | landing",
+  "visual_purpose": "string",
   "timing": "sync_with_voiceover_anchor | hold_during_quote | keep_voiceover_primary",
+  "timing_hint": "string",
   "overlay_text_candidate": "string"
 }
 ```
@@ -105,7 +117,10 @@ Each shot:
   "formats": ["16x9", "9x16"],
   "style_preset": "brand | explainer-sketch",
   "structure_type": "string",
+  "cognitive_role": "hook | misconception | turning_point | mechanism | evidence_or_boundary | conclusion | explanation",
+  "expression_pace": "hook | turn | explain | landing",
   "timing": "sync_with_voiceover_anchor",
+  "timing_hint": "string",
   "voiceover_summary": "string",
   "script_summary_excerpt": "string",
   "visual_purpose": "string",

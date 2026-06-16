@@ -29,6 +29,7 @@ Read when needed:
 - `references/visual-routing-rules.json` for semantic intent to layout routing.
 - `references/layout-library.json` for layout actions, labels, and avoid lists.
 - `references/treatment-rules.json` for S/B scoring, quote handling, and inline override syntax.
+- `references/audio-visual-map.schema.json` for the downstream JSON contract.
 - `references/composition-patterns.md` for choosing the visual structure.
 - `references/cli-usage.md` when the user wants command-line or batch workflow integration.
 - `references/delivery-spec.md` for task folder layout.

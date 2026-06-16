@@ -24,6 +24,8 @@ Review before image generation:
 - `audio-visual-map.json`: machine-readable contract for Remotion, ffmpeg, or another video agent.
 - `image-prompts.md`: prompts are drafts; tighten the best 2-3 before generating images.
 
+Validate machine-readable output against `agent-pack/audio-visual-map.schema.json` when building automation around this package.
+
 Override when needed:
 
 ```bash

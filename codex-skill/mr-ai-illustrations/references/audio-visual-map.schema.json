@@ -1,0 +1,58 @@
+{
+  "version": "0.1.0",
+  "description": "Lightweight schema contract for audio-visual-map.json. This is intentionally simple so any agent can read it without a JSON Schema library.",
+  "top_level_required": ["topic", "style_preset", "segments", "shots"],
+  "segment_required": [
+    "segment_id",
+    "role",
+    "title",
+    "voiceover_summary",
+    "script_summary_excerpt",
+    "selected_for_image",
+    "visual_treatment",
+    "cognitive_role",
+    "expression_pace",
+    "visual_purpose",
+    "timing",
+    "timing_hint",
+    "overlay_text_candidate"
+  ],
+  "shot_required": [
+    "shot_id",
+    "segment_id",
+    "segment_role",
+    "formats",
+    "style_preset",
+    "structure_type",
+    "cognitive_role",
+    "expression_pace",
+    "timing",
+    "timing_hint",
+    "voiceover_summary",
+    "script_summary_excerpt",
+    "visual_purpose",
+    "mr_ai_action",
+    "short_labels",
+    "overlay_text_candidate"
+  ],
+  "enums": {
+    "top_level.style_preset": ["brand", "explainer-sketch", "auto"],
+    "segment.role": ["host_voiceover", "quoted_source"],
+    "segment.visual_treatment": ["brand", "explainer-sketch", "quote-card-or-overlay", "subtitle-or-no-image"],
+    "segment.cognitive_role": ["hook", "misconception", "turning_point", "mechanism", "evidence_or_boundary", "conclusion", "explanation", "quote_source"],
+    "segment.expression_pace": ["hook", "turn", "explain", "quote", "landing"],
+    "segment.timing": ["sync_with_voiceover_anchor", "hold_during_quote", "keep_voiceover_primary"],
+    "shot.segment_role": ["host_voiceover"],
+    "shot.formats": ["16x9", "9x16"],
+    "shot.style_preset": ["brand", "explainer-sketch"],
+    "shot.expression_pace": ["hook", "turn", "explain", "quote", "landing"],
+    "shot.timing": ["sync_with_voiceover_anchor"]
+  },
+  "invariants": [
+    "Every S segment from the source script must appear in segments.",
+    "B segments must use role=quoted_source, cognitive_role=quote_source, visual_treatment=quote-card-or-overlay, and must not appear in shots unless explicitly overridden in a future version.",
+    "Every shot.segment_id must reference one host_voiceover segment with selected_for_image=true.",
+    "Every shot.formats must be exactly [\"16x9\", \"9x16\"] for the current MVP.",
+    "overlay_text_candidate is a short overlay seed, not a full subtitle."
+  ]
+}
